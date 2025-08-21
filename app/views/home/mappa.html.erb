@@ -1,0 +1,31 @@
+<h1>mappa</h1>
+
+<div class="container">
+  <div class="section">Parte 1</div>
+  <div class="section">
+  
+    <div id="map"></div>
+    
+  </div>
+  <div class="section">
+  
+  <h1> Percorso 1</h1>
+    <br>
+  <h1> Percorso 2</h1>
+    <br>
+  <h1> Percorso 3</h1>
+    <br>
+  <h1> . . .</h1>
+  
+  </div>
+</div>
+
+
+
+
+<script>
+    var map = L.map('map').setView([41.8902, 12.4922], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+</script>
