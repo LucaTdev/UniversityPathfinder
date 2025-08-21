@@ -5,6 +5,9 @@ class HomeController < ApplicationController
   def profilo
   end
 
+  def sedi
+  end 
+
   def mappa
   end
 
