@@ -4,4 +4,7 @@ class HomeController < ApplicationController
 
   def profilo
   end
+
+  def sedi
+  end 
 end
