@@ -1,0 +1,67 @@
+<div class="topbar">
+  <div class="controls">
+    <input id="startInput" type="text" placeholder="Indirizzo di partenza" />
+    <input id="endInput" type="text" placeholder="Indirizzo di arrivo" />
+    <button id="routeBtn">Calcola percorso</button>
+  </div>
+</div>
+
+<div id="map" style="height: 80vh; width: 100%;"></div>
+
+
+<!-- Scripts Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+  var map = L.map('map').setView([41.8902, 12.4922], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  var routingControl = L.Routing.control({
+    waypoints: [
+      L.latLng(41.8902, 12.4922),
+      L.latLng(41.9028, 12.4964)
+    ],
+    routeWhileDragging: true,
+    geocoder: L.Control.Geocoder.nominatim()    
+  }).addTo(map);
+
+  async function geocode(query) {
+    const url = new URL('https://nominatim.openstreetmap.org/search');
+    url.searchParams.set('q', query);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('limit', '1');
+
+    const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+    const data = await res.json();
+    if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
+    const { lat, lon } = data[0];
+    return { lat: parseFloat(lat), lon: parseFloat(lon) };
+  }
+
+  document.getElementById('routeBtn').addEventListener('click', async () => {
+    const start = document.getElementById('startInput').value.trim();
+    const end = document.getElementById('endInput').value.trim();
+    if (!start || !end) {
+      alert('Inserisci entrambi gli indirizzi.');
+      return;
+    }
+    try {
+      const [from, to] = await Promise.all([geocode(start), geocode(end)]);
+      routingControl.setWaypoints([
+        L.latLng(from.lat, from.lon),
+        L.latLng(to.lat, to.lon)
+      ]);
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+</script>
