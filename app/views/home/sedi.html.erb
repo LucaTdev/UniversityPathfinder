@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Pathfinder</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .mode-switch {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50px;
+            padding: 5px;
+            display: inline-flex;
+            margin-bottom: 2rem;
+        }
+        
+        .mode-btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 45px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .mode-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mode-btn:not(.active) {
+            background: transparent;
+            color: white;
+        }
+        
+        .university-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .university-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .building-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 2px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="page-header text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4">University Pathfinder</h1>
+            
+            <!-- Mode Switch -->
+            <div class="mode-switch">
+                <button type="button" class="mode-btn active" id="userBtn" onclick="switchMode('user')">
+                    <i class="fas fa-user me-2"></i>Utente
+                </button>
+                <button type="button" class="mode-btn" id="adminBtn" onclick="switchMode('admin')">
+                    <i class="fas fa-shield-alt me-2"></i>Amministratore
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- User Mode -->
+        <div id="userMode" class="mode-content">
+            <h2 class="mb-4">
+                <i class="fas fa-university me-2"></i>Sedi Universitarie
+            </h2>
+            
+            <!-- Universities List -->
+            <div class="row" id="universitiesList">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Admin Mode -->
+        <div id="adminMode" class="mode-content d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-cog me-2"></i>Amministrazione Sedi
+                </h2>
+                <button type="button" class="btn btn-success" onclick="showAddForm()">
+                    <i class="fas fa-plus me-2"></i>Aggiungi Sede
+                </button>
+            </div>
+
+            <!-- Add Form -->
+            <div id="addForm" class="card mb-4 d-none">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Nuova Sede Universitaria
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="universityForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nomeSede" class="form-label">Nome Sede</label>
+                                <input type="text" class="form-control" id="nomeSede" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="indirizzoSede" class="form-label">Indirizzo Sede</label>
+                                <input type="text" class="form-control" id="indirizzoSede" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Edifici presenti nella sede</label>
+                            <div id="edificiContainer">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addBuildingInput()">
+                                <i class="fas fa-plus me-2"></i>Aggiungi Edificio
+                            </button>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Salva Sede
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="hideAddForm()">
+                                <i class="fas fa-times me-2"></i>Annulla
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Universities List -->
+            <div class="row" id="adminUniversitiesList">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+
+        <!-- University Detail Modal -->
+        <div class="modal fade" id="universityModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sample data - In Rails this would come from the backend
+        let universities = [
+            {
+                id: 1,
+                nome: "Università La Sapienza",
+                indirizzo: "Piazzale Aldo Moro, 5, 00185 Roma RM",
+                edifici: ["Edificio CU002 - Matematica", "Edificio CU006 - Fisica", "Edificio RM018 - Lettere", "Biblioteca Centrale"]
+            },
+            {
+                id: 2,
+                nome: "Università Tor Vergata",
+                indirizzo: "Via della Ricerca Scientifica, 1, 00133 Roma RM",
+                edifici: ["Macroarea di Ingegneria", "Macroarea di Scienze", "Biblioteca di Area Tecnologica"]
+            },
+            {
+                id: 3,
+                nome: "Università Roma Tre",
+                indirizzo: "Via Ostiense, 133, 00154 Roma RM",
+                edifici: ["Edificio Principali", "Dipartimento di Architettura", "Biblioteca di Area delle Arti"]
+            }
+        ];
+
+        let currentMode = 'user';
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update buttons
+            document.getElementById('userBtn').classList.toggle('active', mode === 'user');
+            document.getElementById('adminBtn').classList.toggle('active', mode === 'admin');
+            
+            // Show/hide content
+            document.getElementById('userMode').classList.toggle('d-none', mode !== 'user');
+            document.getElementById('adminMode').classList.toggle('d-none', mode !== 'admin');
+            
+            // Refresh lists
+            if (mode === 'user') {
+                renderUserUniversities();
+            } else {
+                renderAdminUniversities();
+            }
+        }
+
+        function renderUserUniversities() {
+            const container = document.getElementById('universitiesList');
+            container.innerHTML = '';
+
+            universities.forEach(uni => {
+                const card = `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card university-card h-100" onclick="showUniversityDetails(${uni.id})">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">
+                                    <i class="fas fa-university me-2"></i>${uni.nome}
+                                </h5>
+                                <p class="card-text text-muted mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">Edifici: ${uni.edifici.length}</small>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    ${uni.edifici.slice(0, 2).map(edificio => 
+                                        `<span class="building-item">${edificio}</span>`
+                                    ).join('')}
+                                    ${uni.edifici.length > 2 ? `<span class="building-item">+${uni.edifici.length - 2} altri</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        function renderAdminUniversities() {
+            const container = document.getElementById('adminUniversitiesList');
+            container.innerHTML = '';
+
+            universities.forEach(uni => {
+                const card = `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary">${uni.nome}</h5>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteUniversity(${uni.id})" title="Elimina sede">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <p class="card-text text-muted mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
+                                </p>
+                                <div class="mb-2">
+                                    <strong>Edifici (${uni.edifici.length}):</strong>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    ${uni.edifici.map(edificio => 
+                                        `<span class="building-item">${edificio}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        function showUniversityDetails(id) {
+            const uni = universities.find(u => u.id === id);
+            if (!uni) return;
+
+            document.getElementById('modalTitle').innerHTML = `
+                <i class="fas fa-university me-2"></i>${uni.nome}
+            `;
+            
+            document.getElementById('modalBody').innerHTML = `
+                <div class="mb-4">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Indirizzo</h6>
+                    <p class="text-muted">${uni.indirizzo}</p>
+                </div>
+                <div>
+                    <h6><i class="fas fa-building me-2"></i>Edifici presenti (${uni.edifici.length})</h6>
+                    <div class="d-flex flex-wrap">
+                        ${uni.edifici.map(edificio => 
+                            `<span class="building-item me-2 mb-2">${edificio}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('universityModal')).show();
+        }
+
+        function showAddForm() {
+            document.getElementById('addForm').classList.remove('d-none');
+        }
+
+        function hideAddForm() {
+            document.getElementById('addForm').classList.add('d-none');
+            document.getElementById('universityForm').reset();
+            // Reset edifici container
+            const container = document.getElementById('edificiContainer');
+            container.innerHTML = `
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function addBuildingInput() {
+            const container = document.getElementById('edificiContainer');
+            const newInput = `
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', newInput);
+        }
+
+        function removeBuilding(button) {
+            const container = document.getElementById('edificiContainer');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            }
+        }
+
+        function deleteUniversity(id) {
+            if (confirm('Sei sicuro di voler eliminare questa sede universitaria?')) {
+                universities = universities.filter(uni => uni.id !== id);
+                renderAdminUniversities();
+            }
+        }
+
+        // Form submission
+        document.getElementById('universityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nomeSede').value;
+            const indirizzo = document.getElementById('indirizzoSede').value;
+            const edificiInputs = document.querySelectorAll('.edificio-input');
+            const edifici = Array.from(edificiInputs)
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+
+            if (nome && indirizzo && edifici.length > 0) {
+                const newUniversity = {
+                    id: Date.now(),
+                    nome: nome,
+                    indirizzo: indirizzo,
+                    edifici: edifici
+                };
+
+                universities.push(newUniversity);
+                renderAdminUniversities();
+                hideAddForm();
+                
+                // In Rails, this would be an AJAX call to your backend
+                alert('Sede universitaria aggiunta con successo!');
+            } else {
+                alert('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
+            }
+        });
+
+        // Initialize
+        renderUserUniversities();
+    </script>
+</body>
+</html>
