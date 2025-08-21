@@ -82,7 +82,7 @@
     </div>
 
     <div class="container">
-        <!-- User Mode -->
+        <!-- Modalità Utente -->
         <div id="userMode" class="mode-content">
             <h2 class="mb-4">
                 <i class="fas fa-university me-2"></i>Sedi Universitarie
@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <!-- Admin Mode -->
+        <!-- Modalità admin -->
         <div id="adminMode" class="mode-content d-none">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>
@@ -105,15 +105,16 @@
                 </button>
             </div>
 
-            <!-- Add Form -->
+            <!-- Add/Edit Form -->
             <div id="addForm" class="card mb-4 d-none">
                 <div class="card-header">
-                    <h5 class="mb-0">
+                    <h5 class="mb-0" id="formTitle">
                         <i class="fas fa-plus me-2"></i>Nuova Sede Universitaria
                     </h5>
                 </div>
                 <div class="card-body">
                     <form id="universityForm">
+                    <input type="hidden" id="universityId" value="">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="nomeSede" class="form-label">Nome Sede</label>
@@ -141,7 +142,7 @@
                         </div>
                         
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" id="saveBtn">
                                 <i class="fas fa-save me-2"></i>Salva Sede
                             </button>
                             <button type="button" class="btn btn-secondary" onclick="hideAddForm()">
@@ -263,9 +264,14 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h5 class="card-title text-primary">${uni.nome}</h5>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteUniversity(${uni.id})" title="Elimina sede">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="editUniversity(${uni.id})" title="Modifica sede">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteUniversity(${uni.id})" title="Elimina sede">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <p class="card-text text-muted mb-3">
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
@@ -314,11 +320,59 @@
 
         function showAddForm() {
             document.getElementById('addForm').classList.remove('d-none');
+            document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Nuova Sede Universitaria';
+            document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save me-2"></i>Salva Sede';
+            document.getElementById('universityId').value = '';
+        }
+
+        function editUniversity(id) {
+            const uni = universities.find(u => u.id === id);
+            if (!uni) return;
+
+            // Show form
+            document.getElementById('addForm').classList.remove('d-none');
+            document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Modifica Sede Universitaria';
+            document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save me-2"></i>Aggiorna Sede';
+            
+            // Fill form with existing data
+            document.getElementById('universityId').value = id;
+            document.getElementById('nomeSede').value = uni.nome;
+            document.getElementById('indirizzoSede').value = uni.indirizzo;
+            
+            // Clear and rebuild edifici container
+            const container = document.getElementById('edificiContainer');
+            container.innerHTML = '';
+            
+            uni.edifici.forEach(edificio => {
+                const inputHtml = `
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" value="${edificio}">
+                        <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', inputHtml);
+            });
+            
+            // Ensure at least one input exists
+            if (uni.edifici.length === 0) {
+                addBuildingInput();
+            }
+            
+            // Scroll to form
+            document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
         }
 
         function hideAddForm() {
             document.getElementById('addForm').classList.add('d-none');
             document.getElementById('universityForm').reset();
+            document.getElementById('universityId').value = '';
+
+            // Reset form title and button
+            document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Nuova Sede Universitaria';
+            document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save me-2"></i>Salva Sede';
+
             // Reset edifici container
             const container = document.getElementById('edificiContainer');
             container.innerHTML = `
@@ -362,6 +416,7 @@
         document.getElementById('universityForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const universityId = document.getElementById('universityId').value;
             const nome = document.getElementById('nomeSede').value;
             const indirizzo = document.getElementById('indirizzoSede').value;
             const edificiInputs = document.querySelectorAll('.edificio-input');
@@ -370,19 +425,36 @@
                 .filter(value => value !== '');
 
             if (nome && indirizzo && edifici.length > 0) {
-                const newUniversity = {
-                    id: Date.now(),
-                    nome: nome,
-                    indirizzo: indirizzo,
-                    edifici: edifici
-                };
+                if (universityId) {
+                    // Update existing university
+                    const index = universities.findIndex(uni => uni.id == universityId);
+                    if (index !== -1) {
+                        universities[index] = {
+                            id: parseInt(universityId),
+                            nome: nome,
+                            indirizzo: indirizzo,
+                            edifici: edifici
+                        };
+                        alert('Sede universitaria aggiornata con successo!');
+                    }
+                } else {
+                    // Add new university
+                    const newUniversity = {
+                        id: Date.now(),
+                        nome: nome,
+                        indirizzo: indirizzo,
+                        edifici: edifici
+                    };
+                    universities.push(newUniversity);
+                    alert('Sede universitaria aggiunta con successo!');
+                }
 
-                universities.push(newUniversity);
                 renderAdminUniversities();
                 hideAddForm();
                 
                 // In Rails, this would be an AJAX call to your backend
-                alert('Sede universitaria aggiunta con successo!');
+                // For update: PUT /universities/:id
+                // For create: POST /universities
             } else {
                 alert('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
             }
