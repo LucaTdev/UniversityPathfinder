@@ -428,3 +428,433 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniversityPathfinder - Profilo Utente</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: none;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 1rem;
+        }
+        
+        .preference-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .preference-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .preference-item.active {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .route-item {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .route-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .notification-item {
+            background: #fff;
+            border-left: 4px solid #17a2b8;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .notification-item.unread {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+        
+        .notification-item.important {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .section-title {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-info h2 {
+            margin-bottom: 0.5rem;
+            color: #343a40;
+        }
+        
+        .user-info p {
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+        }
+        
+        .badge-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body style="background-color: #f5f6fa;">
+    <!-- Header del progetto -->
+    <div class="profile-header">
+        <div class="container">
+            <h1><i class="fas fa-map-marked-alt me-2"></i>UniversityPathfinder</h1>
+            <p class="mb-0">Il tuo assistente personale per i percorsi universitari</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sezione Dati Utente -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <div class="profile-card text-center">
+                    <img src="https://via.placeholder.com/150x150/667eea/ffffff?text=User" 
+                         alt="Foto Profilo" class="profile-image">
+                    
+                    <div class="user-info">
+                        <h2>Mario Rossi</h2>
+                        <p><i class="fas fa-envelope text-muted me-2"></i>mario.rossi@university.it</p>
+                        <p><i class="fas fa-id-card text-muted me-2"></i>Studente</p>
+                        <span class="badge-custom">Utente Attivo dal 2024</span>
+                    </div>
+                    
+                    <div class="stats-container mt-3">
+                        <div class="stat-item">
+                            <div class="stat-number">47</div>
+                            <small class="text-muted">Percorsi Cercati</small>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">12</div>
+                            <small class="text-muted">Preferiti</small>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">3</div>
+                            <small class="text-muted">Notifiche</small>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-edit mt-3">
+                        <i class="fas fa-edit me-2"></i>Modifica Profilo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Preferenze Mezzi di Trasporto -->
+            <div class="col-lg-6 mb-4">
+                <div class="profile-card">
+                    <h4 class="section-title">
+                        <i class="fas fa-route text-primary"></i>
+                        Preferenze di Trasporto
+                    </h4>
+                    
+                    <div class="preference-item active">
+                        <i class="fas fa-walking text-success me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>A Piedi</strong>
+                            <small class="d-block text-muted">Modalità preferita</small>
+                        </div>
+                        <i class="fas fa-check-circle text-success"></i>
+                    </div>
+                    
+                    <div class="preference-item">
+                        <i class="fas fa-car text-info me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Auto Privata</strong>
+                            <small class="d-block text-muted">Disponibile</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="car-switch">
+                        </div>
+                    </div>
+                    
+                    <div class="preference-item active">
+                        <i class="fas fa-bus text-warning me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Trasporto Pubblico</strong>
+                            <small class="d-block text-muted">Bus e Treni</small>
+                        </div>
+                        <i class="fas fa-check-circle text-success"></i>
+                    </div>
+                    
+                    <div class="preference-item">
+                        <i class="fas fa-bicycle text-success me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Bicicletta</strong>
+                            <small class="d-block text-muted">Eco-friendly</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="bike-switch">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Percorsi Più Ricercati -->
+            <div class="col-lg-6 mb-4">
+                <div class="profile-card">
+                    <h4 class="section-title">
+                        <i class="fas fa-star text-warning"></i>
+                        Percorsi Più Ricercati
+                    </h4>
+                    
+                    <div class="route-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Casa → Facoltà di Ingegneria</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    Via Roma, 123 → Viale Università, 45
+                                </small>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary">15 min</span>
+                                    <span class="badge bg-success">A piedi</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary">23 ricerche</span>
+                        </div>
+                    </div>
+                    
+                    <div class="route-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Stazione → Biblioteca</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    Stazione Centrale → Biblioteca Universitaria
+                                </small>
+                                <div class="mt-1">
+                                    <span class="badge bg-info">8 min</span>
+                                    <span class="badge bg-warning">Bus</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary">18 ricerche</span>
+                        </div>
+                    </div>
+                    
+                    <div class="route-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Mensa → Aula Studio</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    Mensa Universitaria → Aula Studio Centrale
+                                </small>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary">5 min</span>
+                                    <span class="badge bg-success">A piedi</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary">12 ricerche</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-outline-primary btn-sm mt-2">
+                        <i class="fas fa-history me-1"></i>Vedi Cronologia Completa
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifiche Amministratore -->
+
+        <div class="row">
+            <div class="col-12">
+                <div class="profile-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="section-title mb-0">
+                            <i class="fas fa-bell text-info"></i>
+                            Notifiche Amministratore
+                        </h4>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-check-double me-1"></i>Segna tutte come lette
+                        </button>
+                    </div>
+                    
+                    <div class="notification-item unread">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-exclamation-circle text-info me-2"></i>
+                                    Aggiornamento del Sistema
+                                </h6>
+                                <p class="mb-1">Il sistema sarà aggiornato domenica 25 agosto dalle 02:00 alle 04:00. Durante questo periodo il servizio potrebbe essere temporaneamente non disponibile.</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>2 ore fa
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item important">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-warning text-danger me-2"></i>
+                                    Interruzione Linea Bus 42
+                                </h6>
+                                <p class="mb-1">La linea bus 42 (Stazione-Università) sarà sospesa dal 22 al 24 agosto per lavori stradali. Utilizzare la linea alternativa 44A.</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>1 giorno fa
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-info-circle text-primary me-2"></i>
+                                    Nuove Funzionalità Disponibili
+                                </h6>
+                                <p class="mb-1">Ora puoi salvare i tuoi percorsi preferiti e ricevere notifiche sui ritardi dei mezzi pubblici in tempo reale!</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>3 giorni fa
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-info">
+                            <i class="fas fa-archive me-1"></i>Visualizza Archivio Notifiche
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 mt-5" style="background-color: #343a40; color: white;">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 UniversityPathfinder. Progetto universitario sviluppato con Ruby on Rails.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script per gestire gli switch delle preferenze
+        document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
+            switchElement.addEventListener('change', function() {
+                const preferenceItem = this.closest('.preference-item');
+                if (this.checked) {
+                    preferenceItem.classList.add('active');
+                    const checkIcon = document.createElement('i');
+                    checkIcon.className = 'fas fa-check-circle text-success';
+                    const existingSwitch = preferenceItem.querySelector('.form-check');
+                    preferenceItem.replaceChild(checkIcon, existingSwitch);
+                } else {
+                    preferenceItem.classList.remove('active');
+                }
+            });
+        });
+
+        // Animazione per le notifiche non lette
+        document.querySelectorAll('.notification-item.unread').forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.remove('unread');
+                this.style.background = '#fff';
+            });
+        });
+
+        // Gestione hover per le route
+        document.querySelectorAll('.route-item').forEach(function(item) {
+            item.addEventListener('mouseenter', function() {
+                this.style.borderColor = '#667eea';
+            });
+            item.addEventListener('mouseleave', function() {
+                this.style.borderColor = '#dee2e6';
+            });
+        });
+    </script>
+</body>
+</html>
