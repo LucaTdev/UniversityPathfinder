@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   get "home/index"
+
+  get "home/profilo"
   #root 'home#index' #setta homepage come root
   get "home/mappa"
 
