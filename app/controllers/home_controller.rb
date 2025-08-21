@@ -4,5 +4,8 @@ class HomeController < ApplicationController
 
   def mappa
   end
-
+  
+  def login
+  end
+  
 end
