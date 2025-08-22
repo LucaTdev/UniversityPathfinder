@@ -1,10 +1,4 @@
- body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    }
-        
+/* Navbar Custom Styles */
 .navbar-custom {
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
