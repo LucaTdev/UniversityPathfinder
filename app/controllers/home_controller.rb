@@ -14,4 +14,7 @@ class HomeController < ApplicationController
   def login
   end
   
+  def registrazione
+  end
+
 end
