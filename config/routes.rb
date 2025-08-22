@@ -1,10 +1,19 @@
 Rails.application.routes.draw do
   get "home/index"
 
+  root 'home#index'
+  
+  get 'sedi', to: 'sedi#index'
+  get 'percorsi', to: 'percorsi#index'
+  get 'news', to: 'news#index'
+  get 'supporto', to: 'supporto#index'
+  get 'profilo', to: 'profilo#index'
+  get 'login', to: 'auth#login'
+  
   get "home/profilo"
 
   get "home/sedi"
-  #root 'home#index' #setta homepage come root
+
   get "home/mappa"
 
   get "home/login"
