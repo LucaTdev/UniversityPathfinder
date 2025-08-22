@@ -1,694 +1,420 @@
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #333;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    gap: 20px;
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            gap: 20px;
+        }
 
-<!-- Sezione Pulsantiera -->
-.button-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+        /* Sezione Pulsantiera */
+        .button-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-.button-section h2 {
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.5rem;
-    text-align: center;
-}
+        .button-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+            text-align: center;
+        }
 
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
 
-<!-- Menu a tendina mezzi di trasporto -->
-.transport-select {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    position: relative;
-    grid-column: span 2;
-}
+        /* Menu a tendina mezzi di trasporto */
+        .transport-select {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            grid-column: span 2;
+        }
 
-.transport-dropdown {
-    width: 100%;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 16px;
-    padding-right: 45px; <!--Spazio per la freccia -->
-}
+        .transport-dropdown {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            padding-right: 45px; /* Spazio per la freccia */
+        }
 
-.transport-dropdown:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
+        .transport-dropdown:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
 
-.transport-dropdown:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
-}
+        .transport-dropdown:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
 
-.transport-dropdown option {
-    background: white; <!-- Sfondo opzioni -->
-    color: #333;       <!-- Testo opzioni -->
-    padding: 10px;
-}
+        .transport-dropdown option {
+            background: white; /* Sfondo opzioni */
+            color: #333;       /* Testo opzioni */
+            padding: 10px;
+        }
 
-.control-btn {
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
+        .control-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
 
-.control-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
 
-.control-btn:active {
-    transform: translateY(0);
-}
+        .control-btn:active {
+            transform: translateY(0);
+        }
 
-<!--Wrapper per mappa e indicazioni affiancate -->
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    width: 100%;
-    align-items: flex-start;
-}
+        /* Wrapper per mappa e indicazioni affiancate */
+        .map-directions-wrapper {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+            align-items: flex-start;
+        }
 
-<!-- Sezione Mappa -->
-.map-section {
-    flex: 2;
-    min-height: 400px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+        /* Sezione Mappa */
+        .map-section {
+            flex: 2;
+            min-height: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-.map-section h2 {
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.5rem;
-    text-align: center;
-}
+        .map-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+            text-align: center;
+        }
 
-.map-container {
-    width: 100%;
-    height: calc(100% - 60px);
-    background: linear-gradient(45deg, #f0f2f5, #e2e8f0);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px dashed #cbd5e0;
-    min-height: 300px;
-    position: relative;
-    overflow: hidden;
-}
+        .map-container {
+            width: 100%;
+            height: calc(100% - 60px);
+            background: linear-gradient(45deg, #f0f2f5, #e2e8f0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #cbd5e0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
 
-.map-placeholder {
-    text-align: center;
-    color: #718096;
-    font-size: 18px;
-}
+        .map-placeholder {
+            text-align: center;
+            color: #718096;
+            font-size: 18px;
+        }
 
-.map-placeholder::before {
-    content: "🗺️";
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 15px;
-    opacity: 0.6;
-}
+        .map-placeholder::before {
+            content: "🗺️";
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 15px;
+            opacity: 0.6;
+        }
 
-<!-- Sezione Indicazioni -->
-.directions-section {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    min-height: 400px;
-    overflow-y: auto;
-}
+        /* Sezione Indicazioni */
+        .directions-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 400px;
+            overflow-y: auto;
+        }
 
-.directions-section h2 {
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.5rem;
-    text-align: center;
-}
+        .directions-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+            text-align: center;
+        }
 
-.directions-content {
-    background: #f8fafc;
-    border-radius: 10px;
-    padding: 20px;
-    height: calc(100% - 60px);
-    overflow-y: auto;
-    border: 1px solid #e2e8f0;
-}
+        .directions-content {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+        }
 
-.direction-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        .direction-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.direction-item:last-child {
-    border-bottom: none;
-}
+        .direction-item:last-child {
+            border-bottom: none;
+        }
 
-.direction-icon {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 10px;
-}
+        .direction-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
 
-.placeholder-text {
-    color: #a0aec0;
-    font-style: italic;
-    text-align: center;
-    margin-top: 50px;
-}
+        .placeholder-text {
+            color: #a0aec0;
+            font-style: italic;
+            text-align: center;
+            margin-top: 50px;
+        }
 
-<!-- Responsive -->
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-        gap: 15px;
-    }
-    
-    .button-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .button-section,
-    .map-section,
-    .directions-section {
-        padding: 20px;
-    }
-    
-    .map-container {
-        min-height: 250px;
-    }
-    
-    .directions-content {
-        height: 120px;
-    }
-}
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .button-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-section,
+            .map-section,
+            .directions-section {
+                padding: 20px;
+            }
+            
+            .map-container {
+                min-height: 250px;
+            }
+            
+            .directions-content {
+                height: 120px;
+            }
+        }
 
-<!-- Animazioni -->
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        /* Animazioni */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.button-section,
-.map-section,
-.directions-section {
-    animation: fadeInUp 0.6s ease forwards;
-}
+        .button-section,
+        .map-section,
+        .directions-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
 
-.map-section {
-    animation-delay: 0.2s;
-}
+        .map-section {
+            animation-delay: 0.2s;
+        }
 
-.directions-section {
-    animation-delay: 0.4s;
-}
-</style
-<div class="container">
-        <!-- Sezione Pulsantiera -->
-        <section class="button-section">
-            <h2>🎛️ Controlli Navigazione</h2>
-            <div class="button-grid">
-                <input id="startInput" type="text" placeholder="📍 Partenza"</input>
-                <input id="endInput" type="text" placeholder="🧭 Destinazione"</input>
-                <button id="routeBtn" class="control-btn" onclick="calculateRoute()">🗺️ Calcola Percorso</button>
-                <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
-                <!-- Menu a tendina mezzi di trasporto -->
-                <div class="transport-select">
-                    <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
-                        <option value="driving">🚗 Automobile</option>
-                        <option value="walking">🚶 A piedi</option>
-                        <option value="cycling">🚴 Bicicletta</option>
-                        <option value="transit">🚌 Trasporti pubblici</option>
-                        <option value="motorcycle">🏍️ Motocicletta</option>
-                        <option value="truck">🚛 Camion</option>
-                    </select>
+        .directions-section {
+            animation-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+            <!-- Sezione Pulsantiera -->
+            <section class="button-section">
+                <h2>🎛️ Controlli Navigazione</h2>
+                <div class="button-grid">
+                    <input id="startInput" type="text" placeholder="📍 Partenza"</input>
+                    <input id="endInput" type="text" placeholder="🧭 Destinazione"</input>
+                    <button id="routeBtn" class="control-btn" onclick="calculateRoute()">🗺️ Calcola Percorso</button>
+                    <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
+                    <!-- Menu a tendina mezzi di trasporto -->
+                    <div class="transport-select">
+                        <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
+                            <option value="driving">🚗 Automobile</option>
+                            <option value="walking">🚶 A piedi</option>
+                            <option value="cycling">🚴 Bicicletta</option>
+                            <option value="transit">🚌 Trasporti pubblici</option>
+                            <option value="motorcycle">🏍️ Motocicletta</option>
+                            <option value="truck">🚛 Camion</option>
+                        </select>
+                    </div>
                 </div>
+            </section>
+
+            <div class="map-directions-wrapper">
+            <section class="map-section">
+                <h2>🗺️ Mappa Interattiva</h2>
+            <div class="map-container" id="mapContainer">
+                <div id="map" style="height: 60vh; width: 100%;"></div>
             </div>
-        </section>
+            </section>
 
-        <div class="map-directions-wrapper">
-          <section class="map-section">
-            <h2>🗺️ Mappa Interattiva</h2>
-        <div class="map-container" id="mapContainer">
-            <div id="map" style="height: 60vh; width: 100%;"></div>
-        </div>
-          </section>
-
-          <section class="directions-section">
-            <h2>🧭 Indicazioni Stradali</h2>
-            <div class="directions-content" id="directionsContent">
-              <div class="placeholder-text">
-                Le indicazioni stradali appariranno qui dopo aver calcolato un percorso
-              </div>
+            <section class="directions-section">
+                <h2>🧭 Indicazioni Stradali</h2>
+                <div class="directions-content" id="directionsContent">
+                <div class="placeholder-text">
+                    Le indicazioni stradali appariranno qui dopo aver calcolato un percorso
+                </div>
+                </div>
+            </section>
             </div>
-          </section>
-        </div>
 
-</div>
+    </div>
 
-<!-- Scripts Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
-<style> 
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #333;
-}
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    gap: 20px;
-}
 
-<!-- Selezione pulsantiera -->
-.button-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+    <!-- Scripts Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
-.button-section h2 {
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.5rem;
-    text-align: center;
-}
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
+    <script>
+    var map = L.map('map').setView([41.8902, 12.4922], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-<!-- Menù a tendina mezzi di trasporto -->
-.transport-select {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    position: relative;
-    grid-column: span 2;
-}
+    var directionsContainer = document.getElementById('directionsContent');
 
-.transport-dropdown {
-    width: 100%;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 16px;
-    padding-right: 45px; <!-- Spazio per la freccia -->
-}
+    // Routing control senza pannello interno
+    var routingControl = L.Routing.control({
+    waypoints: [
+        L.latLng(41.8902, 12.4922),
+        L.latLng(41.9028, 12.4964)
+    ],
+    routeWhileDragging: true,
+    geocoder: L.Control.Geocoder.nominatim(),
+    show: false // Disabilita pannello interno
+    }).addTo(map);
 
-.transport-dropdown:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
+    // Funzione per aggiornare il div con le istruzioni
+    routingControl.on('routesfound', function(e) {
+    var routes = e.routes;
+    if (routes.length > 0) {
+        var instructions = '';
+        routes[0].instructions = routes[0].instructions || [];
+        routes[0].instructions = routes[0].instructions;
 
-.transport-dropdown:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
-}
+        // Usa summary + istruzioni dettagliate
+        instructions += `<h3>🚦 Riepilogo Percorso</h3>`;
+        instructions += `<p>Distanza: ${routes[0].summary.totalDistance / 1000} km</p>`;
+        instructions += `<p>Durata: ${Math.round(routes[0].summary.totalTime / 60)} min</p>`;
+        instructions += `<h3>🧾 Indicazioni:</h3><ol>`;
+        
+        routes[0].instructions.forEach(function(inst) {
+        instructions += `<li>${inst.text}</li>`;
+        });
+        
+        instructions += `</ol>`;
 
-.transport-dropdown option {
-    background: white; <!-- Sfondo opzioni -->
-    color: #333;       <!-- testo opzioni -->
-    padding: 10px;
-}
-
-.control-btn {
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.control-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.control-btn:active {
-    transform: translateY(0);
-}
-
-<!-- Wrapper per mappa ed indicazioni affiancate -->
-.map-directions-wrapper {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    width: 100%;
-    align-items: flex-start;
-}
-
-<!-- Sezione mappa -->
-.map-section {
-    flex: 2;
-    min-height: 400px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.map-section h2 {
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
-.map-container {
-    width: 100%;
-    height: calc(100% - 60px);
-    background: linear-gradient(45deg, #f0f2f5, #e2e8f0);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px dashed #cbd5e0;
-    min-height: 300px;
-    position: relative;
-    overflow: hidden;
-}
-
-.map-placeholder {
-    text-align: center;
-    color: #718096;
-    font-size: 18px;
-}
-
-.map-placeholder::before {
-    content: "🗺️";
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 15px;
-    opacity: 0.6;
-}
-
-<!-- Sezione indicazioni -->
-.directions-section {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    min-height: 400px;
-    overflow-y: auto;
-}
-
-.directions-section h2 {
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
-.directions-content {
-    background: #f8fafc;
-    border-radius: 10px;
-    padding: 20px;
-    height: calc(100% - 60px);
-    overflow-y: auto;
-    border: 1px solid #e2e8f0;
-}
-
-.direction-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.direction-item:last-child {
-    border-bottom: none;
-}
-
-.direction-icon {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 10px;
-}
-
-.placeholder-text {
-    color: #a0aec0;
-    font-style: italic;
-    text-align: center;
-    margin-top: 50px;
-}
-
-<!-- Responsive -->
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-        gap: 15px;
+        directionsContainer.innerHTML = instructions;
     }
-    
-    .button-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .button-section,
-    .map-section,
-    .directions-section {
-        padding: 20px;
-    }
-    
-    .map-container {
-        min-height: 250px;
-    }
-    
-    .directions-content {
-        height: 120px;
-    }
-}
-
-<!-- Animazioni -->
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.button-section,
-.map-section,
-.directions-section {
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.map-section {
-    animation-delay: 0.2s;
-}
-
-.directions-section {
-    animation-delay: 0.4s;
-}
-
-</style>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
-<script>
-var map = L.map('map').setView([41.8902, 12.4922], 14);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-var directionsContainer = document.getElementById('directionsContent');
-
-// Routing control senza pannello interno
-var routingControl = L.Routing.control({
-  waypoints: [
-    L.latLng(41.8902, 12.4922),
-    L.latLng(41.9028, 12.4964)
-  ],
-  routeWhileDragging: true,
-  geocoder: L.Control.Geocoder.nominatim(),
-  show: false // Disabilita pannello interno
-}).addTo(map);
-
-// Funzione per aggiornare il div con le istruzioni
-routingControl.on('routesfound', function(e) {
-  var routes = e.routes;
-  if (routes.length > 0) {
-    var instructions = '';
-    routes[0].instructions = routes[0].instructions || [];
-    routes[0].instructions = routes[0].instructions;
-
-    // Usa summary + istruzioni dettagliate
-    instructions += `<h3>🚦 Riepilogo Percorso</h3>`;
-    instructions += `<p>Distanza: ${routes[0].summary.totalDistance / 1000} km</p>`;
-    instructions += `<p>Durata: ${Math.round(routes[0].summary.totalTime / 60)} min</p>`;
-    instructions += `<h3>🧾 Indicazioni:</h3><ol>`;
-    
-    routes[0].instructions.forEach(function(inst) {
-      instructions += `<li>${inst.text}</li>`;
     });
-    
-    instructions += `</ol>`;
 
-    directionsContainer.innerHTML = instructions;
-  }
-});
+    // Funzione di geocoding per input
+    async function geocode(query) {
+    const url = new URL('https://nominatim.openstreetmap.org/search');
+    url.searchParams.set('q', query);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('limit', '1');
 
-// Funzione di geocoding per input
-async function geocode(query) {
-  const url = new URL('https://nominatim.openstreetmap.org/search');
-  url.searchParams.set('q', query);
-  url.searchParams.set('format', 'json');
-  url.searchParams.set('limit', '1');
+    const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+    const data = await res.json();
+    if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
+    const { lat, lon } = data[0];
+    return { lat: parseFloat(lat), lon: parseFloat(lon) };
+    }
 
-  const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
-  const data = await res.json();
-  if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
-  const { lat, lon } = data[0];
-  return { lat: parseFloat(lat), lon: parseFloat(lon) };
-}
+    // Evento sul pulsante "Calcola Percorso"
+    document.getElementById('routeBtn').addEventListener('click', async () => {
+    const start = document.getElementById('startInput').value.trim();
+    const end = document.getElementById('endInput').value.trim();
+    if (!start || !end) {
+        alert('Inserisci entrambi gli indirizzi.');
+        return;
+    }
+    try {
+        const [from, to] = await Promise.all([geocode(start), geocode(end)]);
+        routingControl.setWaypoints([
+        L.latLng(from.lat, from.lon),
+        L.latLng(to.lat, to.lon)
+        ]);
+    } catch (err) {
+        alert(err.message);
+    }
+    });
 
-// Evento sul pulsante "Calcola Percorso"
-document.getElementById('routeBtn').addEventListener('click', async () => {
-  const start = document.getElementById('startInput').value.trim();
-  const end = document.getElementById('endInput').value.trim();
-  if (!start || !end) {
-    alert('Inserisci entrambi gli indirizzi.');
-    return;
-  }
-  try {
-    const [from, to] = await Promise.all([geocode(start), geocode(end)]);
-    routingControl.setWaypoints([
-      L.latLng(from.lat, from.lon),
-      L.latLng(to.lat, to.lon)
-    ]);
-  } catch (err) {
-    alert(err.message);
-  }
-});
-
-</script>
+    </script>
+</body>
