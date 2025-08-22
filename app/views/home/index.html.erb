@@ -1,33 +1,219 @@
-<div class="homepage-container">
-  <div class="header-section">
-    <h1 class="main-title">University Path Finder</h1>
-  </div>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Pathfinder - App di Navigazione</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .btn-hero {
+            background-color: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            font-weight: 500;
+            padding: 12px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hero:hover {
+            background-color: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 50px;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 80px 0;
+        }
+        
+        .footer-custom {
+            background: #2d3748;
+            color: white;
+            padding: 40px 0;
+        }
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Home</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Sedi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Percorso</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Supporto</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Profilo</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
+        .notifications-container {
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            transition: background-color 0.2s ease;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-icon {
+            width: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">University Pathfinder</h1>
+            <p class="hero-subtitle">Trova il percorso più veloce tra le sedi universitarie</p>
+            <%= link_to "Inizia la navigazione", home_mappa_path, class: "btn btn-hero" %>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section style="padding: 80px 0;">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Cosa offriamo</h2>
+                <p class="section-subtitle">Strumenti di navigazione per muoverti facilmente tra le università</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <h5 class="mb-3">Sedi Universitarie</h5>
+                        <p class="text-muted mb-4">Mappa interattiva di tutte le sedi universitarie della città con informazioni dettagliate.</p>
+                        <%= link_to "Esplora sedi", home_sedi_path, class: "btn btn-outline-primary" %>
+                    </div>
+                </div>
+                
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                      </div>
+                      <h5 class="mb-3">Supporto</h5>
+                      <p class="text-muted mb-4">Ricevi assistenza personalizzata per tutte le tue domande e necessità.</p>
+                      <%= link_to "Contatta supporto", "#", class: "btn btn-outline-primary" %>
+                  </div>
+              </div> 
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <h5 class="mb-3">News</h5>
+                        <p class="text-muted mb-4">Rimani aggiornato su chiusure strade, eventi e novità che influenzano i percorsi.</p>
+                        <%= link_to "Leggi news", "#", class: "btn btn-outline-primary" %>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h5 class="mb-3">Il tuo Profilo</h5>
+                        <p class="text-muted mb-4">Salva i tuoi percorsi preferiti e personalizza l'esperienza di navigazione. </p>
+                        <%= link_to "Vai al profilo", home_profilo_path, class: "btn btn-outline-primary" %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section text-center">
+        <div class="container">
+            <h3 class="mb-4" style="font-size: 2rem; font-weight: 600; color: #2d3748;">Pronto a navigare tra le università?</h3>
+            <p class="mb-4" style="font-size: 1.1rem; color: #718096;">Unisciti a migliaia di studenti che usano la nostra app per spostarsi</p>
+            <%= link_to "Registrati ora", home_registrazione_path,
+              class: "btn btn-primary me-3",
+              style: "padding: 12px 30px; border-radius: 25px; background: #667eea; border-color: #667eea;" %>
+
+            <%= link_to "Login", home_login_path,
+              class: "btn btn-outline-primary",
+              style: "padding: 12px 30px; border-radius: 25px; color: #667eea; border-color: #667eea;" %>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5>University Pathfinder</h5>
+                    <p class="mb-0" style="opacity: 0.8;">La tua app di navigazione universitaria</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0" style="opacity: 0.8;">&copy; 2025 University Pathfinder. Tutti i diritti riservati.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
