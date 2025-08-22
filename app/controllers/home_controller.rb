@@ -10,5 +10,11 @@ class HomeController < ApplicationController
 
   def mappa
   end
+  
+  def login
+  end
+  
+  def registrazione
+  end
 
 end
