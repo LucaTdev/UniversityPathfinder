@@ -1,0 +1,29 @@
+.navbar-custom {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+.navbar-brand-custom {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: white !important;
+        }
+        
+.nav-link-custom {
+        color: rgba(255,255,255,0.9) !important;
+        font-weight: 500;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        }
+        
+.nav-link-custom:hover {
+        color: white !important;
+        transform: translateY(-1px);
+        }
+        
+.nav-link-custom.active {
+        color: white !important;
+        background-color: rgba(255,255,255,0.2);
+        border-radius: 20px;
+        padding: 8px 16px !important;
+    }   
