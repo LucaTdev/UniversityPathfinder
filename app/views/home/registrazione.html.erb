@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione - University Path Finder</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            border-radius: 15px;
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .text-primary {
+            color: #667eea !important;
+        }
+        
+        a.text-primary:hover {
+            color: #764ba2 !important;
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+        }
+
+        .bg-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+        
+        .input-group .form-control:focus {
+            z-index: 3;
+        }
+
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 2rem !important;
+            }
+        }
+
+        .field-animation {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-gradient py-4">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold text-primary mb-3">University Path Finder</h2>
+                            <p class="text-muted">Crea il tuo account</p>
+                        </div>
+
+                        <!-- Registration Form -->
+                        <form class="needs-validation" novalidate>
+                            
+                            <div class="row">
+                                <!-- Nome Field -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label fw-semibold">Nome</label>
+                                    <input type="text" 
+                                           class="form-control form-control-lg" 
+                                           id="first_name"
+                                           name="first_name"
+                                           placeholder="Inserisci il tuo nome"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Il nome è obbligatorio.
+                                    </div>
+                                </div>
+
+                                <!-- Cognome Field -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label fw-semibold">Cognome</label>
+                                    <input type="text" 
+                                           class="form-control form-control-lg" 
+                                           id="last_name"
+                                           name="last_name"
+                                           placeholder="Inserisci il tuo cognome"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Il cognome è obbligatorio.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-semibold">Email</label>
+                                <input type="email" 
+                                       class="form-control form-control-lg" 
+                                       id="email"
+                                       name="email"
+                                       placeholder="Inserisci la tua email"
+                                       required>
+                                <div class="invalid-feedback">
+                                    Inserisci un indirizzo email valido.
+                                </div>
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-semibold">Password</label>
+                                <div class="input-group">
+                                    <input type="password" 
+                                           class="form-control form-control-lg" 
+                                           id="password"
+                                           name="password"
+                                           placeholder="Crea una password sicura"
+                                           minlength="8"
+                                           required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text text-muted">
+                                    La password deve contenere almeno 8 caratteri.
+                                </div>
+                                <div class="invalid-feedback">
+                                    La password deve contenere almeno 8 caratteri.
+                                </div>
+                            </div>
+
+                            <!-- Confirm Password Field -->
+                            <div class="mb-4">
+                                <label for="password_confirmation" class="form-label fw-semibold">Conferma Password</label>
+                                <div class="input-group">
+                                    <input type="password" 
+                                           class="form-control form-control-lg" 
+                                           id="password_confirmation"
+                                           name="password_confirmation"
+                                           placeholder="Ripeti la password"
+                                           minlength="8"
+                                           required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirmation">
+                                        <i class="fas fa-eye" id="togglePasswordConfirmationIcon"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Le password devono coincidere.
+                                </div>
+                            </div>
+
+                            <!-- Student Status Checkbox -->
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="is_student_checkbox">
+                                    <label for="is_student_checkbox" class="form-check-label fw-semibold">Sono uno studente universitario</label>
+                                </div>
+                            </div>
+
+                            <!-- Registration Date Field -->
+                            <div class="mb-4">
+                                <label for="registration_date" class="form-label fw-semibold">Data di Registrazione</label>
+                                <input type="date" 
+                                       class="form-control form-control-lg" 
+                                       id="registration_date"
+                                       name="registration_date"
+                                       required>
+                                <div class="form-text text-muted">
+                                    Data in cui ti stai registrando al sito.
+                                </div>
+                                <div class="invalid-feedback">
+                                    Seleziona la data di registrazione.
+                                </div>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="terms_accepted" required>
+                                    <label for="terms_accepted" class="form-check-label">
+                                        Accetto i 
+                                        <a href="#" class="text-primary text-decoration-none">Termini e Condizioni</a> 
+                                        e la 
+                                        <a href="#" class="text-primary text-decoration-none">Privacy Policy</a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Devi accettare i termini e condizioni.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Register Button -->
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg">Registrati</button>
+                            </div>
+
+                        </form>
+
+                        <!-- Divider -->
+                        <hr class="my-4">
+
+                        <!-- Login Link -->
+                        <div class="text-center">
+                            <p class="text-muted mb-0">
+                                Hai già un account? 
+                                <a href="login" class="text-primary text-decoration-none fw-semibold">Accedi qui</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date automatically
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('registration_date').value = today;
+
+            // Password visibility toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordField = document.getElementById('password');
+            const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+            const togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
+            const passwordConfirmationField = document.getElementById('password_confirmation');
+            const togglePasswordConfirmationIcon = document.getElementById('togglePasswordConfirmationIcon');
+
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                // Toggle icon
+                if (type === 'text') {
+                    togglePasswordIcon.className = 'fas fa-eye-slash';
+                } else {
+                    togglePasswordIcon.className = 'fas fa-eye';
+                }
+            });
+
+            // Toggle password confirmation visibility
+            togglePasswordConfirmation.addEventListener('click', function() {
+                const type = passwordConfirmationField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordConfirmationField.setAttribute('type', type);
+                
+                // Toggle icon
+                if (type === 'text') {
+                    togglePasswordConfirmationIcon.className = 'fas fa-eye-slash';
+                } else {
+                    togglePasswordConfirmationIcon.className = 'fas fa-eye';
+                }
+            });
+
+            // Password confirmation validation
+            function validatePasswordMatch() {
+                if (passwordField.value !== passwordConfirmationField.value) {
+                    passwordConfirmationField.setCustomValidity('Le password non coincidono');
+                } else {
+                    passwordConfirmationField.setCustomValidity('');
+                }
+            }
+
+            passwordField.addEventListener('change', validatePasswordMatch);
+            passwordConfirmationField.addEventListener('keyup', validatePasswordMatch);
+
+            // Demo hover effects
+            document.querySelector('.btn-primary').addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            document.querySelector('.btn-primary').addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Bootstrap form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault(); // Prevent actual form submission for demo
+                        if (form.checkValidity() === false) {
+                            event.stopPropagation();
+                        } else {
+                            alert('Registrazione completata! (In Rails verrebbe salvato nel database)');
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+</body>
+</html>
