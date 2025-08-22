@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         .profile-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(200deg, #667eea 10%, #764ba2 90%);
             color: white;
             padding: 2rem 0;
             text-align: center;
@@ -109,7 +109,7 @@
         .badge-custom {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.1rem 1rem;
             border-radius: 20px;
             font-size: 0.875rem;
         }
@@ -164,8 +164,10 @@
         <div class="row justify-content-center mb-4">
             <div class="col-lg-8">
                 <div class="profile-card text-center">
-                    <img src="https://via.placeholder.com/150x150/667eea/ffffff?text=User" 
-                         alt="Foto Profilo" class="profile-image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    </svg>
                     
                     <div class="user-info">
                         <h2>Mario Rossi</h2>
@@ -211,7 +213,9 @@
                             <strong>A Piedi</strong>
                             <small class="d-block text-muted">Modalità preferita</small>
                         </div>
-                        <i class="fas fa-check-circle text-success"></i>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="foot-switch">
+                        </div>
                     </div>
                     
                     <div class="preference-item">
@@ -231,7 +235,9 @@
                             <strong>Trasporto Pubblico</strong>
                             <small class="d-block text-muted">Bus e Treni</small>
                         </div>
-                        <i class="fas fa-check-circle text-success"></i>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="PublicTransport-switch">
+                        </div>
                     </div>
                     
                     <div class="preference-item">
@@ -392,39 +398,83 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Script per gestire gli switch delle preferenze
-        document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
-            switchElement.addEventListener('change', function() {
-                const preferenceItem = this.closest('.preference-item');
-                if (this.checked) {
-                    preferenceItem.classList.add('active');
-                    const checkIcon = document.createElement('i');
-                    checkIcon.className = 'fas fa-check-circle text-success';
-                    const existingSwitch = preferenceItem.querySelector('.form-check');
-                    preferenceItem.replaceChild(checkIcon, existingSwitch);
-                } else {
-                    preferenceItem.classList.remove('active');
+        <!-- Script per gestire gli switch delle preferenze -->
+    document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
+        switchElement.addEventListener('change', function() {
+            const preferenceItem = this.closest('.preference-item');
+            const switchContainer = preferenceItem.querySelector('.form-check');
+            
+            if (this.checked) {
+                preferenceItem.classList.add('active');
+                <!-- Nasconde lo switch -->
+                switchContainer.style.display = 'none';
+                
+                <!-- Crea icona di check se non esiste -->
+                let checkIcon = preferenceItem.querySelector('.check-icon');
+                if (!checkIcon) {
+                    checkIcon = document.createElement('i');
+                    checkIcon.className = 'fas fa-check-circle text-success check-icon';
+                    checkIcon.style.cursor = 'pointer';
+                    checkIcon.style.fontSize = '1.2rem';
+                    
+                    <!-- Riattiva lo switch -->
+                    checkIcon.addEventListener('click', function() {
+                        preferenceItem.classList.remove('active');
+                        switchContainer.style.display = 'block';
+                        switchElement.checked = false;
+                        checkIcon.style.display = 'none';
+                    });
+                    
+                    preferenceItem.appendChild(checkIcon);
                 }
-            });
+                checkIcon.style.display = 'inline-block';
+                
+            } else {
+                preferenceItem.classList.remove('active');
+                const checkIcon = preferenceItem.querySelector('.check-icon');
+                if (checkIcon) {
+                    checkIcon.style.display = 'none';
+                }
+                switchContainer.style.display = 'block';
+            }
         });
+    });
 
-        // Animazione per le notifiche non lette
-        document.querySelectorAll('.notification-item.unread').forEach(function(item) {
-            item.addEventListener('click', function() {
-                this.classList.remove('unread');
-                this.style.background = '#fff';
-            });
+    // Animazione per le notifiche non lette
+    document.querySelectorAll('.notification-item.unread').forEach(function(item) {
+        item.addEventListener('click', function() {
+            this.classList.remove('unread');
+            this.style.background = '#fff';
         });
+    });
 
-        // Gestione hover per le route
-        document.querySelectorAll('.route-item').forEach(function(item) {
-            item.addEventListener('mouseenter', function() {
-                this.style.borderColor = '#667eea';
-            });
-            item.addEventListener('mouseleave', function() {
-                this.style.borderColor = '#dee2e6';
-            });
+    // Gestione hover per le route
+    document.querySelectorAll('.route-item').forEach(function(item) {
+        item.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#667eea';
         });
+        item.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#dee2e6';
+        });
+    });
+
+    // Animazione per le notifiche non lette
+    document.querySelectorAll('.notification-item.unread').forEach(function(item) {
+        item.addEventListener('click', function() {
+            this.classList.remove('unread');
+            this.style.background = '#fff';
+        });
+    });
+
+    // Gestione hover per le route
+    document.querySelectorAll('.route-item').forEach(function(item) {
+        item.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#667eea';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#dee2e6';
+        });
+    });
     </script>
 </body>
 </html>
