@@ -1,12 +1,27 @@
 Rails.application.routes.draw do
   get "home/index"
 
+  root 'home#index'
+  
+  get 'sedi', to: 'sedi#index'
+  get 'percorsi', to: 'percorsi#index'
+  get 'news', to: 'news#index'
+  get 'supporto', to: 'supporto#index'
+  get 'profilo', to: 'profilo#index'
+  get 'login', to: 'auth#login'
+  
   get "home/profilo"
 
   get "home/sedi"
-  #root 'home#index' #setta homepage come root
+
   get "home/mappa"
 
+  get "home/login"
+  post 'login', to: 'sessions#create'
+  get 'forgot_password', to: 'passwords#new'
+  get 'registration', to: 'users#new'
+
+  get 'home/registrazione'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
