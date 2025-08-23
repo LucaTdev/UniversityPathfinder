@@ -1,3 +1,4 @@
+<<<<<<< HEAD
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
@@ -29,3 +30,36 @@
         </div>
     </nav>
 
+=======
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <%= link_to "Univerity Pathfinder", home_index_path, class: "navbar-brand navbar-brand-custom" %>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                      <%= link_to "Sedi", home_sedi_path, class: "nav-link nav-link-custom" %>
+                    </li>
+                    <li class="nav-item">
+                        <%= link_to "Percorsi", home_mappa_path, class: "nav-link nav-link-custom" %>
+                    </li>
+                    <li class="nav-item">
+                        <%= link_to "News", home_meteo_path, class: "nav-link nav-link-custom" %>
+                    </li>
+                    <li class="nav-item">
+                        <%= link_to "Supporto", "#", class: "nav-link nav-link-custom" %>
+                    </li>
+                    <li class="nav-item">
+                        <%= link_to "Profilo", home_profilo_path, class: "nav-link nav-link-custom" %>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+>>>>>>> c70e353 (Creazione Pagina news)

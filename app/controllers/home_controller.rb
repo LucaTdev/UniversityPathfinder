@@ -17,4 +17,7 @@ class HomeController < ApplicationController
   def registrazione
   end
 
+  def meteo
+  end
+
 end
