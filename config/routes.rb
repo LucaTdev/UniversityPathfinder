@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   get "home/sedi"
 
   get "home/mappa"
+  #wheater
+  get 'home/weather', to: 'weather#show'
+
 
   get "home/login"
   post 'login', to: 'sessions#create'
@@ -23,7 +26,7 @@ Rails.application.routes.draw do
 
   get 'home/registrazione'
 
-  get "home/meteo"
+  get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
