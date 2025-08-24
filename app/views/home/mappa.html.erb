@@ -48,6 +48,7 @@
         
         .transport-select {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 70%;
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
@@ -149,9 +150,9 @@
             align-items: center;
             justify-content: center;
             border: 2px dashed #cbd5e0;
-            min-height: 300px;
+            min-height: 400px;
             position: relative;
-            overflow: hidden;
+            overflow: visible !important;
         }
 
         .map-placeholder {
@@ -227,6 +228,10 @@
             margin-top: 50px;
         }
 
+        .leaflet-popup {
+            z-index: 10000 !important;
+        }
+
         
         @media (max-width: 768px) {
             .container_m {
@@ -282,53 +287,48 @@
 </head>
 <body>
     <div class="container_m">
-            <!-- Sezione Pulsantiera -->
-            <section class="button-section">
-                <h2>🎛️ Controlli Navigazione</h2>
-                <div class="button-grid">
-                    <input id="startInput" type="text" placeholder="📍 Partenza"></input>
-                    <input id="endInput" type="text" placeholder="🧭 Destinazione"></input>
-                    <button id="routeBtn" class="control-btn" onclick="calculateRoute()">🗺️ Calcola Percorso</button>
-                    <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
-                    <!-- Menu a tendina mezzi di trasporto -->
-                    <div class="transport-select">
-                        <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
-                            <option value="driving">🚗 Automobile</option>
-                            <option value="walking">🚶 A piedi</option>
-                            <option value="cycling">🚴 Bicicletta</option>
-                            <option value="transit">🚌 Trasporti pubblici</option>
-                            <option value="motorcycle">🏍️ Motocicletta</option>
-                            <option value="truck">🚛 Camion</option>
-                        </select>
-                    </div>
+        <!-- Pulsanti -->
+        <section class="button-section">
+            <h2>🎛️ Controlli Navigazione</h2>
+            <div class="button-grid">
+                <input id="startInput" type="text" placeholder="📍 Partenza"></input>
+                <input id="endInput" type="text" placeholder="🧭 Destinazione"></input>
+                <button id="routeBtn" class="control-btn">🗺️ Calcola Percorso</button>
+                <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
+                <!-- Dropdown mezzi -->
+                <div class="transport-select">
+                    <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
+                        <option value="driving">🚗 Automobile</option>
+                        <option value="walking">🚶 A piedi</option>
+                        <option value="cycling">🚴 Bicicletta</option>
+                        <option value="transit">🚌 Trasporti pubblici</option>
+                        <option value="motorcycle">🏍️ Motocicletta</option>
+                        <option value="truck">🚛 Camion</option>
+                    </select>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <div class="map-directions-wrapper">
+        <div class="map-directions-wrapper">
             <section class="map-section">
                 <h2>🗺️ Mappa Interattiva</h2>
-            <div class="map-container" id="mapContainer">
-                <div id="map" style="height: 60vh; width: 100%;"></div>
-            </div>
+                <div class="map-container" id="mapContainer">
+                    <div id="map" style="height: 60vh; width: 100%;"></div>
+                </div>
             </section>
 
             <section class="directions-section">
                 <h2>🧭 Indicazioni Stradali</h2>
                 <div class="directions-content" id="directionsContent">
-                <div class="placeholder-text">
-                    Le indicazioni stradali appariranno qui dopo aver calcolato un percorso
-                </div>
+                    <div class="placeholder-text">
+                        Le indicazioni appariranno qui dopo aver calcolato un percorso
+                    </div>
                 </div>
             </section>
-            </div>
+        </div>
     </div>
 
-
-
-
-
-
-    <!-- Scripts Leaflet -->
+    <!-- Librerie Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
@@ -338,81 +338,114 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script>
-    var map = L.map('map').setView([41.8902, 12.4922], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('map').setView([41.8902, 12.4922], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    var directionsContainer = document.getElementById('directionsContent');
+        // Layer per marker meteo
+        var weatherLayer = L.layerGroup().addTo(map);
 
-    // Routing control senza pannello interno
-    var routingControl = L.Routing.control({
-    waypoints: [
-        L.latLng(41.8902, 12.4922),
-        L.latLng(41.9028, 12.4964)
-    ],
-    routeWhileDragging: true,
-    geocoder: L.Control.Geocoder.nominatim(),
-    show: false // Disabilita pannello interno
-    }).addTo(map);
+        // Routing
+        var routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(41.8902, 12.4922),
+                L.latLng(41.9028, 12.4964)
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            show: false
+        }).addTo(map);
 
-    // Funzione per aggiornare il div con le istruzioni
-    routingControl.on('routesfound', function(e) {
-    var routes = e.routes;
-    if (routes.length > 0) {
-        var instructions = '';
-        routes[0].instructions = routes[0].instructions || [];
-        routes[0].instructions = routes[0].instructions;
+        var directionsContainer = document.getElementById('directionsContent');
 
-        // Usa summary + istruzioni dettagliate
-        instructions += `<h3>🚦 Riepilogo Percorso</h3>`;
-        instructions += `<p>Distanza: ${routes[0].summary.totalDistance / 1000} km</p>`;
-        instructions += `<p>Durata: ${Math.round(routes[0].summary.totalTime / 60)} min</p>`;
-        instructions += `<h3>🧾 Indicazioni:</h3><ol>`;
-        
-        routes[0].instructions.forEach(function(inst) {
-        instructions += `<li>${inst.text}</li>`;
+        // Mostra istruzioni + meteo
+        routingControl.on('routesfound', function(e) {
+            var route = e.routes[0];
+            var instructions = `
+                <h3>🚦 Riepilogo Percorso</h3>
+                <p>Distanza: ${(route.summary.totalDistance / 1000).toFixed(1)} km</p>
+                <p>Durata: ${Math.round(route.summary.totalTime / 60)} min</p>
+                <h3>🧾 Indicazioni:</h3><ol>
+            `;
+
+            route.instructions.forEach(function(inst) {
+                instructions += `<li>${inst.text}</li>`;
+            });
+            instructions += `</ol>`;
+            directionsContainer.innerHTML = instructions;
+
+            // Meteo per start e end
+            const startLL = e.waypoints[0].latLng;
+            const endLL = e.waypoints[e.waypoints.length - 1].latLng;
+
+            //Debug
+            console.log('Waypoint start:', startLL);
+            console.log('Waypoint end:', endLL);
+
+            weatherLayer.clearLayers();
+            addWeatherMarker(startLL.lat, startLL.lng, "📍 Partenza");
+            addWeatherMarker(endLL.lat, endLL.lng, "🏁 Arrivo");
         });
-        
-        instructions += `</ol>`;
 
-        directionsContainer.innerHTML = instructions;
-    }
+           
+
+
+        // Geocoding
+        async function geocode(query) {
+            const url = new URL('https://nominatim.openstreetmap.org/search');
+            url.searchParams.set('q', query);
+            url.searchParams.set('format', 'json');
+            url.searchParams.set('limit', '1');
+
+            const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+            const data = await res.json();
+            if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
+            const { lat, lon } = data[0];
+            return { lat: parseFloat(lat), lon: parseFloat(lon) };
+        }
+
+        // Calcolo percorso
+        document.getElementById('routeBtn').addEventListener('click', async () => {
+            const start = document.getElementById('startInput').value.trim();
+            const end = document.getElementById('endInput').value.trim();
+            if (!start || !end) {
+                alert('Inserisci entrambi gli indirizzi.');
+                return;
+            }
+            try {
+                const [from, to] = await Promise.all([geocode(start), geocode(end)]);
+                routingControl.setWaypoints([
+                    L.latLng(from.lat, from.lon),
+                    L.latLng(to.lat, to.lon)
+                ]);
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+            // Funzione per aggiungere meteo
+        function addWeatherMarker(lat, lon, label) {
+            const marker = L.marker([lat, lon]).addTo(weatherLayer).bindPopup('Caricamento meteo...');
+            fetch(`/home/weather?lat=${lat}&lon=${lon}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.temperature !== undefined) {
+                        marker.setPopupContent(`
+                            <b>${label}</b><br>
+                            🌡️ ${data.temperature} °C<br>
+                            💨 ${data.windspeed} km/h<br>
+                            ⏰ ${data.time}
+                        `);
+                        marker.openPopup();
+                    }
+                });
+
+        }
+
     });
-
-    // Funzione di geocoding per input
-    async function geocode(query) {
-    const url = new URL('https://nominatim.openstreetmap.org/search');
-    url.searchParams.set('q', query);
-    url.searchParams.set('format', 'json');
-    url.searchParams.set('limit', '1');
-
-    const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
-    const data = await res.json();
-    if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
-    const { lat, lon } = data[0];
-    return { lat: parseFloat(lat), lon: parseFloat(lon) };
-    }
-
-    // Evento sul pulsante "Calcola Percorso"
-    document.getElementById('routeBtn').addEventListener('click', async () => {
-    const start = document.getElementById('startInput').value.trim();
-    const end = document.getElementById('endInput').value.trim();
-    if (!start || !end) {
-        alert('Inserisci entrambi gli indirizzi.');
-        return;
-    }
-    try {
-        const [from, to] = await Promise.all([geocode(start), geocode(end)]);
-        routingControl.setWaypoints([
-        L.latLng(from.lat, from.lon),
-        L.latLng(to.lat, to.lon)
-        ]);
-    } catch (err) {
-        alert(err.message);
-    }
-    });
-
     </script>
+
 </body>
