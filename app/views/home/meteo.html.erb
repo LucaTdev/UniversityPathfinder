@@ -430,53 +430,11 @@
                 <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
                     <!-- Widget Meteo -->
                     <div class="widget weather-widget">
-                        <div class="widget-header">
-                            <h3 class="widget-title">
-                                <i class="fas fa-cloud-sun"></i>
-                                Condizioni Meteo
-                            </h3>
-                        </div>
-                        <div class="widget-body">
-                            <div class="weather-display">
-                                <div class="weather-icon">
-                                    <i class="fas fa-sun"></i>
-                                </div>
-                                <div class="temperature">25°C</div>
-                                <div class="weather-desc">Soleggiato</div>
-                                <div class="feels-like">Percepiti: 27°C</div>
-                            </div>
-                            
-                            <div class="weather-details">
-                                <div class="weather-detail">
-                                    <i class="fas fa-eye" style="color: #74b9ff;"></i>
-                                    <span class="label">Visibilità</span>
-                                    <span class="value">10 km</span>
-                                </div>
-                                <div class="weather-detail">
-                                    <i class="fas fa-tint" style="color: #0984e3;"></i>
-                                    <span class="label">Umidità</span>
-                                    <span class="value">65%</span>
-                                </div>
-                                <div class="weather-detail">
-                                    <i class="fas fa-wind" style="color: #636e72;"></i>
-                                    <span class="label">Vento</span>
-                                    <span class="value">12 km/h</span>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <div class="forecast-title">Previsioni 3 giorni</div>
-                                <div class="forecast-item">
-                                    <span>Domani</span>
-                                    <span><i class="fas fa-cloud-rain" style="color: #74b9ff; margin-right: 8px;"></i>22° / 18°</span>
-                                </div>
-                                <div class="forecast-item">
-                                    <span>Mercoledì</span>
-                                    <span><i class="fas fa-sun" style="color: #fdcb6e; margin-right: 8px;"></i>26° / 20°</span>
-                                </div>
-                                <div class="forecast-item">
-                                    <span>Giovedì</span>
-                                    <span><i class="fas fa-cloud-sun" style="color: #74b9ff; margin-right: 8px;"></i>24° / 19°</span>
+                        <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
+                            <div class="container py-5">
+                                <h1 class="text-center mb-4">Previsioni Meteo</h1>
+                                <div id="meteo-card" class="card shadow-sm p-4 text-center">
+                                    <p>Caricamento posizione...</p>
                                 </div>
                             </div>
                         </div>
@@ -493,64 +451,8 @@
                         </div>
                         <div class="widget-body" style="padding: 0; max-height: 450px; overflow-y: auto;">
                             <div style="padding: 0 25px;">
-                                <div class="news-item">
-                                    <div class="news-icon alert">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6 style="color: #e17055;">Allerta Meteo - Pioggia Intensa</h6>
-                                        <p>Previste precipitazioni intense per domani pomeriggio dalle 14:00 alle 18:00. Si consiglia prudenza negli spostamenti.</p>
-                                        <span class="news-time">5 min fa</span>
-                                        <span class="badge-custom" style="background: #e17055; color: white; margin-left: 10px;">Allerta Arancione</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #f39c12;">
-                                        <i class="fas fa-wind"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6 style="color: #f39c12;">Vento Forte</h6>
-                                        <p>Raffiche di vento fino a 60 km/h previste nelle prossime ore. Attenzione ai mezzi pesanti e alle strutture temporanee.</p>
-                                        <span class="news-time">20 min fa</span>
-                                        <span class="badge-custom" style="background: #f39c12; color: white; margin-left: 10px;">Allerta Gialla</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #00b894;">
-                                        <i class="fas fa-sun"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6 style="color: #00b894;">Miglioramento Condizioni</h6>
-                                        <p>Da domenica ritorna il bel tempo con temperature in aumento. Cieli sereni per tutta la settimana.</p>
-                                        <span class="news-time">2 ore fa</span>
-                                        <span class="badge-custom" style="background: #00b894; color: white; margin-left: 10px;">Info</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon system">
-                                        <i class="fas fa-thermometer-half"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Variazione Temperature</h6>
-                                        <p>Calo termico di 8-10°C rispetto ai valori attuali. Temperature minime intorno ai 15°C.</p>
-                                        <span class="news-time">4 ore fa</span>
-                                        <span class="badge-custom" style="background: #74b9ff; color: white; margin-left: 10px;">Previsioni</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #6c5ce7;">
-                                        <i class="fas fa-cloud-rain"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Aggiornamento Radar</h6>
-                                        <p>Fronte nuvoloso in avvicinamento da ovest. Prime precipitazioni previste entro le 16:00.</p>
-                                        <span class="news-time">6 ore fa</span>
-                                        <span class="badge-custom" style="background: #6c5ce7; color: white; margin-left: 10px;">Radar</span>
-                                    </div>
+                                <div id="weather-alerts" class="p-3 card shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 15px;">
+                                    <p>Caricamento allerte...</p>
                                 </div>
                             </div>
                         </div>
@@ -558,3 +460,111 @@
                             <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
                         </div>
                     </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const meteoCard = document.getElementById('meteo-card');
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+        meteoCard.innerHTML = "<div class='alert alert-danger'>Geolocalizzazione non supportata dal browser.</div>";
+    }
+
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Fetch dati meteo attuale
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode,relativehumidity_2m,pressure_msl&current_weather=true&timezone=auto`)
+        .then(response => response.json())
+        .then(data => {
+            const weather = data.current_weather;
+            const temp = weather.temperature;
+            const wind = weather.windspeed;
+            const code = weather.weathercode;
+            const time = weather.time;
+
+            // Trova indice dell'orario corrente
+            const currentIndex = data.hourly.time.indexOf(time);
+            const humidity = data.hourly.relativehumidity_2m[currentIndex];
+            const pressure = data.hourly.pressure_msl[currentIndex];
+
+            const descrizione = getWeatherDescription(code);
+            const icona = getWeatherIcon(code);
+
+            meteoCard.innerHTML = `
+            <div class="d-flex flex-column align-items-center">
+                <img src="${icona}" alt="Icona Meteo" class="mb-3" style="width:80px;">
+                <h2 class="mb-3">${descrizione}</h2>
+                <p class="fs-4"><strong>Temperatura:</strong> ${temp}°C</p>
+                <p><strong>Umidità:</strong> ${humidity}%</p>
+                <p><strong>Pressione:</strong> ${pressure} hPa</p>
+                <p><strong>Vento:</strong> ${wind} km/h</p>
+                <p class="text-muted"><small>Aggiornato alle: ${time}</small></p>
+            </div>
+            `;
+        })
+        .catch(err => {
+            meteoCard.innerHTML = "<div class='alert alert-danger'>Errore nel recupero dei dati meteo.</div>";
+            console.error(err);
+        });
+
+        // Fetch allerte meteo
+        getWeatherAlerts(lat, lon);
+    }
+
+    function error() {
+        meteoCard.innerHTML = "<div class='alert alert-warning'>Impossibile ottenere la posizione.</div>";
+        document.getElementById('weather-alerts').innerHTML = '<div class="alert alert-warning">Allerte non disponibili senza posizione.</div>';
+    }
+
+    function getWeatherDescription(code) {
+        const map = {
+        0: "Cielo sereno", 1: "Prevalentemente sereno", 2: "Parzialmente nuvoloso", 3: "Nuvoloso",
+        45: "Nebbia", 48: "Nebbia ghiacciata", 51: "Pioviggine leggera", 53: "Pioviggine moderata",
+        55: "Pioviggine intensa", 61: "Pioggia leggera", 63: "Pioggia moderata", 65: "Pioggia intensa",
+        71: "Neve leggera", 73: "Neve moderata", 75: "Neve intensa", 80: "Rovesci leggeri",
+        81: "Rovesci moderati", 82: "Rovesci forti", 95: "Temporali", 96: "Temporali con grandine leggera",
+        99: "Temporali con grandine forte"
+        };
+        return map[code] || "Condizione sconosciuta";
+    }
+
+    function getWeatherIcon(code) {
+        if ([0, 1].includes(code)) return "https://img.icons8.com/color/96/000000/sun--v1.png";
+        if ([2, 3].includes(code)) return "https://img.icons8.com/color/96/000000/partly-cloudy-day.png";
+        if ([61, 63, 65, 80, 81, 82].includes(code)) return "https://img.icons8.com/color/96/000000/rain.png";
+        if ([71, 73, 75].includes(code)) return "https://img.icons8.com/color/96/000000/snow.png";
+        if ([95, 96, 99].includes(code)) return "https://img.icons8.com/color/96/000000/storm.png";
+        return "https://img.icons8.com/color/96/000000/cloud.png";
+    }
+
+    function getWeatherAlerts(lat, lon) {
+        fetch(`https://api.open-meteo.com/v1/weather-alerts?latitude=${lat}&longitude=${lon}`)
+        .then(response => response.json())
+        .then(data => {
+            const alertsContainer = document.getElementById('weather-alerts');
+            if (data.alerts && data.alerts.length > 0) {
+            let html = '';
+            data.alerts.forEach(alert => {
+                html += `
+                <div class="alert alert-warning mb-3">
+                    <strong>${alert.event}</strong><br>
+                    <small><em>${alert.sender_name}</em></small><br>
+                    <span>${alert.description}</span><br>
+                    <small><strong>Validità:</strong> ${alert.effective} - ${alert.expires}</small>
+                </div>
+                `;
+            });
+            alertsContainer.innerHTML = html;
+            } else {
+            alertsContainer.innerHTML = '<div class="alert alert-success">Nessuna allerta meteo in corso.</div>';
+            }
+        })
+        .catch(err => {
+            document.getElementById('weather-alerts').innerHTML = '<div class="alert alert-danger">Errore nel recupero delle allerte.</div>';
+            console.error(err);
+        });
+    }
+    });
+</script>
