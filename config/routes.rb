@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   get "home/sedi"
 
   get "home/mappa"
+  #wheater
+  get 'home/weather', to: 'weather#show'
+
 
   get "home/login"
   post 'login', to: 'sessions#create'
