@@ -65,6 +65,11 @@
             z-index: 3;
         }
 
+        .field-animation {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+
         @media (max-width: 768px) {
             .card-body {
                 padding: 2rem !important;
@@ -85,7 +90,7 @@
                     <div class="card-body p-5">
                         <!-- Header -->
                         <div class="text-center mb-4">
-                            <h2 class="fw-bold text-primary mb-3">University Pathfinder</h2>
+                            <h2 class="fw-bold text-primary mb-3">University Path Finder</h2>
                             <p class="text-muted">Crea il tuo account</p>
                         </div>
 
@@ -179,14 +184,6 @@
                                 </div>
                             </div>
 
-                            <!-- Student Status Checkbox -->
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="is_student_checkbox">
-                                    <label for="is_student_checkbox" class="form-check-label fw-semibold">Sono uno studente universitario</label>
-                                </div>
-                            </div>
-
                             <!-- Registration Date Field -->
                             <div class="mb-4">
                                 <label for="registration_date" class="form-label fw-semibold">Data di Registrazione</label>
@@ -200,6 +197,72 @@
                                 </div>
                                 <div class="invalid-feedback">
                                     Seleziona la data di registrazione.
+                                </div>
+                            </div>
+
+                            <!-- User Type Selection -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tipo di Account</label>
+                                
+                                <!-- Student Status Checkbox -->
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input user-type-checkbox" id="is_student_checkbox">
+                                    <label for="is_student_checkbox" class="form-check-label fw-semibold">Sono uno studente universitario</label>
+                                </div>
+
+                                <!-- Administrator Status Checkbox -->
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input user-type-checkbox" id="is_admin_checkbox">
+                                    <label for="is_admin_checkbox" class="form-check-label fw-semibold">Sono un amministratore</label>
+                                </div>
+                            </div>
+
+                            <!-- Student Fields (Initially Hidden) -->
+                            <div id="student_fields" class="mb-4 field-animation" style="display: none; opacity: 0;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="student_id" class="form-label fw-semibold">Matricola</label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               id="student_id"
+                                               name="student_id"
+                                               placeholder="Inserisci la tua matricola">
+                                        <div class="invalid-feedback">
+                                            La matricola è obbligatoria per gli studenti.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="university" class="form-label fw-semibold">Università</label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               id="university"
+                                               name="university"
+                                               placeholder="Nome dell'università">
+                                        <div class="invalid-feedback">
+                                            L'università è obbligatoria per gli studenti.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Admin Fields (Initially Hidden) -->
+                            <div id="admin_fields" class="mb-4 field-animation" style="display: none; opacity: 0;">
+                                <label for="admin_token" class="form-label fw-semibold">Token Amministratore</label>
+                                <div class="input-group">
+                                    <input type="password" 
+                                           class="form-control form-control-lg" 
+                                           id="admin_token"
+                                           name="admin_token"
+                                           placeholder="Inserisci il token amministratore">
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleAdminToken">
+                                        <i class="fas fa-eye" id="toggleAdminTokenIcon"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text text-muted">
+                                    Token richiesto per registrarsi come amministratore.
+                                </div>
+                                <div class="invalid-feedback">
+                                    Il token amministratore è obbligatorio.
                                 </div>
                             </div>
 
@@ -233,7 +296,7 @@
                         <div class="text-center">
                             <p class="text-muted mb-0">
                                 Hai già un account? 
-                                <a href="login" class="text-primary text-decoration-none fw-semibold">Accedi qui</a>
+                                <a href="#" class="text-primary text-decoration-none fw-semibold">Accedi qui</a>
                             </p>
                         </div>
 
@@ -250,6 +313,77 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('registration_date').value = today;
 
+            // User type checkbox handling
+            const studentCheckbox = document.getElementById('is_student_checkbox');
+            const adminCheckbox = document.getElementById('is_admin_checkbox');
+            const studentFields = document.getElementById('student_fields');
+            const adminFields = document.getElementById('admin_fields');
+            const studentIdField = document.getElementById('student_id');
+            const universityField = document.getElementById('university');
+            const adminTokenField = document.getElementById('admin_token');
+
+            // Ensure only one checkbox can be selected
+            studentCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    adminCheckbox.checked = false;
+                    showStudentFields();
+                    hideAdminFields();
+                } else {
+                    hideStudentFields();
+                }
+            });
+
+            adminCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    studentCheckbox.checked = false;
+                    showAdminFields();
+                    hideStudentFields();
+                } else {
+                    hideAdminFields();
+                }
+            });
+
+            function showStudentFields() {
+                studentFields.style.display = 'block';
+                setTimeout(() => {
+                    studentFields.style.opacity = '1';
+                    studentFields.style.transform = 'translateY(0)';
+                }, 10);
+                studentIdField.required = true;
+                universityField.required = true;
+            }
+
+            function hideStudentFields() {
+                studentFields.style.opacity = '0';
+                studentFields.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    studentFields.style.display = 'none';
+                }, 300);
+                studentIdField.required = false;
+                universityField.required = false;
+                studentIdField.value = '';
+                universityField.value = '';
+            }
+
+            function showAdminFields() {
+                adminFields.style.display = 'block';
+                setTimeout(() => {
+                    adminFields.style.opacity = '1';
+                    adminFields.style.transform = 'translateY(0)';
+                }, 10);
+                adminTokenField.required = true;
+            }
+
+            function hideAdminFields() {
+                adminFields.style.opacity = '0';
+                adminFields.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    adminFields.style.display = 'none';
+                }, 300);
+                adminTokenField.required = false;
+                adminTokenField.value = '';
+            }
+
             // Password visibility toggle
             const togglePassword = document.getElementById('togglePassword');
             const passwordField = document.getElementById('password');
@@ -258,6 +392,10 @@
             const togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
             const passwordConfirmationField = document.getElementById('password_confirmation');
             const togglePasswordConfirmationIcon = document.getElementById('togglePasswordConfirmationIcon');
+
+            // Admin token visibility toggle
+            const toggleAdminToken = document.getElementById('toggleAdminToken');
+            const adminTokenIconElement = document.getElementById('toggleAdminTokenIcon');
 
             // Toggle password visibility
             togglePassword.addEventListener('click', function() {
@@ -282,6 +420,19 @@
                     togglePasswordConfirmationIcon.className = 'fas fa-eye-slash';
                 } else {
                     togglePasswordConfirmationIcon.className = 'fas fa-eye';
+                }
+            });
+
+            // Toggle admin token visibility
+            toggleAdminToken.addEventListener('click', function() {
+                const type = adminTokenField.getAttribute('type') === 'password' ? 'text' : 'password';
+                adminTokenField.setAttribute('type', type);
+                
+                // Toggle icon
+                if (type === 'text') {
+                    adminTokenIconElement.className = 'fas fa-eye-slash';
+                } else {
+                    adminTokenIconElement.className = 'fas fa-eye';
                 }
             });
 
