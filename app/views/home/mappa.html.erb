@@ -54,7 +54,7 @@
         }
 
         
-        .transport-select {
+        .select {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             height: 70%;
             border: none;
@@ -64,7 +64,7 @@
             grid-column: span 2;
         }
 
-        .transport-dropdown {
+        .dropdown {
             width: 100%;
             padding: 12px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -84,17 +84,17 @@
             padding-right: 45px; 
         }
 
-        .transport-dropdown:hover {
+        .dropdown:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .transport-dropdown:focus {
+        .dropdown:focus {
             outline: none;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
         }
 
-        .transport-dropdown option {
+        .dropdown option {
             background: white; 
             color: #333;       
             padding: 10px;
@@ -376,21 +376,26 @@
         <section class="button-section">
             <h2>🎛️ Controlli Navigazione</h2>
             <div class="button-grid">
-                <input id="startInput" type="text" placeholder="📍 Partenza"></input>
-                <input id="endInput" type="text" placeholder="🧭 Destinazione"></input>
-                <button id="routeBtn" class="control-btn">🗺️ Calcola Percorso</button>
+
+                <select id="startSelect" class="select">
+                    <div class="dropdown">
+                        <option value="">Seleziona partenza</option>
+                        <% @sedi.each do |sede| %>
+                        <option value="<%= sede.id %>"><%= sede.nome %> (<%= sede.indirizzo %>)</option>
+                        <% end %>
+                    </div>
+                </select>
+                <select id="endSelect" class="select">
+                    <div class="dropdown">
+                        <option value="">Seleziona destinazione</option>
+                        <% @sedi.each do |sede| %>
+                        <option value="<%= sede.id %>"><%= sede.nome %> (<%= sede.indirizzo %>)</option>
+                        <% end %>
+                    </div>
+                </select>
+
+                <button id="calculateRouteBtn" class="control-btn">🗺️ Calcola Percorso</button>
                 <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
-                <!-- Dropdown mezzi -->
-                <div class="transport-select">
-                    <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
-                        <option value="driving">🚗 Automobile</option>
-                        <option value="walking">🚶 A piedi</option>
-                        <option value="cycling">🚴 Bicicletta</option>
-                        <option value="transit">🚌 Trasporti pubblici</option>
-                        <option value="motorcycle">🏍️ Motocicletta</option>
-                        <option value="truck">🚛 Camion</option>
-                    </select>
-                </div>
             </div>
         </section>
 
@@ -401,7 +406,7 @@
                     <div id="map" style="height: 60vh; width: 100%;"></div>
                 </div>
             </section>
-
+    
             <section class="directions-section">
                 <h2>🧭 Indicazioni Stradali</h2>
                 <div class="directions-content" id="directionsContent">
@@ -418,8 +423,12 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script>
+    // Sedi dal DB con lat e long
+    const sedi = <%= @sedi.to_json(only: [:id, :nome, :indirizzo, :lat, :long]).html_safe %>;
 
+    // Inizializza la mappa centrata su Roma
     var map = L.map('map').setView([41.8902, 12.4922], 14);
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors'
@@ -430,10 +439,7 @@
 
     // Routing
     var routingControl = L.Routing.control({
-        waypoints: [
-            L.latLng(41.8902, 12.4922),
-            L.latLng(41.9028, 12.4964)
-        ],
+        waypoints: [],
         routeWhileDragging: true,
         geocoder: L.Control.Geocoder.nominatim(),
         show: false
@@ -441,119 +447,130 @@
 
     var directionsContainer = document.getElementById('directionsContent');
 
-    // Inizializza la mappa con waypoints di default per Roma
-    initializeDefaultRoute();
+    // Marker generali per tutte le sedi
+    function addMarkers() {
+        sedi.forEach(sede => {
+            if (sede.lat != null && sede.long != null) {
+                L.marker([parseFloat(sede.lat), parseFloat(sede.long)])
+                    .addTo(map)
+                    .bindPopup(`<b>${sede.nome}</b><br>${sede.indirizzo}`);
+            }
+        });
+    }
 
-    // Controlla se ci sono dati di navigazione al caricamento della pagina
-    checkForNavigationData();
+    // Marker per partenza e destinazione selezionate
+    let routeMarkers = [];
 
+    function addRouteMarkers(startSede, endSede) {
+        // Rimuovi vecchi marker
+        routeMarkers.forEach(m => map.removeLayer(m));
+        routeMarkers = [];
+
+        const startMarker = L.marker([parseFloat(startSede.lat), parseFloat(startSede.long)])
+            .addTo(map)
+            .bindPopup('Partenza');
+
+        const endMarker = L.marker([parseFloat(endSede.lat), parseFloat(endSede.long)])
+            .addTo(map)
+            .bindPopup('Destinazione');
+
+        routeMarkers.push(startMarker, endMarker);
+    }
+
+    // Percorso di default (Colosseo → Fontana di Trevi)
     function initializeDefaultRoute() {
-        // Imposta waypoints di default per Roma se non ci sono dati di navigazione
         routingControl.setWaypoints([
-            L.latLng(41.8902, 12.4922), // Colosseo
-            L.latLng(41.9028, 12.4964)  // Fontana di Trevi
+            L.latLng(41.8902, 12.4922),
+            L.latLng(41.9028, 12.4964)
         ]);
     }
 
+    // Calcola percorso dai dropdown
+    document.getElementById('calculateRouteBtn').addEventListener('click', () => {
+        const startId = parseInt(document.getElementById('startSelect').value);
+        const endId = parseInt(document.getElementById('endSelect').value);
+
+        if (!startId || !endId) {
+            alert('Seleziona sia partenza che destinazione!');
+            return;
+        }
+
+        const startSede = sedi.find(s => s.id === startId);
+        const endSede = sedi.find(s => s.id === endId);
+
+        if (!startSede || !endSede) {
+            alert('Sede non trovata!');
+            return;
+        }
+
+        routingControl.setWaypoints([
+            L.latLng(parseFloat(startSede.lat), parseFloat(startSede.long)),
+            L.latLng(parseFloat(endSede.lat), parseFloat(endSede.long))
+        ]);
+
+        map.fitBounds([
+            [parseFloat(startSede.lat), parseFloat(startSede.long)],
+            [parseFloat(endSede.lat), parseFloat(endSede.long)]
+        ]);
+
+        addRouteMarkers(startSede, endSede);
+    });
+
+    // Mostra alert di navigazione
+    function showNavigationAlert(destinationName, destinationAddress) {
+        const alert = document.getElementById('navigationAlert');
+        const alertText = document.getElementById('alertText');
+        alertText.textContent = `Destinazione: ${destinationName} (${destinationAddress})`;
+        alert.style.display = 'block';
+        setTimeout(() => alert.classList.add('show'), 10);
+    }
+
+    // Pulisce navigazione e resetta mappa
+    function clearNavigation() {
+        const alert = document.getElementById('navigationAlert');
+        alert.classList.remove('show');
+        setTimeout(() => alert.style.display = 'none', 300);
+
+        document.getElementById('startSelect').value = '';
+        document.getElementById('endSelect').value = '';
+
+        initializeDefaultRoute();
+        weatherLayer.clearLayers();
+        routeMarkers.forEach(m => map.removeLayer(m));
+        routeMarkers = [];
+
+        directionsContainer.innerHTML = '<div class="placeholder-text">Le indicazioni appariranno qui dopo aver calcolato un percorso</div>';
+    }
+
+    // Inizializza la mappa con tutti i marker e percorso di default
+    addMarkers();
+
+    // Controllo eventuali dati di navigazione salvati
     function checkForNavigationData() {
         const navigationData = sessionStorage.getItem('navigationData');
         if (navigationData) {
             try {
                 const data = JSON.parse(navigationData);
-                
-                // Mostra alert di navigazione
+
                 showNavigationAlert(data.destinationName, data.destination);
-                
-                // Imposta la destinazione
-                document.getElementById('endInput').value = data.destination;
-                
-                // Prova a ottenere la posizione attuale per la partenza
-                getCurrentLocation().then(currentPos => {
-                    if (currentPos.address) {
-                        document.getElementById('startInput').value = currentPos.address;
-                    } else {
-                        document.getElementById('startInput').value = 'Posizione attuale';
-                    }
-                    
-                    // Calcola automaticamente il percorso
-                    calculateRoute();
-                });
-                
-                // Pulisci i dati dal sessionStorage dopo averli usati
+
+                document.getElementById('endSelect').value = data.destinationId || '';
+
+                // Qui puoi eventualmente calcolare percorso automatico se vuoi
+                // calculateRouteFromData(data);
+
                 sessionStorage.removeItem('navigationData');
             } catch (error) {
                 console.error('Errore nel parsing dei dati di navigazione:', error);
-                //Errore, mantieni il percorso di default
                 initializeDefaultRoute();
             }
-        } else {
-            // Se non ci sono dati di navigazione, mostra il percorso di default
-            console.log('Nessun dato di navigazione trovato, inizializzo percorso di default');
         }
     }
 
-    function showNavigationAlert(destinationName, destinationAddress) {
-        const alert = document.getElementById('navigationAlert');
-        const alertText = document.getElementById('alertText');
-        alertText.textContent = `Destinazione: ${destinationName} (${destinationAddress})`;
-        
-        // Assicurati che sia visibile prima di aggiungere la classe show
-        alert.style.display = 'block';
-        
-        // Piccolo delay per garantire che animazione funzioni
-        setTimeout(() => {
-            alert.classList.add('show');
-        }, 10);
-    }
+    checkForNavigationData();
 
-    function clearNavigation() {
-        const alert = document.getElementById('navigationAlert');
-        alert.classList.remove('show');
 
-        // Nascondi completamente l'alert dopo l'animazione
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 300);
 
-        document.getElementById('startInput').value = '';
-        document.getElementById('endInput').value = '';
-        
-        // Reset della mappa
-        initializeDefaultRoute();
-        weatherLayer.clearLayers();
-        directionsContainer.innerHTML = '<div class="placeholder-text">Le indicazioni appariranno qui dopo aver calcolato un percorso</div>';
-    }
-
-    // Funzione per ottenere la posizione attuale
-    function getCurrentLocation() {
-        return new Promise((resolve, reject) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        resolve({
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude,
-                            address: 'Posizione attuale'
-                        });
-                    },
-                    error => {
-                        console.warn('Geolocation failed, using default location');
-                        resolve({
-                            lat: 41.8902,
-                            lng: 12.4922,
-                            address: 'Roma, Italia'
-                        });
-                    }
-                );
-            } else {
-                resolve({
-                    lat: 41.8902,
-                    lng: 12.4922,
-                    address: 'Roma, Italia'
-                });
-            }
-        });
-    }
 
     // Mostra istruzioni + meteo
     routingControl.on('routesfound', function(e) {
@@ -671,12 +688,6 @@
 
         localStorage.setItem('savedRoute_' + Date.now(), JSON.stringify(routeData));
         alert('Percorso salvato con successo!');
-    }
-
-    function changeTransportMode() {
-        const mode = document.getElementById('transportMode').value;
-        console.log('Transport mode changed to:', mode);
-        // Qui puoi implementare la logica per cambiare il tipo di trasporto nella mappa
     }
 
     // Rendi la funzione globale per il pulsante
