@@ -1,4 +1,12 @@
+<!DOCTYPE html>
+<html lang="it">
 <head>
+
+<!-- Librerie Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
     <style>
         * {
             margin: 0;
@@ -48,6 +56,7 @@
         
         .transport-select {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 70%;
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
@@ -91,7 +100,7 @@
             padding: 10px;
         }
 
-        .control-btn {
+        .control-btn, #startInput, #endInput {
             padding: 12px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -104,7 +113,15 @@
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .control-btn:hover {
+        #startInput, #endInput {
+            cursor: text;
+        }
+
+        #startInput::placeholder, #endInput::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .control-btn:hover, #startInput:focus, #endInput:focus{
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
@@ -121,7 +138,6 @@
             width: 100%;
             align-items: flex-start;
         }
-
         
         .map-section {
             flex: 2;
@@ -143,15 +159,10 @@
         .map-container {
             width: 100%;
             height: calc(100% - 60px);
-            background: linear-gradient(45deg, #f0f2f5, #e2e8f0);
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed #cbd5e0;
-            min-height: 300px;
+            min-height: 400px;
             position: relative;
-            overflow: hidden;
+            overflow: visible !important;
         }
 
         .map-placeholder {
@@ -227,6 +238,56 @@
             margin-top: 50px;
         }
 
+        .leaflet-popup {
+            z-index: 10000 !important;
+        }
+
+        .navigation-alert {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .navigation-alert.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .loading-indicator.show {
+            display: block;
+        }
+
         
         @media (max-width: 768px) {
             .container_m {
@@ -251,6 +312,10 @@
             .directions-content {
                 height: 120px;
             }
+
+            .map-directions-wrapper {
+                flex-direction: column;
+            }
         }
 
         
@@ -258,6 +323,17 @@
             from {
                 opacity: 0;
                 transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+         @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
@@ -280,139 +356,334 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container_m">
-            <!-- Sezione Pulsantiera -->
-            <section class="button-section">
-                <h2>🎛️ Controlli Navigazione</h2>
-                <div class="button-grid">
-                    <input id="startInput" type="text" placeholder="📍 Partenza"></input>
-                    <input id="endInput" type="text" placeholder="🧭 Destinazione"></input>
-                    <button id="routeBtn" class="control-btn" onclick="calculateRoute()">🗺️ Calcola Percorso</button>
-                    <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
-                    <!-- Menu a tendina mezzi di trasporto -->
-                    <div class="transport-select">
-                        <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
-                            <option value="driving">🚗 Automobile</option>
-                            <option value="walking">🚶 A piedi</option>
-                            <option value="cycling">🚴 Bicicletta</option>
-                            <option value="transit">🚌 Trasporti pubblici</option>
-                            <option value="motorcycle">🏍️ Motocicletta</option>
-                            <option value="truck">🚛 Camion</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
 
-            <div class="map-directions-wrapper">
+        <!-- Alert per navigazione -->
+        <div id="navigationAlert" class="navigation-alert">
+            <strong>🎯 Navigazione impostata!</strong> 
+            <span id="alertText"></span>
+            <button class="clear-btn" onclick="clearNavigation()">✕ Cancella</button>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loadingIndicator" class="loading-indicator">
+            <div>🗺️ Caricamento mappa...</div>
+        </div>
+
+        <!-- Pulsanti -->
+        <section class="button-section">
+            <h2>🎛️ Controlli Navigazione</h2>
+            <div class="button-grid">
+                <input id="startInput" type="text" placeholder="📍 Partenza"></input>
+                <input id="endInput" type="text" placeholder="🧭 Destinazione"></input>
+                <button id="routeBtn" class="control-btn">🗺️ Calcola Percorso</button>
+                <button class="control-btn" onclick="saveRoute()">💾 Salva Percorso</button>
+                <!-- Dropdown mezzi -->
+                <div class="transport-select">
+                    <select class="transport-dropdown" id="transportMode" onchange="changeTransportMode()">
+                        <option value="driving">🚗 Automobile</option>
+                        <option value="walking">🚶 A piedi</option>
+                        <option value="cycling">🚴 Bicicletta</option>
+                        <option value="transit">🚌 Trasporti pubblici</option>
+                        <option value="motorcycle">🏍️ Motocicletta</option>
+                        <option value="truck">🚛 Camion</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <div class="map-directions-wrapper">
             <section class="map-section">
                 <h2>🗺️ Mappa Interattiva</h2>
-            <div class="map-container" id="mapContainer">
-                <div id="map" style="height: 60vh; width: 100%;"></div>
-            </div>
+                <div class="map-container" id="mapContainer">
+                    <div id="map" style="height: 60vh; width: 100%;"></div>
+                </div>
             </section>
 
             <section class="directions-section">
                 <h2>🧭 Indicazioni Stradali</h2>
                 <div class="directions-content" id="directionsContent">
-                <div class="placeholder-text">
-                    Le indicazioni stradali appariranno qui dopo aver calcolato un percorso
-                </div>
+                    <div class="placeholder-text">
+                        Le indicazioni appariranno qui dopo aver calcolato un percorso
+                    </div>
                 </div>
             </section>
-            </div>
+        </div>
     </div>
-
-
-
-
-
-
-    <!-- Scripts Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script>
-    var map = L.map('map').setView([41.8902, 12.4922], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-    }).addTo(map);
 
-    var directionsContainer = document.getElementById('directionsContent');
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('map').setView([41.8902, 12.4922], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    // Routing control senza pannello interno
-    var routingControl = L.Routing.control({
-    waypoints: [
-        L.latLng(41.8902, 12.4922),
-        L.latLng(41.9028, 12.4964)
-    ],
-    routeWhileDragging: true,
-    geocoder: L.Control.Geocoder.nominatim(),
-    show: false // Disabilita pannello interno
-    }).addTo(map);
+        // Layer per marker meteo
+        var weatherLayer = L.layerGroup().addTo(map);
 
-    // Funzione per aggiornare il div con le istruzioni
-    routingControl.on('routesfound', function(e) {
-    var routes = e.routes;
-    if (routes.length > 0) {
-        var instructions = '';
-        routes[0].instructions = routes[0].instructions || [];
-        routes[0].instructions = routes[0].instructions;
+        // Routing
+        var routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(41.8902, 12.4922),
+                L.latLng(41.9028, 12.4964)
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            show: false
+        }).addTo(map);
 
-        // Usa summary + istruzioni dettagliate
-        instructions += `<h3>🚦 Riepilogo Percorso</h3>`;
-        instructions += `<p>Distanza: ${routes[0].summary.totalDistance / 1000} km</p>`;
-        instructions += `<p>Durata: ${Math.round(routes[0].summary.totalTime / 60)} min</p>`;
-        instructions += `<h3>🧾 Indicazioni:</h3><ol>`;
-        
-        routes[0].instructions.forEach(function(inst) {
-        instructions += `<li>${inst.text}</li>`;
+        var directionsContainer = document.getElementById('directionsContent');
+
+        // Inizializza la mappa con waypoints di default per Roma
+        initializeDefaultRoute();
+
+        // Controlla se ci sono dati di navigazione al caricamento della pagina
+        checkForNavigationData();
+
+        function initializeDefaultRoute() {
+            // Imposta waypoints di default per Roma se non ci sono dati di navigazione
+            routingControl.setWaypoints([
+                L.latLng(41.8902, 12.4922), // Colosseo
+                L.latLng(41.9028, 12.4964)  // Fontana di Trevi
+            ]);
+        }
+
+        function checkForNavigationData() {
+            const navigationData = sessionStorage.getItem('navigationData');
+            if (navigationData) {
+                try {
+                    const data = JSON.parse(navigationData);
+                    
+                    // Mostra alert di navigazione
+                    showNavigationAlert(data.destinationName, data.destination);
+                    
+                    // Imposta la destinazione
+                    document.getElementById('endInput').value = data.destination;
+                    
+                    // Prova a ottenere la posizione attuale per la partenza
+                    getCurrentLocation().then(currentPos => {
+                        if (currentPos.address) {
+                            document.getElementById('startInput').value = currentPos.address;
+                        } else {
+                            document.getElementById('startInput').value = 'Posizione attuale';
+                        }
+                        
+                        // Calcola automaticamente il percorso
+                        calculateRoute();
+                    });
+                    
+                    // Pulisci i dati dal sessionStorage dopo averli usati
+                    sessionStorage.removeItem('navigationData');
+                } catch (error) {
+                    console.error('Errore nel parsing dei dati di navigazione:', error);
+                    //Errore, mantieni il percorso di default
+                    initializeDefaultRoute();
+                }
+            } else {
+                // Se non ci sono dati di navigazione, mostra il percorso di default
+                console.log('Nessun dato di navigazione trovato, inizializzo percorso di default');
+            }
+        }
+
+        function showNavigationAlert(destinationName, destinationAddress) {
+            const alert = document.getElementById('navigationAlert');
+            const alertText = document.getElementById('alertText');
+            alertText.textContent = `Destinazione: ${destinationName} (${destinationAddress})`;
+            
+            // Assicurati che sia visibile prima di aggiungere la classe show
+            alert.style.display = 'block';
+            
+            // Piccolo delay per garantire che animazione funzioni
+            setTimeout(() => {
+                alert.classList.add('show');
+            }, 10);
+        }
+
+        function clearNavigation() {
+            const alert = document.getElementById('navigationAlert');
+            alert.classList.remove('show');
+
+            // Nascondi completamente l'alert dopo l'animazione
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 300);
+
+            document.getElementById('startInput').value = '';
+            document.getElementById('endInput').value = '';
+            
+            // Reset della mappa
+            initializeDefaultRoute();
+            weatherLayer.clearLayers();
+            directionsContainer.innerHTML = '<div class="placeholder-text">Le indicazioni appariranno qui dopo aver calcolato un percorso</div>';
+        }
+
+        // Funzione per ottenere la posizione attuale
+        function getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            resolve({
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                                address: 'Posizione attuale'
+                            });
+                        },
+                        error => {
+                            console.warn('Geolocation failed, using default location');
+                            resolve({
+                                lat: 41.8902,
+                                lng: 12.4922,
+                                address: 'Roma, Italia'
+                            });
+                        }
+                    );
+                } else {
+                    resolve({
+                        lat: 41.8902,
+                        lng: 12.4922,
+                        address: 'Roma, Italia'
+                    });
+                }
+            });
+        }
+
+        // Mostra istruzioni + meteo
+        routingControl.on('routesfound', function(e) {
+            var route = e.routes[0];
+            var instructions = `
+                <h3>🚦 Riepilogo Percorso</h3>
+                <p>Distanza: ${(route.summary.totalDistance / 1000).toFixed(1)} km</p>
+                <p>Durata: ${Math.round(route.summary.totalTime / 60)} min</p>
+                <h3>🧾 Indicazioni:</h3><ol>
+            `;
+
+            route.instructions.forEach(function(inst) {
+                instructions += `<li>${inst.text}</li>`;
+            });
+            instructions += `</ol>`;
+            directionsContainer.innerHTML = instructions;
+
+            // Meteo per start e end
+            const startLL = e.waypoints[0].latLng;
+            const endLL = e.waypoints[e.waypoints.length - 1].latLng;
+
+            //Debug
+            console.log('Waypoint start:', startLL);
+            console.log('Waypoint end:', endLL);
+
+            weatherLayer.clearLayers();
+            addWeatherMarker(startLL.lat, startLL.lng, "📍 Partenza");
+            addWeatherMarker(endLL.lat, endLL.lng, "🏁 Arrivo");
         });
-        
-        instructions += `</ol>`;
 
-        directionsContainer.innerHTML = instructions;
-    }
+           
+
+
+        // Geocoding
+        async function geocode(query) {
+            const url = new URL('https://nominatim.openstreetmap.org/search');
+            url.searchParams.set('q', query);
+            url.searchParams.set('format', 'json');
+            url.searchParams.set('limit', '1');
+
+            const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+            const data = await res.json();
+            if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
+            const { lat, lon } = data[0];
+            return { lat: parseFloat(lat), lon: parseFloat(lon) };
+        }
+
+         // Calcolo percorso
+        async function calculateRoute() {
+            const start = document.getElementById('startInput').value.trim();
+            const end = document.getElementById('endInput').value.trim();
+            if (!start || !end) {
+                alert('Inserisci entrambi gli indirizzi.');
+                return;
+            }
+
+            try {
+                let from, to;
+                
+                // Se start è "Posizione attuale", usa la geolocation
+                if (start === 'Posizione attuale') {
+                    from = await getCurrentLocation();
+                } else {
+                    from = await geocode(start);
+                }
+                
+                to = await geocode(end);
+                
+                routingControl.setWaypoints([
+                    L.latLng(from.lat, from.lng || from.lon),
+                    L.latLng(to.lat, to.lng || to.lon)
+                ]);
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        document.getElementById('routeBtn').addEventListener('click', calculateRoute);
+
+            // Funzione per aggiungere meteo
+        function addWeatherMarker(lat, lon, label) {
+            const marker = L.marker([lat, lon]).addTo(weatherLayer).bindPopup('Caricamento meteo...');
+            fetch(`/home/weather?lat=${lat}&lon=${lon}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.temperature !== undefined) {
+                        marker.setPopupContent(`
+                            <b>${label}</b><br>
+                            🌡️ ${data.temperature} °C<br>
+                            💨 ${data.windspeed} km/h<br>
+                            ⏰ ${data.time}
+                        `);
+                        marker.openPopup();
+                    }
+                });
+
+        }
+
+        function saveRoute() {
+            const start = document.getElementById('startInput').value;
+            const end = document.getElementById('endInput').value;
+            
+            if (!start || !end) {
+                alert('Calcola prima un percorso per salvarlo.');
+                return;
+            }
+
+            // Qui potresti salvare nel localStorage o inviare al server
+            const routeData = {
+                start: start,
+                end: end,
+                transport: document.getElementById('transportMode').value,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('savedRoute_' + Date.now(), JSON.stringify(routeData));
+            alert('Percorso salvato con successo!');
+        }
+
+        function changeTransportMode() {
+            const mode = document.getElementById('transportMode').value;
+            console.log('Transport mode changed to:', mode);
+            // Qui puoi implementare la logica per cambiare il tipo di trasporto nella mappa
+        }
+
+        // Rendi la funzione globale per il pulsante
+        window.clearNavigation = clearNavigation;
     });
-
-    // Funzione di geocoding per input
-    async function geocode(query) {
-    const url = new URL('https://nominatim.openstreetmap.org/search');
-    url.searchParams.set('q', query);
-    url.searchParams.set('format', 'json');
-    url.searchParams.set('limit', '1');
-
-    const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
-    const data = await res.json();
-    if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
-    const { lat, lon } = data[0];
-    return { lat: parseFloat(lat), lon: parseFloat(lon) };
-    }
-
-    // Evento sul pulsante "Calcola Percorso"
-    document.getElementById('routeBtn').addEventListener('click', async () => {
-    const start = document.getElementById('startInput').value.trim();
-    const end = document.getElementById('endInput').value.trim();
-    if (!start || !end) {
-        alert('Inserisci entrambi gli indirizzi.');
-        return;
-    }
-    try {
-        const [from, to] = await Promise.all([geocode(start), geocode(end)]);
-        routingControl.setWaypoints([
-        L.latLng(from.lat, from.lon),
-        L.latLng(to.lat, to.lon)
-        ]);
-    } catch (err) {
-        alert(err.message);
-    }
-    });
-
     </script>
+
 </body>
+</html>
