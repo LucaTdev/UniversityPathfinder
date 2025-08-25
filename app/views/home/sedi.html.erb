@@ -61,6 +61,33 @@
             margin: 2px;
             display: inline-block;
         }
+
+        .footer-custom{
+            background-color: #343a40; color: white;
+            padding: 2rem;
+        }
+
+        .navigate-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .navigate-btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -305,7 +332,7 @@
                     <h6><i class="fas fa-map-marker-alt me-2"></i>Indirizzo</h6>
                     <p class="text-muted">${uni.indirizzo}</p>
                 </div>
-                <div>
+                <div class="mb-4">
                     <h6><i class="fas fa-building me-2"></i>Edifici presenti (${uni.edifici.length})</h6>
                     <div class="d-flex flex-wrap">
                         ${uni.edifici.map(edificio => 
@@ -313,9 +340,69 @@
                         ).join('')}
                     </div>
                 </div>
+                <div class="text-center">
+                    <button class="navigate-btn" onclick="navigateToUniversity(${uni.id})">
+                        <i class="fas fa-navigation me-2"></i>Portami lì
+                    </button>
+                </div>
             `;
 
             new bootstrap.Modal(document.getElementById('universityModal')).show();
+        }
+
+        // Funzione per navigare alla sede
+        function navigateToUniversity(id) {
+            const uni = universities.find(u => u.id === id);
+            if (!uni) return;
+
+            // Chiudi il modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('universityModal'));
+            modal.hide();
+
+            // Usa il sessionStorage per passare i dati alla pagina mappa
+            const navigationData = {
+                destination: uni.indirizzo,
+                destinationName: uni.nome,
+                timestamp: Date.now()
+            };
+            
+            sessionStorage.setItem('navigationData', JSON.stringify(navigationData));
+            
+            // Reindirizza alla pagina mappa
+            // In Rails questo sarà qualcosa come: window.location.href = '/mappa' o il tuo path
+            window.location.href = 'mappa.html'; // Modifica questo path secondo la tua struttura
+        }
+
+        // Funzione per ottenere la posizione attuale
+        function getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            resolve({
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            });
+                        },
+                        error => {
+                            // Se non riesce a ottenere la posizione, usa Roma centro come default
+                            console.warn('Geolocation failed, using default location');
+                            resolve({
+                                lat: 41.8902,
+                                lng: 12.4922,
+                                address: 'Roma, Italia'
+                            });
+                        }
+                    );
+                } else {
+                    // Browser non supporta geolocation, usa default
+                    resolve({
+                        lat: 41.8902,
+                        lng: 12.4922,
+                        address: 'Roma, Italia'
+                    });
+                }
+            });
         }
 
         function showAddForm() {
@@ -463,5 +550,20 @@
         // Initialize
         renderUserUniversities();
     </script>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5>University Pathfinder</h5>
+                <p class="mb-0" style="opacity: 0.8;">La tua app di navigazione universitaria</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0" style="opacity: 0.8;">&copy; 2025 University Pathfinder. Tutti i diritti riservati.</p>
+            </div>
+        </div>
+    </div>
+    </footer>
 </body>
 </html>
