@@ -9,6 +9,7 @@ class HomeController < ApplicationController
   end 
 
   def mappa
+    @sedi = Sede.all
   end
   
   def login
