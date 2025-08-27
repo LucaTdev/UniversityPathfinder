@@ -1,42 +1,34 @@
 Rails.application.routes.draw do
   get "home/index"
-
+  # config/routes.rb
   root 'home#index'
+
+  # Rotte per le viste HTML (Frontend)
+  # Queste rotte sono per le pagine del tuo sito che restituiscono HTML
+  get 'home/sedi', to: 'home#sedi'
+  get 'home/mappa', to: 'home#mappa'
+  get 'home/profilo', to: 'home#profilo'
+  get 'home/registrazione', to: 'home#registrazione'
+  get 'home/meteo', to: 'home#meteo'
   
-  get 'sedi', to: 'sedi#index'
+  # Rotte personalizzate che restituiscono HTML
   get 'percorsi', to: 'percorsi#index'
   get 'news', to: 'news#index'
   get 'supporto', to: 'supporto#index'
   get 'profilo', to: 'profilo#index'
   get 'login', to: 'auth#login'
-  
-  get "home/profilo"
-
-  get "home/sedi"
-
-  get "home/mappa"
-  #wheater
-  get 'home/weather', to: 'weather#show'
-
-
-  get "home/login"
-  post 'login', to: 'sessions#create'
-  get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
 
-  get 'home/registrazione'
+  # Rotte API per la gestione delle risorse RESTful
+  # Questa riga gestisce tutte le operazioni CRUD per il modello Sede.
+  # La rotta GET /sedi per 'index' è inclusa qui.
 
-  get "home/meteo", to: "home#meteo"
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :sedi, only: [:index, :show, :create, :update, :destroy]
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+
+  # Rotte aggiuntive che non rientrano in una risorsa specifica
+  post 'login', to: 'sessions#create'
+  get 'forgot_password', to: 'passwords#new'
+  get 'home/weather', to: 'weather#show'
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
