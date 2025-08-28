@@ -1,0 +1,22 @@
+<div class="container mt-5">
+  <h2>Aggiungi una nuova FAQ</h2>
+
+  <%= form_with( local: true, class: "mt-4") do |form| %>
+    <div>
+      <%= form.label :domanda, "Domanda", class: "form-label" %>
+      <%= form.text_field :domanda, class: "form-control", placeholder: "Inserisci la domanda" %>
+    </div>
+
+    <div>
+      <%= form.label :risposta, "Risposta", class: "form-label" %>
+      <%= form.text_area :risposta, rows: 4, class: "form-control", placeholder: "Inserisci la risposta" %>
+    </div>
+
+    <div>
+      <%= form.label :categoria, "Categoria", class: "form-label" %>
+      <%= form.text_field :categoria, class: "form-control", placeholder: "Menu a tendina" %>
+    </div>
+
+    <%= form.submit "Aggiungi FAQ", class: "btn btn-primary" %>
+  <% end %>
+</div>

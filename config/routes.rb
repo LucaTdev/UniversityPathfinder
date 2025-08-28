@@ -26,6 +26,12 @@ Rails.application.routes.draw do
 
   get 'home/registrazione'
 
+  #prova inserimento dati db
+  get "home/supporto", to: "home#supporto"
+  #resources :persone, only: [:create]  
+  #fine prova
+
+
   get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

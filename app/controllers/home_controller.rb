@@ -22,5 +22,7 @@ class HomeController < ApplicationController
   end
 
   def supporto
+    @persona = Persona.new
+    @persone = Persona.all.order(:id)  # ordina per id, puoi cambiare se vuoi
   end
 end
