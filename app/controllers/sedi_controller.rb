@@ -47,8 +47,15 @@ class SediController < ApplicationController
   end
 
   def sede_params
-    params.require(:sede).permit(:nome, :indirizzo, edifici: [])
-  end
+    # Permetti i parametri principali
+    permitted_params = params.require(:sede).permit(:nome, :indirizzo, edifici: [])
+
+    # Aggiungi manualmente lat e lng mappandoli dai nomi del frontend
+    permitted_params[:lat] = params[:sede][:latitudine] if params[:sede][:latitudine].present?
+    permitted_params[:long] = params[:sede][:long] if params[:sede][:long].present?
+
+    permitted_params
+end
 
 end
 
