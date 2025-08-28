@@ -58,18 +58,8 @@
 
             <!-- Tipo Account -->
             <div class="mb-3">
-              <label class="form-label fw-semibold">Tipo di Account</label>
-              <%= f.hidden_field :role, value: "base" %>
-
-              <div class="form-check">
-                <%= radio_button_tag :role, "student", false, class: "form-check-input", id: "is_student_checkbox" %>
-                <label for="is_student_checkbox" class="form-check-label fw-semibold">Sono uno studente universitario</label>
-              </div>
-
-              <div class="form-check">
-                <%= radio_button_tag :role, "admin", false, class: "form-check-input", id: "is_admin_checkbox" %>
-                <label for="is_admin_checkbox" class="form-check-label fw-semibold">Sono un amministratore</label>
-              </div>
+              <%= f.label :role, "Tipo di Account", class: "form-label fw-semibold" %>
+              <%= f.select :role, [["Altro", 0], ["Studente", 1], ["Amministratore", 2]], {}, class: "form-select form-select-lg", id: "role_select" %>
             </div>
 
             <!-- Campi Studente -->
@@ -112,3 +102,28 @@
     </div>
   </div>
 </div>
+
+<!-- Script per mostrare/nascondere i campi extra -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const roleSelect = document.getElementById("role_select");
+    const studentFields = document.getElementById("student_fields");
+    const adminFields = document.getElementById("admin_fields");
+
+    function toggleFields() {
+      if (roleSelect.value == "1") { // studente
+        studentFields.style.display = "block";
+        adminFields.style.display = "none";
+      } else if (roleSelect.value == "2") { // admin
+        studentFields.style.display = "none";
+        adminFields.style.display = "block";
+      } else {
+        studentFields.style.display = "none";
+        adminFields.style.display = "none";
+      }
+    }
+
+    roleSelect.addEventListener("change", toggleFields);
+    toggleFields(); // inizializza
+  });
+</script>
