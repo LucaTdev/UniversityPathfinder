@@ -10,14 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_25_162340) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_093253) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "admin_profiles", force: :cascade do |t|
+    t.string "email"
+    t.string "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "faqs", id: :serial, force: :cascade do |t|
+    t.text "domanda", null: false
+    t.text "risposta", null: false
+    t.text "categoria", null: false
+    t.datetime "created_at", precision: nil, default: -> { "now()" }
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }
+  end
 
   create_table "percorsi", id: :integer, default: nil, force: :cascade do |t|
     t.string "partenza", null: false
     t.string "arrivo", null: false
     t.string "mezzo", null: false
+  end
+
+  create_table "persona", id: :text, force: :cascade do |t|
+    t.text "nome", null: false
+    t.text "cognome", null: false
+    t.date "nascita", null: false
   end
 
   create_table "profilo", id: :integer, default: nil, force: :cascade do |t|
@@ -28,30 +49,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_25_162340) do
     t.unique_constraint ["persona"], name: "profilo_persona_key"
   end
 
-  create_table "registrazione", id: :integer, default: nil, force: :cascade do |t|
-    t.string "email", null: false
-    t.string "nome", null: false
-    t.string "cognome", null: false
-    t.string "password", null: false
-    t.date "data", null: false
-    t.integer "ruolo", default: 0, null: false
-    t.integer "matricola"
-    t.string "università"
-    t.string "token", default: "1234", null: false
-    t.boolean "policy", default: false, null: false
-
-    t.unique_constraint ["email"], name: "Registrazione_email_key"
-  end
-
-  create_table "sedes", force: :cascade do |t|
-    t.string "nome"
-    t.string "indirizzo"
-    t.float "lat"
-    t.float "long"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "sedi", id: :integer, default: nil, force: :cascade do |t|
     t.string "nome", null: false
     t.string "indirizzo", null: false
@@ -59,5 +56,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_25_162340) do
     t.json "eventi"
     t.float "lat"
     t.float "long"
+    t.index ["nome"], name: "index_sedi_on_nome"
+  end
+
+  create_table "student_profiles", force: :cascade do |t|
+    t.string "email"
+    t.string "student_id"
+    t.string "university"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "test_enums", force: :cascade do |t|
+    t.integer "role"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.string "password_digest"
+    t.date "registration_date"
+    t.integer "role", default: 0, null: false
+    t.boolean "terms_accepted"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 end

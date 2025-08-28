@@ -1,4 +1,4 @@
-Rails.application.routes.draw do
+Rails.application.routes.draw do  
   get "home/index"
   root 'home#index'
 
@@ -22,8 +22,9 @@ Rails.application.routes.draw do
   post 'login', to: 'sessions#create'
   get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
+  post 'registration', to: 'users#create'
 
-  get 'home/registrazione'
+  get 'users/new'
 
   get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
