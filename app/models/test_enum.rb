@@ -1,0 +1,2 @@
+class TestEnum < ApplicationRecord
+end
