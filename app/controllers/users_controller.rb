@@ -6,12 +6,13 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
 
-    if params[:role] == "student"
-      @user.role = :student
-    elsif params[:role] == "admin"
-      @user.role = :admin
+    case params[:user][:role]
+    when "1" # studente
+      @user.role = User::ROLE_STUDENT
+    when "2" # admin
+      @user.role = User::ROLE_ADMIN
     else
-      @user.role = :base
+      @user.role = User::ROLE_BASE
     end
 
     if @user.save
@@ -36,7 +37,7 @@ class UsersController < ApplicationController
       render :new
     end
   end
-
+  
   private
 
   def user_params
