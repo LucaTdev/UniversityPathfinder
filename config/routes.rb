@@ -26,6 +26,8 @@ Rails.application.routes.draw do
 
   get 'users/new'
 
+  get "home/supporto"
+
   get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
