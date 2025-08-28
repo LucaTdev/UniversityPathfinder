@@ -21,4 +21,6 @@ class HomeController < ApplicationController
   def meteo
   end
 
+  def supporto
+  end
 end
