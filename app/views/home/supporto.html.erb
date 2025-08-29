@@ -1,22 +1,60 @@
 <div class="container mt-5">
-  <h2>Aggiungi una nuova FAQ</h2>
+  <h2>⚙️ Amministrazione FAQ</h2>
 
-  <%= form_with( local: true, class: "mt-4") do |form| %>
-    <div>
+  <!-- Form aggiunta FAQ -->
+  <%= form_with(model: @faq, url: faqs_path, local: true, class: "mt-4") do |form| %>
+    <div class="mb-3">
       <%= form.label :domanda, "Domanda", class: "form-label" %>
       <%= form.text_field :domanda, class: "form-control", placeholder: "Inserisci la domanda" %>
     </div>
 
-    <div>
+    <div class="mb-3">
       <%= form.label :risposta, "Risposta", class: "form-label" %>
       <%= form.text_area :risposta, rows: 4, class: "form-control", placeholder: "Inserisci la risposta" %>
     </div>
 
-    <div>
+    <div class="mb-3">
       <%= form.label :categoria, "Categoria", class: "form-label" %>
-      <%= form.text_field :categoria, class: "form-control", placeholder: "Menu a tendina" %>
+      <%= form.text_field :categoria, class: "form-control", placeholder: "Es. Iscrizioni, Segreteria, Esami" %>
     </div>
 
     <%= form.submit "Aggiungi FAQ", class: "btn btn-primary" %>
   <% end %>
+
+  <!-- Elenco FAQ + modifica -->
+  <div class="container mt-5">
+    <div class="row">
+      <% @faqs.each do |faq| %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title"><%= faq.categoria %></h5>
+              <h6 class="card-subtitle mb-2 text-muted"><%= faq.domanda %></h6>
+              <p class="card-text"><%= faq.risposta %></p>
+
+              <!-- Form modifica (DA RIVEDERE) -->
+              <%= form_with(model: faq, url: faq_path(faq), method: :patch, local: true, class: "mb-2") do |f| %>
+                <div class="mb-2">
+                  <%= f.text_field :domanda, value: faq.domanda, class: "form-control", placeholder: "Modifica domanda" %>
+                </div>
+                <div class="mb-2">
+                  <%= f.text_area :risposta, value: faq.risposta, rows: 2, class: "form-control", placeholder: "Modifica risposta" %>
+                </div>
+                <div class="mb-2">
+                  <%= f.text_field :categoria, value: faq.categoria, class: "form-control", placeholder: "Modifica categoria" %>
+                </div>
+                <%= f.submit "Aggiorna", class: "btn btn-warning btn-sm" %>
+              <% end %>
+
+              <!-- Pulsante elimina -->
+              <%= button_to "Elimina", faq_path(faq), 
+                  method: :delete, 
+                  data: { confirm: "Sei sicuro di voler eliminare questa FAQ?" }, 
+                  class: "btn btn-danger btn-sm mt-2" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
