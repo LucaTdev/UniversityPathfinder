@@ -1,6 +1,6 @@
 require "test_helper"
 
-class StudentProfileTest < ActiveSupport::TestCase
+class PercorsiTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
