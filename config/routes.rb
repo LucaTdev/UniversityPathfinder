@@ -1,15 +1,13 @@
-Rails.application.routes.draw do
+Rails.application.routes.draw do  
   get "home/index"
-
   root 'home#index'
-  
-  get 'sedi', to: 'sedi#index'
+
   get 'percorsi', to: 'percorsi#index'
   get 'news', to: 'news#index'
   get 'supporto', to: 'supporto#index'
   get 'profilo', to: 'profilo#index'
   get 'login', to: 'auth#login'
-  
+
   get "home/profilo"
 
   get "home/sedi"
@@ -18,13 +16,19 @@ Rails.application.routes.draw do
   #wheater
   get 'home/weather', to: 'weather#show'
 
+  resources :sedi, only: [:index, :show, :create, :update, :destroy]
 
-  get "home/login"
+  get "sessions/new"
+  get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  get 'users/new'
   get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
+  post 'registration', to: 'users#create'
 
-  get 'home/registrazione'
+  get "home/supporto"
 
   #prova inserimento dati db
   get "home/supporto", to: "home#supporto"
@@ -43,6 +47,9 @@ Rails.application.routes.draw do
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
+
+  resources :percorsi, only: [:create]
+
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

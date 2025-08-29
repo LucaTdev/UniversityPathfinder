@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University Pathfinder</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -100,6 +102,30 @@
             height: 90px; 
         }
 
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            display: none;
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 
@@ -123,6 +149,24 @@
     
     <div class="main-content">
         <div class="container">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Caricamento...</span>
+                </div>
+                <p class="mt-2">Caricamento sedi universitarie...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message">
+                <strong>Errore!</strong> <span id="errorText"></span>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message">
+                <strong>Successo!</strong> <span id="successText"></span>
+            </div>
+
             <!-- Modalità Utente -->
             <div id="userMode" class="mode-content">
                 <h2 class="mb-4">
@@ -155,23 +199,23 @@
                     </div>
                     <div class="card-body">
                         <form id="universityForm">
-                        <input type="hidden" id="universityId" value="">
+                            <input type="hidden" id="universityId" value="">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nomeSede" class="form-label">Nome Sede</label>
+                                    <label for="nomeSede" class="form-label">Nome Sede *</label>
                                     <input type="text" class="form-control" id="nomeSede" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="indirizzoSede" class="form-label">Indirizzo Sede</label>
+                                    <label for="indirizzoSede" class="form-label">Indirizzo Sede *</label>
                                     <input type="text" class="form-control" id="indirizzoSede" required>
                                 </div>
                             </div>
                             
                             <div class="mb-3">
-                                <label class="form-label">Edifici presenti nella sede</label>
+                                <label class="form-label">Edifici presenti nella sede *</label>
                                 <div id="edificiContainer">
                                     <div class="input-group mb-2">
-                                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                                         <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -180,6 +224,17 @@
                                 <button type="button" class="btn btn-outline-primary btn-sm" onclick="addBuildingInput()">
                                     <i class="fas fa-plus me-2"></i>Aggiungi Edificio
                                 </button>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nomeSede" class="form-label">Latitudine sede *</label>
+                                    <input type="text" class="form-control" id="latSede" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="indirizzoSede" class="form-label">Longitudine sede *</label>
+                                    <input type="text" class="form-control" id="longSede" required>
+                                </div>
                             </div>
                             
                             <div class="d-flex gap-2">
@@ -215,7 +270,7 @@
                 </div>
             </div>
         </div>
-    <div>
+    </div>
 
     <!-- Footer -->
     <div class="sticky-bottom">
@@ -237,41 +292,142 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Sample data - In Rails this would come from the backend
-        let universities = [
-            {
-                id: 1,
-                nome: "Università La Sapienza",
-                indirizzo: "Piazzale Aldo Moro, 5, 00185 Roma RM",
-                edifici: ["Edificio CU002 - Matematica", "Edificio CU006 - Fisica", "Edificio RM018 - Lettere", "Biblioteca Centrale"]
-            },
-            {
-                id: 2,
-                nome: "Università Tor Vergata",
-                indirizzo: "Via della Ricerca Scientifica, 1, 00133 Roma RM",
-                edifici: ["Macroarea di Ingegneria", "Macroarea di Scienze", "Biblioteca di Area Tecnologica"]
-            },
-            {
-                id: 3,
-                nome: "Università Roma Tre",
-                indirizzo: "Via Ostiense, 133, 00154 Roma RM",
-                edifici: ["Edificio Principali", "Dipartimento di Architettura", "Biblioteca di Area delle Arti"]
-            },
-            {
-                id: 4,
-                nome: "Università La Sapienza - Marco Polo",
-                indirizzo: "Viale dello Scalo S. Lorenzo, 82, 00159 Roma RM",
-                edifici: ["RM021 Edificio Marco Polo - Ingegneria Informatica", "RM021 Edificio Marco Polo - Lingue Orientali", "RM021 Edificio Marco Polo - Biblioteca"]
-            },
-            {
-                id: 5,
-                nome: "Università La Sapienza - S. Pietro in Vincoli",
-                indirizzo: "Via Eudossiana, 18, 00184 Roma RM",
-                edifici: ["RM031 Edificio A - Ingegneria", "RM032 Edificio B - Ingegneria", "RM033 Edificio C - Ingegneria Elettrica", "RM034 Edificio D - Ingegneria Idraulica trasporti e strade"]
-            }
-        ];
-
+        // Variabile globale per memorizzare le sedi
+        let universities = [];
         let currentMode = 'user';
+
+        // Utility functions per gestire UI
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('errorMessage').style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+
+        // Funzione per ottenere il CSRF token
+        function getCSRFToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            return meta ? meta.getAttribute('content') : '';
+        }
+
+        // API Calls per comunicare con Rails backend
+        async function fetchUniversities() {
+            try {
+                showLoading();
+                const response = await fetch("http://localhost:3000/sedi", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                universities = data;
+                hideLoading();
+                
+                if (currentMode === 'user') {
+                    renderUserUniversities();
+                } else {
+                    renderAdminUniversities();
+                }
+                
+            } catch (error) {
+                hideLoading();
+                showError('Errore nel caricamento delle sedi: ' + error.message);
+                console.error('Error fetching universities:', error);
+            }
+        }
+
+        async function createUniversity(sedeData) {
+            try {
+                const response = await fetch('/sedi', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCSRFToken()
+                    },
+                    body: JSON.stringify({ sede: sedeData })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.errors ? data.errors.join(', ') : 'Errore nella creazione');
+                }
+
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function updateUniversity(id, sedeData) {
+            try {
+                const response = await fetch(`/sedi/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCSRFToken()
+                    },
+                    body: JSON.stringify({ sede: sedeData })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.errors ? data.errors.join(', ') : 'Errore nell\'aggiornamento');
+                }
+
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function deleteUniversityFromServer(id) {
+            try {
+                const response = await fetch(`/sedi/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCSRFToken()
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return true;
+            } catch (error) {
+                throw error;
+            }
+        }
 
         function switchMode(mode) {
             currentMode = mode;
@@ -296,7 +452,19 @@
             const container = document.getElementById('universitiesList');
             container.innerHTML = '';
 
+            if (universities.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-university fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Nessuna sede universitaria disponibile</h4>
+                        <p class="text-muted">Le sedi universitarie verranno visualizzate qui una volta aggiunte.</p>
+                    </div>
+                `;
+                return;
+            }
+
             universities.forEach(uni => {
+                const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
                 const card = `
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card university-card h-100" onclick="showUniversityDetails(${uni.id})">
@@ -307,14 +475,17 @@
                                 <p class="card-text text-muted mb-3">
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
+                                <p class="small text-muted mb-3">
+                                    <i class="fas fa-globe me-2"></i>${uni.latitudine}, ${uni.longitudine}
+                                </p>
                                 <div class="mb-2">
-                                    <small class="text-muted">Edifici: ${uni.edifici.length}</small>
+                                    <small class="text-muted">Edifici: ${edificiArray.length}</small>
                                 </div>
                                 <div class="d-flex flex-wrap">
-                                    ${uni.edifici.slice(0, 2).map(edificio => 
+                                    ${edificiArray.slice(0, 2).map(edificio => 
                                         `<span class="building-item">${edificio}</span>`
                                     ).join('')}
-                                    ${uni.edifici.length > 2 ? `<span class="building-item">+${uni.edifici.length - 2} altri</span>` : ''}
+                                    ${edificiArray.length > 2 ? `<span class="building-item">+${edificiArray.length - 2} altri</span>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -328,7 +499,19 @@
             const container = document.getElementById('adminUniversitiesList');
             container.innerHTML = '';
 
+            if (universities.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Nessuna sede da gestire</h4>
+                        <p class="text-muted">Aggiungi la prima sede universitaria cliccando sul pulsante "Aggiungi Sede".</p>
+                    </div>
+                `;
+                return;
+            }
+
             universities.forEach(uni => {
+                const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
                 const card = `
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card h-100">
@@ -344,14 +527,17 @@
                                         </button>
                                     </div>
                                 </div>
-                                <p class="card-text text-muted mb-3">
+                                <p class="card-text text-muted mb-1">
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
+                                <p class="small text-muted mb-3">
+                                    <i class="fas fa-globe me-2"></i>${uni.latitudine}, ${uni.longitudine}
+                                </p>
                                 <div class="mb-2">
-                                    <strong>Edifici (${uni.edifici.length}):</strong>
+                                    <strong>Edifici (${edificiArray.length}):</strong>
                                 </div>
                                 <div class="d-flex flex-wrap">
-                                    ${uni.edifici.map(edificio => 
+                                    ${edificiArray.map(edificio => 
                                         `<span class="building-item">${edificio}</span>`
                                     ).join('')}
                                 </div>
@@ -367,6 +553,8 @@
             const uni = universities.find(u => u.id === id);
             if (!uni) return;
 
+            const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
+
             document.getElementById('modalTitle').innerHTML = `
                 <i class="fas fa-university me-2"></i>${uni.nome}
             `;
@@ -377,22 +565,27 @@
                     <p class="text-muted">${uni.indirizzo}</p>
                 </div>
                 <div class="mb-4">
-                    <h6><i class="fas fa-building me-2"></i>Edifici presenti (${uni.edifici.length})</h6>
+                    <h6><i class="fas fa-globe me-2"></i>Coordinate</h6>
+                    <p class="text-muted">Lat: ${uni.latitudine} | Long: ${uni.longitudine}</p>
+                </div>
+                <div class="mb-4">
+                    <h6><i class="fas fa-building me-2"></i>Edifici presenti (${edificiArray.length})</h6>
                     <div class="d-flex flex-wrap">
-                        ${uni.edifici.map(edificio => 
+                        ${edificiArray.map(edificio => 
                             `<span class="building-item me-2 mb-2">${edificio}</span>`
                         ).join('')}
                     </div>
                 </div>
                 <div class="text-center">
                     <button class="navigate-btn" onclick="navigateToUniversity(${uni.id})">
-                        <i class="fa-solid fa-plane-departure"></i> Portami lì  
+                        <i class="fa-solid fa-route"></i> Portami lì  
                     </button>
                 </div>
             `;
 
             new bootstrap.Modal(document.getElementById('universityModal')).show();
         }
+
 
         // Funzione per navigare alla sede
         function navigateToUniversity(id) {
@@ -412,41 +605,8 @@
             
             sessionStorage.setItem('navigationData', JSON.stringify(navigationData));
             
-            // Reindirizza alla pagina mappa
-            // In Rails questo sarà qualcosa come: window.location.href = '/mappa' o il tuo path
-            window.location.href = 'mappa.html'; // Modifica questo path secondo la tua struttura
-        }
-
-        // Funzione per ottenere la posizione attuale
-        function getCurrentLocation() {
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            resolve({
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            });
-                        },
-                        error => {
-                            // Se non riesce a ottenere la posizione, usa Roma centro come default
-                            console.warn('Geolocation failed, using default location');
-                            resolve({
-                                lat: 41.8902,
-                                lng: 12.4922,
-                                address: 'Roma, Italia'
-                            });
-                        }
-                    );
-                } else {
-                    // Browser non supporta geolocation, usa default
-                    resolve({
-                        lat: 41.8902,
-                        lng: 12.4922,
-                        address: 'Roma, Italia'
-                    });
-                }
-            });
+            // Reindirizza alla pagina mappa (modifica il path secondo la tua struttura Rails)
+            window.location.href = '<%= home_mappa_path %>';
         }
 
         function showAddForm() {
@@ -454,6 +614,17 @@
             document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Nuova Sede Universitaria';
             document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save me-2"></i>Salva Sede';
             document.getElementById('universityId').value = '';
+            
+            // Reset edifici container
+            const container = document.getElementById('edificiContainer');
+            container.innerHTML = `
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
+                    <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
         }
 
         function editUniversity(id) {
@@ -469,15 +640,19 @@
             document.getElementById('universityId').value = id;
             document.getElementById('nomeSede').value = uni.nome;
             document.getElementById('indirizzoSede').value = uni.indirizzo;
+            document.getElementById('latSede').value = uni.latitudine || '';
+            document.getElementById('longSede').value = uni.longitudine || '';
             
             // Clear and rebuild edifici container
             const container = document.getElementById('edificiContainer');
             container.innerHTML = '';
             
-            uni.edifici.forEach(edificio => {
+            const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
+            
+            edificiArray.forEach(edificio => {
                 const inputHtml = `
                     <div class="input-group mb-2">
-                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" value="${edificio}">
+                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" value="${edificio}" required>
                         <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -487,7 +662,7 @@
             });
             
             // Ensure at least one input exists
-            if (uni.edifici.length === 0) {
+            if (edificiArray.length === 0) {
                 addBuildingInput();
             }
             
@@ -508,7 +683,7 @@
             const container = document.getElementById('edificiContainer');
             container.innerHTML = `
                 <div class="input-group mb-2">
-                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -520,7 +695,7 @@
             const container = document.getElementById('edificiContainer');
             const newInput = `
                 <div class="input-group mb-2">
-                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -536,63 +711,75 @@
             }
         }
 
-        function deleteUniversity(id) {
+        async function deleteUniversity(id) {
             if (confirm('Sei sicuro di voler eliminare questa sede universitaria?')) {
-                universities = universities.filter(uni => uni.id !== id);
-                renderAdminUniversities();
+                try {
+                    showLoading();
+                    await deleteUniversityFromServer(id);
+                    showSuccess('Sede eliminata con successo!');
+                    await fetchUniversities(); // Ricarica la lista
+                } catch (error) {
+                    hideLoading();
+                    showError('Errore nell\'eliminazione della sede: ' + error.message);
+                }
             }
         }
 
         // Form submission
-        document.getElementById('universityForm').addEventListener('submit', function(e) {
+        document.getElementById('universityForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const universityId = document.getElementById('universityId').value;
-            const nome = document.getElementById('nomeSede').value;
-            const indirizzo = document.getElementById('indirizzoSede').value;
+            const nome = document.getElementById('nomeSede').value.trim();
+            const indirizzo = document.getElementById('indirizzoSede').value.trim();
+            const lat = document.getElementById('latSede').value.trim();
+            const long = document.getElementById('longSede').value.trim();
+
             const edificiInputs = document.querySelectorAll('.edificio-input');
             const edifici = Array.from(edificiInputs)
                 .map(input => input.value.trim())
                 .filter(value => value !== '');
 
-            if (nome && indirizzo && edifici.length > 0) {
+            if (!nome || !indirizzo || !lat || !long || edifici.length === 0) {
+                showError('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
+                return;
+            }
+
+            const sedeData = {
+                nome: nome,
+                indirizzo: indirizzo,
+                latitudine:lat,
+                long: long,
+                edifici: edifici
+            };
+
+            try {
+                showLoading();
+                
                 if (universityId) {
                     // Update existing university
-                    const index = universities.findIndex(uni => uni.id == universityId);
-                    if (index !== -1) {
-                        universities[index] = {
-                            id: parseInt(universityId),
-                            nome: nome,
-                            indirizzo: indirizzo,
-                            edifici: edifici
-                        };
-                        alert('Sede universitaria aggiornata con successo!');
-                    }
+                    await updateUniversity(universityId, sedeData);
+                    showSuccess('Sede universitaria aggiornata con successo!');
                 } else {
                     // Add new university
-                    const newUniversity = {
-                        id: Date.now(),
-                        nome: nome,
-                        indirizzo: indirizzo,
-                        edifici: edifici
-                    };
-                    universities.push(newUniversity);
-                    alert('Sede universitaria aggiunta con successo!');
+                    await createUniversity(sedeData);
+                    showSuccess('Sede universitaria aggiunta con successo!');
                 }
 
-                renderAdminUniversities();
+                await fetchUniversities(); // Ricarica la lista
                 hideAddForm();
                 
-                // In Rails, this would be an AJAX call to your backend
-                // For update: PUT /universities/:id
-                // For create: POST /universities
-            } else {
-                alert('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
+            } catch (error) {
+                hideLoading();
+                showError('Errore nel salvataggio: ' + error.message);
             }
         });
 
-        // Initialize
-        renderUserUniversities();
+        // Initialize - Carica le sedi allavvio
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUniversities();
+        });
+
     </script>
 </body>
 </html>
