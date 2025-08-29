@@ -3,10 +3,15 @@ class FaqsController < ApplicationController
     @faq = Faq.new
   end
 
+  def admin
+    @faq = Faq.new
+    @faqs = Faq.all.order(created_at: :desc)
+  end
+
   def create
     @faq = Faq.new(faq_params)
     if @faq.save
-      redirect_to home_supporto_path, notice: "FAQ aggiunta"
+      redirect_to admin_faqs_path, notice: "FAQ aggiunta"
     else
       flash.now[:alert] = "Errore aggiunta della FAQ."
       render :new
@@ -20,7 +25,7 @@ class FaqsController < ApplicationController
   def update
     @faq = Faq.find(params[:id])
     if @faq.update(faq_params)
-      redirect_to home_supporto_path, notice: "FAQ aggiornata con successo."
+      redirect_to admin_faqs_path, notice: "FAQ aggiornata con successo."
     else
       flash.now[:alert] = "Errore aggiornamento della FAQ."
       render :edit
@@ -30,7 +35,7 @@ class FaqsController < ApplicationController
   def destroy
     @faq = Faq.find(params[:id])
     @faq.destroy
-    redirect_to home_supporto_path, notice: "FAQ eliminata con successo."
+    redirect_to admin_faqs_path, notice: "FAQ eliminata con successo."
   end
 
   private
