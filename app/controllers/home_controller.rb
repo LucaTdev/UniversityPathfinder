@@ -22,5 +22,7 @@ class HomeController < ApplicationController
   end
 
   def supporto
+    @faq = Faq.new
+    @faqs = Faq.all.order(created_at: :desc)
   end
 end
