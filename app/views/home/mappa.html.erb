@@ -22,7 +22,7 @@
         }
 
         .container_m {
-            max-width: 1200px;
+            max-width: 1450px;
             margin: 0 auto;
             padding: 20px;
             display: flex;
@@ -133,6 +133,7 @@
         
         .map-directions-wrapper {
             display: flex;
+            align-items: stretch;
             flex-direction: row;
             gap: 20px;
             width: 100%;
@@ -188,6 +189,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             min-height: 400px;
+            max-height: 900px;
             overflow-y: auto;
         }
 
@@ -620,35 +622,36 @@
 
         // Calcolo percorso
     async function calculateRoute() {
-        const start = document.getElementById('startInput').value.trim();
-        const end = document.getElementById('endInput').value.trim();
+        const start = document.getElementById('startSelect').value;
+        const end = document.getElementById('endSelect').value;
         if (!start || !end) {
-            alert('Inserisci entrambi gli indirizzi.');
+            alert('Seleziona sia partenza che destinazione!');
             return;
         }
 
-        try {
-            let from, to;
-            
-            // Se start è "Posizione attuale", usa la geolocation
-            if (start === 'Posizione attuale') {
-                from = await getCurrentLocation();
-            } else {
-                from = await geocode(start);
-            }
-            
-            to = await geocode(end);
-            
-            routingControl.setWaypoints([
-                L.latLng(from.lat, from.lng || from.lon),
-                L.latLng(to.lat, to.lng || to.lon)
-            ]);
-        } catch (err) {
-            alert(err.message);
+        const startSede = sedi.find(s => s.id === parseInt(start));
+        const endSede = sedi.find(s => s.id === parseInt(end));
+
+        if (!startSede || !endSede) {
+            alert('Sede non trovata!');
+            return;
         }
+
+        routingControl.setWaypoints([
+            L.latLng(parseFloat(startSede.lat), parseFloat(startSede.long)),
+            L.latLng(parseFloat(endSede.lat), parseFloat(endSede.long))
+        ]);
+
+        map.fitBounds([
+            [parseFloat(startSede.lat), parseFloat(startSede.long)],
+            [parseFloat(endSede.lat), parseFloat(endSede.long)]
+        ]);
+
+        addRouteMarkers(startSede, endSede);
     }
 
-    document.getElementById('routeBtn').addEventListener('click', calculateRoute);
+
+    document.getElementById('calculateRouteBtn').addEventListener('click', calculateRoute);
 
         // Funzione per aggiungere meteo
     function addWeatherMarker(lat, lon, label) {
@@ -670,25 +673,44 @@
     }
 
     function saveRoute() {
-        const start = document.getElementById('startInput').value;
-        const end = document.getElementById('endInput').value;
-        
-        if (!start || !end) {
-            alert('Calcola prima un percorso per salvarlo.');
+        const startId = parseInt(document.getElementById('startSelect').value);
+        const endId = parseInt(document.getElementById('endSelect').value);
+
+        if (!startId || !endId) {
+            alert('Seleziona partenza e destinazione prima di salvare.');
             return;
         }
 
-        // Qui potresti salvare nel localStorage o inviare al server
-        const routeData = {
-            start: start,
-            end: end,
-            transport: document.getElementById('transportMode').value,
-            timestamp: new Date().toISOString()
+        const data = {
+            partenza: startId,
+            arrivo: endId
         };
 
-        localStorage.setItem('savedRoute_' + Date.now(), JSON.stringify(routeData));
-        alert('Percorso salvato con successo!');
+        fetch('/percorsi', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Errore nel salvataggio del percorso');
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log('Percorso salvato:', result);
+            alert('Percorso salvato correttamente!');
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Errore durante il salvataggio');
+        });
     }
+
+
 
     // Rendi la funzione globale per il pulsante
     window.clearNavigation = clearNavigation;
