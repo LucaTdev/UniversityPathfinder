@@ -9,6 +9,7 @@ class HomeController < ApplicationController
   end 
 
   def mappa
+    @sedi = Sede.all
   end
   
   def login
@@ -20,4 +21,8 @@ class HomeController < ApplicationController
   def meteo
   end
 
+  def supporto
+    @faq = Faq.new
+    @faqs = Faq.all.order(created_at: :desc)
+  end
 end
