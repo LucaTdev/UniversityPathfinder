@@ -1,34 +1,55 @@
-Rails.application.routes.draw do
+Rails.application.routes.draw do  
   get "home/index"
-
   root 'home#index'
-  
-  get 'sedi', to: 'sedi#index'
+
   get 'percorsi', to: 'percorsi#index'
   get 'news', to: 'news#index'
   get 'supporto', to: 'supporto#index'
   get 'profilo', to: 'profilo#index'
   get 'login', to: 'auth#login'
-  
+
   get "home/profilo"
 
   get "home/sedi"
 
   get "home/mappa"
+  #wheater
+  get 'home/weather', to: 'weather#show'
 
-  get "home/login"
+  resources :sedi, only: [:index, :show, :create, :update, :destroy]
+
+  get "sessions/new"
+  get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  get 'users/new'
   get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
+  post 'registration', to: 'users#create'
 
-  get 'home/registrazione'
+  get "home/supporto"
 
-  get "home/meteo"
+  #prova inserimento dati db
+  get "home/supporto", to: "home#supporto"
+  #resources :persone, only: [:create]  
+  #fine prova
+
+  #FAQ
+  resources :faqs, only: [:create, :update, :destroy]
+  #get "supporto", to: "faqs#index", as: "home_supporto"
+
+
+
+  get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
+
+  resources :percorsi, only: [:create]
+
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
