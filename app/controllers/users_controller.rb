@@ -32,7 +32,7 @@ class UsersController < ApplicationController
         end
       end
 
-      redirect_to home_login_path, notice: "Registrazione completata con successo!"
+      redirect_to sessions_new_path, notice: "Registrazione completata con successo!"
     else
       render :new
     end
