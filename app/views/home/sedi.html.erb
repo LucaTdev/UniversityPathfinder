@@ -331,7 +331,7 @@
         async function fetchUniversities() {
             try {
                 showLoading();
-                const response = await fetch("http://localhost:3000/sedi", {
+                const response = await fetch("/sedi", {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
