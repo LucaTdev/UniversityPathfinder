@@ -30,7 +30,7 @@ gem "solid_cable"
 
 #CUSTOM GEMS
 gem 'dotenv-rails', groups: [:development, :test]
-
+gem 'rack-cors'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
