@@ -31,6 +31,11 @@ Rails.application.routes.draw do
   #resources :persone, only: [:create]  
   #fine prova
 
+  #FAQ
+  resources :faqs, only: [:create, :update, :destroy]
+  #get "supporto", to: "faqs#index", as: "home_supporto"
+
+
 
   get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
