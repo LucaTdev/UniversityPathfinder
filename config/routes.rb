@@ -18,13 +18,15 @@ Rails.application.routes.draw do
 
   resources :sedi, only: [:index, :show, :create, :update, :destroy]
 
-  get "home/login"
+  get "sessions/new"
+  get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  get 'users/new'
   get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
   post 'registration', to: 'users#create'
-
-  get 'users/new'
 
   get "home/supporto"
 
