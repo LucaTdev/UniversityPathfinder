@@ -1,5 +1,6 @@
 /* Navbar Custom Styles */
 .navbar-custom {
+    height: 70px;
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
@@ -28,3 +29,7 @@
     border-radius: 20px;
     padding: 8px 16px !important;
     }
+
+body{
+    padding-top: 70px;
+}
