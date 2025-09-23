@@ -31,6 +31,8 @@ Rails.application.routes.draw do
 #LUCA
   #Path 
   get 'admin/faqs', to: 'faqs#admin', as: 'admin_faqs'
+  get 'user/faqs', to: 'faqs#user', as: 'user_faqs'
+  get 'visitors/faqs', to: 'faqs#visitor', as: 'visitor_faqs'
 
   #FAQ
   resources :faqs, only: [:create, :update, :destroy]
