@@ -1,60 +1,127 @@
-<div class="container mt-5">
-  <h2>⚙️ Amministrazione FAQ</h2>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Pathfinder - FAQ Admin</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
 
-  <!-- Form aggiunta FAQ -->
-  <%= form_with(model: @faq, url: faqs_path, local: true, class: "mt-4") do |form| %>
-    <div class="mb-3">
-      <%= form.label :domanda, "Domanda", class: "form-label" %>
-      <%= form.text_field :domanda, class: "form-control", placeholder: "Inserisci la domanda" %>
-    </div>
-
-    <div class="mb-3">
-      <%= form.label :risposta, "Risposta", class: "form-label" %>
-      <%= form.text_area :risposta, rows: 4, class: "form-control", placeholder: "Inserisci la risposta" %>
-    </div>
-
-    <div class="mb-3">
-      <%= form.label :categoria, "Categoria", class: "form-label" %>
-      <%= form.text_field :categoria, class: "form-control", placeholder: "Es. Iscrizioni, Segreteria, Esami" %>
-    </div>
-
-    <%= form.submit "Aggiungi FAQ", class: "btn btn-primary" %>
-  <% end %>
-
-  <!-- Elenco FAQ + modifica -->
-  <div class="container mt-5">
-    <div class="row">
-      <% @faqs.each do |faq| %>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title"><%= faq.categoria %></h5>
-              <h6 class="card-subtitle mb-2 text-muted"><%= faq.domanda %></h6>
-              <p class="card-text"><%= faq.risposta %></p>
-
-              <!-- Form modifica (DA RIVEDERE) -->
-              <%= form_with(model: faq, url: faq_path(faq), method: :patch, local: true, class: "mb-2") do |f| %>
-                <div class="mb-2">
-                  <%= f.text_field :domanda, value: faq.domanda, class: "form-control", placeholder: "Modifica domanda" %>
-                </div>
-                <div class="mb-2">
-                  <%= f.text_area :risposta, value: faq.risposta, rows: 2, class: "form-control", placeholder: "Modifica risposta" %>
-                </div>
-                <div class="mb-2">
-                  <%= f.text_field :categoria, value: faq.categoria, class: "form-control", placeholder: "Modifica categoria" %>
-                </div>
-                <%= f.submit "Aggiorna", class: "btn btn-warning btn-sm" %>
-              <% end %>
-
-              <!-- Pulsante elimina -->
-              <%= button_to "Elimina", faq_path(faq), 
-                  method: :delete, 
-                  data: { confirm: "Sei sicuro di voler eliminare questa FAQ?" }, 
-                  class: "btn btn-danger btn-sm mt-2" %>
-            </div>
-          </div>
+<body>
+    <!-- Header -->
+    <div class="page-header text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>FAQ Management</h1>
         </div>
-      <% end %>
     </div>
-  </div>
-</div>
+    
+    <div class="main-content">
+        <div class="container" data-controller="faqs-admin">
+            
+
+            <!-- Admin Mode -->
+            <div id="adminMode" class="mode-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>
+                        <i class="fas fa-cogs me-2"></i>Amministrazione FAQ
+                    </h2>
+                    <button type="button" class="btn btn-success" data-action="click->faqs-admin#openAddForm">
+                        <i class="fas fa-plus me-2"></i>Aggiungi FAQ
+                    </button>
+                </div>
+
+                <!-- Add/Edit Form -->
+                <div id="faq-form" class="card mb-4" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0" id="form-title">
+                            <i class="fas fa-plus me-2"></i>Nuova FAQ
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="faq-form-element" method="post" action="/faqs">
+                            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                            <input type="hidden" name="_method" value="" id="form-method">
+                            
+                            <div class="mb-3">
+                                <label for="faq_domanda" class="form-label">Domanda *</label>
+                                <input type="text" name="faq[domanda]" id="faq_domanda" class="form-control" placeholder="Inserisci la domanda" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="faq_risposta" class="form-label">Risposta *</label>
+                                <textarea name="faq[risposta]" id="faq_risposta" rows="4" class="form-control" placeholder="Inserisci la risposta" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="faq_categoria" class="form-label">Categoria *</label>
+                                <input type="text" name="faq[categoria]" id="faq_categoria" class="form-control" placeholder="Es. Iscrizioni, Segreteria, Esami" required>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary" id="submit-btn">
+                                    <i class="fas fa-save me-2"></i>Salva FAQ
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-action="click->faqs-admin#closeForm">
+                                    <i class="fas fa-times me-2"></i>Annulla
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- FAQ List -->
+                <div class="row">
+                    <% @faqs.each do |faq| %>
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card faq-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <span class="category-badge"><%= faq.categoria %></span>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" 
+                                                    data-action="click->faqs-admin#openEditForm"
+                                                    data-faqs-admin-faq-id-param="<%= faq.id %>"
+                                                    data-faqs-admin-domanda-param="<%= faq.domanda %>"
+                                                    data-faqs-admin-risposta-param="<%= faq.risposta %>"
+                                                    data-faqs-admin-categoria-param="<%= faq.categoria %>" 
+                                                    title="Modifica FAQ">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <%= button_to faq_path(faq), method: :delete, 
+                                                data: { confirm: "Sei sicuro di voler eliminare questa FAQ?" }, 
+                                                class: "btn btn-outline-danger btn-sm",
+                                                title: "Elimina FAQ" do %>
+                                                <i class="fas fa-trash"></i>
+                                            <% end %>
+                                        </div>
+                                    </div>
+                                    <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
+                                    <p class="card-text text-muted"><%= faq.risposta %></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% end %>
+                </div>
+
+                <!-- Empty State -->
+                <% if @faqs.empty? %>
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Nessuna FAQ disponibile</h4>
+                        <p class="text-muted">Aggiungi la prima FAQ cliccando sul pulsante "Aggiungi FAQ".</p>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+
+    <%= link_to "utente registrato", user_faqs_path, class: "footer" %>
+    <%= link_to "utente visitatore", visitor_faqs_path, class: "footer" %>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

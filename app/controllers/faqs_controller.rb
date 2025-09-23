@@ -8,6 +8,14 @@ class FaqsController < ApplicationController
     @faqs = Faq.all.order(created_at: :desc)
   end
 
+  def user
+    @faqs = Faq.all.order(created_at: :desc)
+  end
+
+  def visitor
+    @faqs = Faq.all.order(created_at: :desc)
+  end
+  
   def create
     @faq = Faq.new(faq_params)
     if @faq.save
