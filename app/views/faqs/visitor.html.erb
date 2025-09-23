@@ -1,45 +1,49 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>University Pathfinder - FAQ</title>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Pathfinder - FAQ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
 
-    <body>
-    
-        <h2>
-            Utente non registrato
-        </h2>
-        <!-- FAQ List -->
-        <div class="row">
-            <% @faqs.each do |faq| %>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card faq-card h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="category-badge"><%= faq.categoria %></span>
+<body>
+    <div class="main-content">
+        <div class="container" data-controller="faqs-admin">
+            <h2>
+                Utente registrato
+            </h2> 
+            <!-- FAQ List -->
+            <div class="row">
+                <% @faqs.each do |faq| %>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card faq-card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="category-badge"><%= faq.categoria %></span>
+                                </div>
+                                <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
+                                <p class="card-text text-muted"><%= faq.risposta %></p>
                             </div>
-                            <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                            <p class="card-text text-muted"><%= faq.risposta %></p>
                         </div>
                     </div>
+                <% end %>
+            </div>
+
+            <!-- Empty State -->
+            <% if @faqs.empty? %>
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Nessuna FAQ disponibile</h4>
+                    <p class="text-muted">Aggiungi la prima FAQ cliccando sul pulsante "Aggiungi FAQ".</p>
                 </div>
             <% end %>
         </div>
+    </div>
 
-        <!-- Empty State -->
-        <% if @faqs.empty? %>
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-                <p class="text-muted">Aggiungi la prima FAQ cliccando sul pulsante "Aggiungi FAQ".</p>
-            </div>
-        <% end %>
 
-    </body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
-
