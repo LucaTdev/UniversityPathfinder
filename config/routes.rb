@@ -4,7 +4,6 @@ Rails.application.routes.draw do
 
   get 'percorsi', to: 'percorsi#index'
   get 'news', to: 'news#index'
-  get 'supporto', to: 'supporto#index'
   get 'profilo', to: 'profilo#index'
   get 'login', to: 'auth#login'
 
@@ -28,16 +27,15 @@ Rails.application.routes.draw do
   get 'registration', to: 'users#new'
   post 'registration', to: 'users#create'
 
-  get "home/supporto"
 
-  #prova inserimento dati db
-  get "home/supporto", to: "home#supporto"
-  #resources :persone, only: [:create]  
-  #fine prova
+#LUCA
+  #Path 
+  get 'admin/faqs', to: 'faqs#admin', as: 'admin_faqs'
+  get 'user/faqs', to: 'faqs#user', as: 'user_faqs'
+  get 'visitors/faqs', to: 'faqs#visitor', as: 'visitor_faqs'
 
   #FAQ
   resources :faqs, only: [:create, :update, :destroy]
-  #get "supporto", to: "faqs#index", as: "home_supporto"
 
 
 
