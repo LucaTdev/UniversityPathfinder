@@ -16,6 +16,17 @@ Rails.application.routes.draw do
   get 'home/weather', to: 'weather#show'
 
   resources :sedi, only: [:index, :show, :create, :update, :destroy]
+  #Per ottenere le info di profilo dal database
+  resources :users do
+    member do
+      get:profile
+      patch :update_profile
+    end
+  end
+  # Rotta per il profilo dell'utente corrente
+  get 'profile', to: 'users#profile'
+  get 'profile/edit', to: 'users#edit_profile'
+  patch 'profile', to: 'users#update_profile'
 
   get "sessions/new"
   get 'login', to: 'sessions#new'
