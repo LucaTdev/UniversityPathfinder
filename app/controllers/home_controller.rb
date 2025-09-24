@@ -3,6 +3,7 @@ class HomeController < ApplicationController
   end
 
   def profilo
+    @user = current_user # oppure User.find(params[:id]) se passi l’id
   end
 
   def sedi
@@ -20,9 +21,5 @@ class HomeController < ApplicationController
 
   def meteo
   end
-
-  def supporto
-    @faq = Faq.new
-    @faqs = Faq.all.order(created_at: :desc)
-  end
+  
 end
