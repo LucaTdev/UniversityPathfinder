@@ -8,23 +8,23 @@
 .navbar-brand-custom {
     font-weight: 700;
     font-size: 1.5rem;
-    color: white !important;
+    color: white;
     }
         
 .nav-link-custom {
-    color: rgba(255,255,255,0.9) !important;
+    color: rgba(255,255,255,0.9);
     font-weight: 500;
     margin: 0 10px;
     transition: all 0.3s ease;
     }
         
 .nav-link-custom:hover {
-    color: white !important;
+    color: white;
     transform: translateY(-1px);
     }
         
 .nav-link-custom.active {
-    color: white !important;
+    color: white;
     background-color: rgba(255,255,255,0.2);
     border-radius: 20px;
     padding: 8px 16px !important;
