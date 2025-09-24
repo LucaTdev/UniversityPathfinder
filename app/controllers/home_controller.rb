@@ -3,6 +3,7 @@ class HomeController < ApplicationController
   end
 
   def profilo
+    @user = current_user # oppure User.find(params[:id]) se passi l’id
   end
 
   def sedi
