@@ -180,23 +180,31 @@
                     </svg>
                     
                     <div class="user-info">
-                        <h2>Mario Rossi</h2>
-                        <p><i class="fas fa-envelope text-muted me-2"></i>mario.rossi@university.it</p>
-                        <p><i class="fas fa-id-card text-muted me-2"></i>Studente</p>
-                        <span class="badge-custom">Utente Attivo dal 2024</span>
+                        <h2><%= @user.full_name %></h2>
+                        <p>
+                            <i class="fas fa-envelope text-muted me-2"></i>
+                            <%= @user.email %>
+                        </p>
+                        <p>
+                            <i class="fas fa-id-card text-muted me-2"></i>
+                            <%= @user.role_display %>
+                        </p>
+                        <span class="badge-custom">
+                            Utente attivo dal <%= @user.registration_year %>
+                        </span>
                     </div>
                     
                     <div class="stats-container mt-3">
                         <div class="stat-item">
-                            <div class="stat-number">47</div>
+                            <div class="stat-number"><%= @user.routes_count %></div>
                             <small class="text-muted">Percorsi Cercati</small>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">12</div>
+                            <div class="stat-number"><%= @user.favorites_count %></div>
                             <small class="text-muted">Preferiti</small>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">3</div>
+                            <div class="stat-number"><%= @user.notifications_count %></div>
                             <small class="text-muted">Notifiche</small>
                         </div>
                     </div>
@@ -207,6 +215,12 @@
                 </div>
             </div>
         </div>
+
+        <% if can_edit_profile? %>
+            <%= link_to edit_user_path(@user), class: "btn btn-edit mt-3" do %>
+                <i class="fas fa-edit me-2"></i>Modifica Profilo
+            <% end %>
+        <% end %>
 
         <div class="row">
             <!-- Preferenze Mezzi di Trasporto -->
@@ -432,22 +446,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer-custom">
-    <div class="container">
-        <div class="row align-items-center">
-        <div class="col-md-6">
-            <h5>University Pathfinder</h5>
-            <p>La tua app di navigazione universitaria</p>
-        </div>
-        <div class="col-md-6 text-md-end">
-            <p>&copy; 2025 University Pathfinder. Tutti i diritti riservati.</p>
-        </div>
-        </div>
-    </div>
-    </footer>
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
         <!-- Script per gestire gli switch delle preferenze -->
@@ -491,6 +489,69 @@
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        #Funzione per aggiornare il profilo via AJAX
+        function updateProfileStats() {
+            const userId = <%= @user.id %>;
+            
+            fetch(`/users/${userId}.json`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Aggiorna le statistiche se necessario
+                document.querySelector('#routesCount').textContent = data.routes_count;
+                document.querySelector('#favoritesCount').textContent = data.favorites_count;
+                document.querySelector('#notificationsCount').textContent = data.notifications_count;
+            })
+            .catch(error => {
+                console.error('Errore nel caricamento delle statistiche:', error);
+            });
+        }
+        
+        // Aggiorna le statistiche ogni 30 secondi (opzionale)
+        setInterval(updateProfileStats, 30000);
+    });
+
+    function deleteProfile() {
+        const confirmMessage = `Sei sicuro di voler eliminare definitivamente il tuo account?\n\n` +
+                            `Questa azione è irreversibile e comporterà la perdita di tutti i tuoi dati:\n` +
+                            `- Percorsi salvati\n` +
+                            `- Preferenze di trasporto\n` +
+                            `- Cronologia delle ricerche\n\n` +
+                            `Digita "ELIMINA" per confermare.`;
+        
+        if (confirm(confirmMessage)) {
+            const confirmation = prompt('Digita "ELIMINA" per confermare la cancellazione:');
+            if (confirmation === 'ELIMINA') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '<%= user_path(@user) %>';
+                
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = 'authenticity_token';
+                tokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                form.appendChild(methodInput);
+                form.appendChild(tokenInput);
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                alert('Cancellazione annullata.');
+            }
+        }
 
     // Animazione per le notifiche non lette
     document.querySelectorAll('.notification-item.unread').forEach(function(item) {
