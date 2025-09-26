@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<meta name="turbo-cache-control" content="no-cache">
 
 <!-- Librerie Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -427,7 +428,7 @@
 
     <script>
     // Definiamo la funzione di setup che conterrà tutta la logica della pagina.
-    // In questo modo, le variabili come 'sedi' vengono dichiarate solo all'interno di questa funzione,
+    // In questo modo, le variabili come sedi vengono dichiarate solo dentro questa funzione,
     // evitando conflitti quando Turbo naviga tra le pagine.
     const initializeMapPage = () => {
 
