@@ -130,11 +130,11 @@
     </style>
 </head>
 
-<body>
+<body data-user-role="<%= @user_role %>">
     <!-- Header -->
     <div class="page-header text-center">
         <div class="container">
-            <h1 class="display-4 fw-bold mb-4"><i class="fas fa-map-marked-alt me-2"></i>University Pathfinder</h1>
+            <h1 class="display-4 fw-bold mb-4"><i class="fas fa-university me-2"></i>Sedi Universitarie</h1>
             
             <!-- Mode Switch -->
             <div class="mode-switch">
@@ -171,7 +171,7 @@
             <!-- Modalità Utente -->
             <div id="userMode" class="mode-content">
                 <h2 class="mb-4">
-                    <i class="fas fa-university me-2"></i>Sedi Universitarie
+                    <i class="fas fa-map-marked-alt me-2"></i>Sedi Disponibili
                 </h2>
             
                 <!-- Universities List -->
@@ -760,8 +760,18 @@
             }
         });
 
-        // Initialize - Carica le sedi allavvio
+        // Initialize - Carica le sedi in avvio
         document.addEventListener('turbo:load', function() {
+            const userRole = document.body.dataset.userRole;
+            const adminButton = document.getElementById('adminBtn');
+
+            // IMPORTANTE: Assumiamo che il ruolo admin sia '2'. 
+            // Se usi un altro valore (es. 1 o 'admin'), modificalo qui.
+            if (userRole !== '2') {
+                adminButton.style.display = 'none';
+            }
+
+            // Il resto del codice rimane uguale
             fetchUniversities();
         });
 
