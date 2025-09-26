@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University Pathfinder</title>
+    <meta name="turbo-cache-control" content="no-cache">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -315,7 +316,7 @@
         async function fetchUniversities() {
             try {
                 showLoading();
-                const response = await fetch("http://localhost:3000/sedi", {
+                const response = await fetch("/sedi", {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -460,7 +461,7 @@
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
                                 <p class="small text-muted mb-3">
-                                    <i class="fas fa-globe me-2"></i>${uni.latitudine}, ${uni.longitudine}
+                                    <i class="fas fa-globe me-2"></i>${uni.lat}, ${uni.long}
                                 </p>
                                 <div class="mb-2">
                                     <small class="text-muted">Edifici: ${edificiArray.length}</small>
@@ -515,7 +516,7 @@
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
                                 <p class="small text-muted mb-3">
-                                    <i class="fas fa-globe me-2"></i>${uni.latitudine}, ${uni.longitudine}
+                                    <i class="fas fa-globe me-2"></i>${uni.lat}, ${uni.long}
                                 </p>
                                 <div class="mb-2">
                                     <strong>Edifici (${edificiArray.length}):</strong>
@@ -550,7 +551,7 @@
                 </div>
                 <div class="mb-4">
                     <h6><i class="fas fa-globe me-2"></i>Coordinate</h6>
-                    <p class="text-muted">Lat: ${uni.latitudine} | Long: ${uni.longitudine}</p>
+                    <p class="text-muted">Lat: ${uni.lat} | Long: ${uni.long}</p>
                 </div>
                 <div class="mb-4">
                     <h6><i class="fas fa-building me-2"></i>Edifici presenti (${edificiArray.length})</h6>
@@ -624,8 +625,8 @@
             document.getElementById('universityId').value = id;
             document.getElementById('nomeSede').value = uni.nome;
             document.getElementById('indirizzoSede').value = uni.indirizzo;
-            document.getElementById('latSede').value = uni.latitudine || '';
-            document.getElementById('longSede').value = uni.longitudine || '';
+            document.getElementById('latSede').value = uni.lat || '';
+            document.getElementById('longSede').value = uni.long || '';
             
             // Clear and rebuild edifici container
             const container = document.getElementById('edificiContainer');
@@ -700,7 +701,7 @@
                 try {
                     showLoading();
                     await deleteUniversityFromServer(id);
-                    showSuccess('Sede eliminata con successo!');
+                    showSuccess('Sede eliminata!');
                     await fetchUniversities(); // Ricarica la lista
                 } catch (error) {
                     hideLoading();
@@ -743,11 +744,11 @@
                 if (universityId) {
                     // Update existing university
                     await updateUniversity(universityId, sedeData);
-                    showSuccess('Sede universitaria aggiornata con successo!');
+                    showSuccess('Sede universitaria aggiornata!');
                 } else {
                     // Add new university
                     await createUniversity(sedeData);
-                    showSuccess('Sede universitaria aggiunta con successo!');
+                    showSuccess('Sede universitaria aggiunta!');
                 }
 
                 await fetchUniversities(); // Ricarica la lista
@@ -760,7 +761,7 @@
         });
 
         // Initialize - Carica le sedi allavvio
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('turbo:load', function() {
             fetchUniversities();
         });
 
