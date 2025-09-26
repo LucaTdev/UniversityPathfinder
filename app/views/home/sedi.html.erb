@@ -13,6 +13,7 @@
         
         .main-content {
             flex: 1 0 auto;
+            margin-bottom: 4rem;
         }
     
         .mode-switch {
@@ -100,7 +101,7 @@
         }
 
         .footer, .push {
-            height: 90px; 
+            height: 89px; 
         }
 
         .loading-spinner {
@@ -135,9 +136,10 @@
     <div class="page-header text-center">
         <div class="container">
             <h1 class="display-4 fw-bold mb-4"><i class="fas fa-university me-2"></i>Sedi Universitarie</h1>
-            
+            <p class="mb-4">Cerca qui la sede universitaria in cui vuoi arrivare!</p>
+
             <!-- Mode Switch -->
-            <div class="mode-switch">
+            <div class="mode-switch mb-1">
                 <button type="button" class="mode-btn active" id="userBtn" onclick="switchMode('user')">
                     <i class="fas fa-user me-2"></i>Utente
                 </button>
@@ -770,8 +772,6 @@
             if (userRole !== '2') {
                 adminButton.style.display = 'none';
             }
-
-            // Il resto del codice rimane uguale
             fetchUniversities();
         });
 
