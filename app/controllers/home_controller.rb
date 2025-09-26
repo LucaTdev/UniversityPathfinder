@@ -1,4 +1,5 @@
 class HomeController < ApplicationController
+  before_action :authenticate_user!
   def index
   end
 
@@ -7,6 +8,7 @@ class HomeController < ApplicationController
   end
 
   def sedi
+    @user_role = current_user.role 
   end 
 
   def mappa
