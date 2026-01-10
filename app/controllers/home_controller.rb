@@ -22,4 +22,7 @@ class HomeController < ApplicationController
   def meteo
   end
   
+  def faqs
+    #@faqs = Faqs.all
+  end
 end
