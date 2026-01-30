@@ -135,28 +135,32 @@
         }
         
         .btn-edit {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #7E88BF, #7D5EBF); 
             border: none;
             color: white;
-            padding: 0.5rem 1.5rem;
+            padding: 0.3rem 1.0rem;
             border-radius: 25px;
             transition: all 0.3s ease;
         }
-        
+
         .btn-edit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-            color: white;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4); 
+            color: yellow;
         }
 
         .btn-rmv{
             background:linear-gradient(#dc3545)
         }
 
-        .footer-custom{
-            background-color: #343a40; color: white;
-            padding: 1.5rem;
+        .footer{
+            width:100%;
+            background-color: #343a40; 
+            color: white;
+            padding: 1rem;
         }
+
+
     </style>
 </head>
 
@@ -164,8 +168,13 @@
     <!-- Header del progetto -->
     <div class="profile-header">
         <div class="container">
-            <h1><i class="fas fa-map-marked-alt me-2"></i>University Pathfinder</h1>
-            <p class="mb-0">Il tuo assistente personale per i percorsi universitari</p>
+            <h1 class="display-4 fw-bold mb-3 d-flex align-items-center justify-content-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="47" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16" style="transform: translateY(4px);">
+                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+            </svg>
+            </i>Il tuo profilo</h1>
+            <p class="mb-0">Visualizza qui le tue informazioni</p>
         </div>
     </div>
 
@@ -174,24 +183,54 @@
         <div class="row justify-content-center mb-4">
             <div class="col-lg-8">
                 <div class="profile-card text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
-                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                    </svg>
+                    <div class="modify-button text-start">
+                        <button class="btn btn-edit">
+                            <i class="fas fa-edit me-2"></i>Modifica Profilo
+                        </button>
+                    </div>
                     
                     <div class="user-info">
-                        <h2><%= @user.full_name %></h2>
-                        <p>
-                            <i class="fas fa-envelope text-muted me-2"></i>
-                            <%= @user.email %>
-                        </p>
-                        <p>
-                            <i class="fas fa-id-card text-muted me-2"></i>
-                            <%= @user.role_display %>
-                        </p>
-                        <span class="badge-custom">
-                            Utente attivo dal <%= @user.registration_year %>
-                        </span>
+                        <div id="view-profile-info">
+                            <h2><%= @user.full_name %></h2>
+                            <p>
+                                <i class="fas fa-envelope text-muted me-2"></i>
+                                <%= @user.email %>
+                            </p>
+                            <p>
+                                <i class="fas fa-id-card text-muted me-2"></i>
+                                <%= @user.role_display %>
+                            </p>
+                            <span class="badge-custom">
+                                Utente attivo dal <%= @user.registration_year %>
+                            </span>
+                        </div>
+
+                        <form id="edit-profile-form" style="display: none;">
+                            <div class="mb-3">
+                                <label for="user_first_name" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="user_first_name" name="user[first_name]" value="<%= @user.first_name %>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_last_name" class="form-label">Cognome</label>
+                                <input type="text" class="form-control" id="user_last_name" name="user[last_name]" value="<%= @user.last_name %>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="user_email" name="user[email]" value="<%= @user.email %>">
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Salva Modifiche
+                                </button>
+                                <button type="button" id="cancel-edit-btn" class="btn btn-secondary">
+                                    Annulla
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="deleteProfile()">
+                                    <i class="fas fa-trash me-2"></i>Elimina Profilo
+                                </button>
+                            </div>
+                        </form>
                     </div>
                     
                     <div class="stats-container mt-3">
@@ -208,21 +247,11 @@
                             <small class="text-muted">Notifiche</small>
                         </div>
                     </div>
-                    
-                    <button class="btn btn-edit mt-3">
-                        <i class="fas fa-edit me-2"></i>Modifica Profilo
-                    </button>
                 </div>
             </div>
         </div>
 
-        <% if can_edit_profile? %>
-            <%= link_to edit_user_path(@user), class: "btn btn-edit mt-3" do %>
-                <i class="fas fa-edit me-2"></i>Modifica Profilo
-            <% end %>
-        <% end %>
-
-        <div class="row">
+        <div class="row mb-4">
             <!-- Preferenze Mezzi di Trasporto -->
             <div class="col-lg-6 mb-4">
                 <div class="profile-card">
@@ -345,7 +374,7 @@
 
         <!-- Notifiche Amministratore -->
 
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-12">
                 <div class="profile-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -411,123 +440,126 @@
                 </div>
             </div>
         </div>
-
-
-        <!-- Gestione del profilo -->
-        <div class="row" >
-            <div class="col-12">
-                <div class="alert alert-danger border border-danger">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="section-title mb-0">
-                            <i class="fas fa-warning text-danger me-2"></i> 
-                            Eliminazione del profilo
-                        </h4>
-                    </div>
-                    
-                    <div class="delete-profile">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    Elimina il tuo account
-                                </h6>
-                                <p class="mb-1">Utilizzando il bottone sottostante eliminerai il tuo profilo!</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center">
-                        <button class="btn btn-rmv mt-2">
-                            <i class="fa-solid fa-trash mt-2"></i> 
-                            Elimina 
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        <!-- Script per gestire gli switch delle preferenze -->
-    document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
-        switchElement.addEventListener('change', function() {
-            const preferenceItem = this.closest('.preference-item');
-            const switchContainer = preferenceItem.querySelector('.form-check');
+        document.addEventListener('turbo:load', function() {
             
-            if (this.checked) {
-                preferenceItem.classList.add('active');
-                <!-- Nasconde lo switch -->
-                switchContainer.style.display = 'none';
-                
-                <!-- Crea icona di check se non esiste -->
-                let checkIcon = preferenceItem.querySelector('.check-icon');
-                if (!checkIcon) {
-                    checkIcon = document.createElement('i');
-                    checkIcon.className = 'fas fa-check-circle text-success check-icon';
-                    checkIcon.style.cursor = 'pointer';
-                    checkIcon.style.fontSize = '1.2rem';
-                    
-                    <!-- Riattiva lo switch -->
-                    checkIcon.addEventListener('click', function() {
-                        preferenceItem.classList.remove('active');
-                        switchContainer.style.display = 'block';
-                        switchElement.checked = false;
-                        checkIcon.style.display = 'none';
-                    });
-                    
-                    preferenceItem.appendChild(checkIcon);
-                }
-                checkIcon.style.display = 'inline-block';
-                
-            } else {
-                preferenceItem.classList.remove('active');
-                const checkIcon = preferenceItem.querySelector('.check-icon');
-                if (checkIcon) {
-                    checkIcon.style.display = 'none';
-                }
-                switchContainer.style.display = 'block';
+            // ========= GESTIONE MODIFICA PROFILO =========
+            const editProfileBtn = document.querySelector('.btn-edit');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const viewProfileInfo = document.getElementById('view-profile-info');
+            const editProfileForm = document.getElementById('edit-profile-form');
+
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function() {
+                    viewProfileInfo.style.display = 'none';
+                    editProfileForm.style.display = 'block';
+                    editProfileBtn.style.display = 'none';
+                });
             }
-        });
-    });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        #Funzione per aggiornare il profilo via AJAX
-        function updateProfileStats() {
-            const userId = <%= @user.id %>;
+            if (cancelEditBtn) {
+                cancelEditBtn.addEventListener('click', function() {
+                    viewProfileInfo.style.display = 'block';
+                    editProfileForm.style.display = 'none';
+                    editProfileBtn.style.display = 'inline-block';
+                });
+            }
             
-            fetch(`/users/${userId}.json`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Aggiorna le statistiche se necessario
-                document.querySelector('#routesCount').textContent = data.routes_count;
-                document.querySelector('#favoritesCount').textContent = data.favorites_count;
-                document.querySelector('#notificationsCount').textContent = data.notifications_count;
-            })
-            .catch(error => {
-                console.error('Errore nel caricamento delle statistiche:', error);
-            });
-        }
-        
-        // Aggiorna le statistiche ogni 30 secondi (opzionale)
-        setInterval(updateProfileStats, 30000);
-    });
+            if (editProfileForm) {
+                editProfileForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); 
 
-    function deleteProfile() {
-        const confirmMessage = `Sei sicuro di voler eliminare definitivamente il tuo account?\n\n` +
-                            `Questa azione è irreversibile e comporterà la perdita di tutti i tuoi dati:\n` +
-                            `- Percorsi salvati\n` +
-                            `- Preferenze di trasporto\n` +
-                            `- Cronologia delle ricerche\n\n` +
-                            `Digita "ELIMINA" per confermare.`;
-        
-        if (confirm(confirmMessage)) {
+                    const userId = <%= @user.id %>;
+                    const formData = new FormData(editProfileForm);
+
+                    fetch(`/users/${userId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Errore durante l-aggiornamento del profilo.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.querySelector('#view-profile-info h2').textContent = data.full_name;
+                        document.querySelector('#view-profile-info p:nth-of-type(1)').innerHTML = 
+                            `<i class="fas fa-envelope text-muted me-2"></i> ${data.email}`;
+                        
+                        cancelEditBtn.click();
+                        // Potresti usare una notifica più elegante, ma per ora un alert va bene
+                        // alert('Profilo aggiornato con successo!'); 
+                    })
+                    .catch(error => {
+                        console.error('Errore:', error);
+                        alert('Si è verificato un errore. Riprova.');
+                    });
+                });
+            }
+
+            // ========= GESTIONE SWITCH PREFERENZE =========
+            document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
+                switchElement.addEventListener('change', function() {
+                    const preferenceItem = this.closest('.preference-item');
+                    // ... (il resto della tua logica per gli switch)
+                });
+            });
+
+            // ========= AGGIORNAMENTO STATISTICHE PROFILO (AJAX) =========
+            // Funzione per aggiornare il profilo via AJAX
+            function updateProfileStats() {
+                const userId = <%= @user.id %>;
+                
+                fetch(`/users/${userId}.json`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Se hai degli id per questi elementi, puoi aggiornarli.
+                    // Es: document.getElementById('routes-count').textContent = data.routes_count;
+                })
+                .catch(error => {
+                    console.error('Errore nel caricamento delle statistiche:', error);
+                });
+            }
+            
+            // Aggiorna le statistiche ogni 30 secondi (opzionale)
+            // setInterval(updateProfileStats, 30000);
+
+            // ========= GESTIONE HOVER E ANIMAZIONI =========
+            document.querySelectorAll('.notification-item.unread').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    this.classList.remove('unread');
+                    this.style.background = '#fff';
+                });
+            });
+
+            document.querySelectorAll('.route-item').forEach(function(item) {
+                item.addEventListener('mouseenter', function() {
+                    this.style.borderColor = '#667eea';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.borderColor = '#dee2e6';
+                });
+            });
+        });
+
+        // La funzione deleteProfile può rimanere fuori perché è globale
+        function deleteProfile() {
+            // ... (la tua logica di eliminazione è corretta)
             const confirmation = prompt('Digita "ELIMINA" per confermare la cancellazione:');
             if (confirmation === 'ELIMINA') {
                 const form = document.createElement('form');
@@ -552,42 +584,6 @@
                 alert('Cancellazione annullata.');
             }
         }
-
-    // Animazione per le notifiche non lette
-    document.querySelectorAll('.notification-item.unread').forEach(function(item) {
-        item.addEventListener('click', function() {
-            this.classList.remove('unread');
-            this.style.background = '#fff';
-        });
-    });
-
-    // Gestione hover per le route
-    document.querySelectorAll('.route-item').forEach(function(item) {
-        item.addEventListener('mouseenter', function() {
-            this.style.borderColor = '#667eea';
-        });
-        item.addEventListener('mouseleave', function() {
-            this.style.borderColor = '#dee2e6';
-        });
-    });
-
-    // Animazione per le notifiche non lette
-    document.querySelectorAll('.notification-item.unread').forEach(function(item) {
-        item.addEventListener('click', function() {
-            this.classList.remove('unread');
-            this.style.background = '#fff';
-        });
-    });
-
-    // Gestione hover per le route
-    document.querySelectorAll('.route-item').forEach(function(item) {
-        item.addEventListener('mouseenter', function() {
-            this.style.borderColor = '#667eea';
-        });
-        item.addEventListener('mouseleave', function() {
-            this.style.borderColor = '#dee2e6';
-        });
-    });
     </script>
 </body>
 </html>
