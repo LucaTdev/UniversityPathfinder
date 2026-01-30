@@ -18,6 +18,21 @@ class HomeController < ApplicationController
   def login
   end
   
+  def do_login
+    if params[:username].present?
+      session[:session] = params[:username]
+      redirect_to "/profilo"
+    else
+      flash[:alert] = "inserisci un nome utente"
+      redirect_to "profilo"
+    end
+  end
+
+  def logout
+    reset_session
+    redirect_to root_path
+  end
+
   def registrazione
   end
 
