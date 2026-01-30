@@ -1,14 +1,14 @@
 class HomeController < ApplicationController
-  before_action :require_login, only: [:profilo]
+  before_action :require_login, only: [:profilo, :mappa, :sedi]
   def index
   end
 
   def profilo
-    @user = current_user # oppure User.find(params[:id]) se passi l’id
+    @user = current_user
   end
 
   def sedi
-    @user_role = current_user.role 
+    @user_role = current_user&.role || 0 # Se non loggato, role = 0 (guest)
   end 
 
   def mappa
