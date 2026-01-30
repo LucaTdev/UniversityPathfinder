@@ -183,10 +183,14 @@
         <div class="row justify-content-center mb-4">
             <div class="col-lg-8">
                 <div class="profile-card text-center">
-                    <div class="modify-button text-start">
+                    <div class="modify-button d-flex justify-content-between align-items-center mb-3">
                         <button class="btn btn-edit">
                             <i class="fas fa-edit me-2"></i>Modifica Profilo
                         </button>
+                        
+                        <%= button_to logout_path, method: :delete, form: { class: 'd-inline' }, class: "btn btn-danger" do %>
+                            <i class="fas fa-sign-out-alt me-2"></i>Disconnetti
+                        <% end %>
                     </div>
                     
                     <div class="user-info">
