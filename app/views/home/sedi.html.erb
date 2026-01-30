@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University Pathfinder</title>
+    <meta name="turbo-cache-control" content="no-cache">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -12,6 +13,7 @@
         
         .main-content {
             flex: 1 0 auto;
+            margin-bottom: 4rem;
         }
     
         .mode-switch {
@@ -99,7 +101,7 @@
         }
 
         .footer, .push {
-            height: 90px; 
+            height: 89px; 
         }
 
         .loading-spinner {
@@ -129,14 +131,15 @@
     </style>
 </head>
 
-<body>
+<body data-user-role="<%= @user_role %>">
     <!-- Header -->
     <div class="page-header text-center">
         <div class="container">
-            <h1 class="display-4 fw-bold mb-4"><i class="fas fa-map-marked-alt me-2"></i>University Pathfinder</h1>
-            
+            <h1 class="display-4 fw-bold mb-4"><i class="fas fa-university me-2"></i>Sedi Universitarie</h1>
+            <p class="mb-4">Cerca qui la sede universitaria in cui vuoi arrivare!</p>
+
             <!-- Mode Switch -->
-            <div class="mode-switch">
+            <div class="mode-switch mb-1">
                 <button type="button" class="mode-btn active" id="userBtn" onclick="switchMode('user')">
                     <i class="fas fa-user me-2"></i>Utente
                 </button>
@@ -170,7 +173,7 @@
             <!-- Modalità Utente -->
             <div id="userMode" class="mode-content">
                 <h2 class="mb-4">
-                    <i class="fas fa-university me-2"></i>Sedi Universitarie
+                    <i class="fas fa-map-marked-alt me-2"></i>Sedi Disponibili
                 </h2>
             
                 <!-- Universities List -->
@@ -272,22 +275,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="sticky-bottom">
-        <footer class="footer">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h5>University Pathfinder</h5>
-                        <p class="mb-0" style="opacity: 0.8;">La tua app di navigazione universitaria</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <p class="mb-0" style="opacity: 0.8;">&copy; 2025 University Pathfinder. Tutti i diritti riservati.</p>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     
@@ -476,7 +463,7 @@
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
                                 <p class="small text-muted mb-3">
-                                    <i class="fas fa-globe me-2"></i>${uni.latitudine}, ${uni.longitudine}
+                                    <i class="fas fa-globe me-2"></i>${uni.lat}, ${uni.long}
                                 </p>
                                 <div class="mb-2">
                                     <small class="text-muted">Edifici: ${edificiArray.length}</small>
@@ -531,7 +518,7 @@
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
                                 <p class="small text-muted mb-3">
-                                    <i class="fas fa-globe me-2"></i>${uni.latitudine}, ${uni.longitudine}
+                                    <i class="fas fa-globe me-2"></i>${uni.lat}, ${uni.long}
                                 </p>
                                 <div class="mb-2">
                                     <strong>Edifici (${edificiArray.length}):</strong>
@@ -566,7 +553,7 @@
                 </div>
                 <div class="mb-4">
                     <h6><i class="fas fa-globe me-2"></i>Coordinate</h6>
-                    <p class="text-muted">Lat: ${uni.latitudine} | Long: ${uni.longitudine}</p>
+                    <p class="text-muted">Lat: ${uni.lat} | Long: ${uni.long}</p>
                 </div>
                 <div class="mb-4">
                     <h6><i class="fas fa-building me-2"></i>Edifici presenti (${edificiArray.length})</h6>
@@ -640,8 +627,8 @@
             document.getElementById('universityId').value = id;
             document.getElementById('nomeSede').value = uni.nome;
             document.getElementById('indirizzoSede').value = uni.indirizzo;
-            document.getElementById('latSede').value = uni.latitudine || '';
-            document.getElementById('longSede').value = uni.longitudine || '';
+            document.getElementById('latSede').value = uni.lat || '';
+            document.getElementById('longSede').value = uni.long || '';
             
             // Clear and rebuild edifici container
             const container = document.getElementById('edificiContainer');
@@ -716,7 +703,7 @@
                 try {
                     showLoading();
                     await deleteUniversityFromServer(id);
-                    showSuccess('Sede eliminata con successo!');
+                    showSuccess('Sede eliminata!');
                     await fetchUniversities(); // Ricarica la lista
                 } catch (error) {
                     hideLoading();
@@ -759,11 +746,11 @@
                 if (universityId) {
                     // Update existing university
                     await updateUniversity(universityId, sedeData);
-                    showSuccess('Sede universitaria aggiornata con successo!');
+                    showSuccess('Sede universitaria aggiornata!');
                 } else {
                     // Add new university
                     await createUniversity(sedeData);
-                    showSuccess('Sede universitaria aggiunta con successo!');
+                    showSuccess('Sede universitaria aggiunta!');
                 }
 
                 await fetchUniversities(); // Ricarica la lista
@@ -775,8 +762,16 @@
             }
         });
 
-        // Initialize - Carica le sedi allavvio
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize - Carica le sedi in avvio
+        document.addEventListener('turbo:load', function() {
+            const userRole = document.body.dataset.userRole;
+            const adminButton = document.getElementById('adminBtn');
+
+            // IMPORTANTE: Assumiamo che il ruolo admin sia '2'. 
+            // Se usi un altro valore (es. 1 o 'admin'), modificalo qui.
+            if (userRole !== '2') {
+                adminButton.style.display = 'none';
+            }
             fetchUniversities();
         });
 
