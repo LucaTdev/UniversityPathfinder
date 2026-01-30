@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   get "sessions/new"
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
+  delete '/logout', to: 'sessions#destroy', as: :logout #delete 'logout', to: 'sessions#destroy'
 
   get 'users/new'
   get 'forgot_password', to: 'passwords#new'
