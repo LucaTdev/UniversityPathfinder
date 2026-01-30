@@ -8,6 +8,7 @@ class HomeController < ApplicationController
   end
 
   def sedi
+    @user_role = current_user.role 
   end 
 
   def mappa
