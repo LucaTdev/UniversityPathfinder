@@ -31,7 +31,7 @@ class User < ApplicationRecord
 
     # === Metodi per il profilo ===
     def full_name
-        "#{first_name} #{last_name}"
+        "#{first_name} #{last_name}".strip
     end
 
     def role_display
