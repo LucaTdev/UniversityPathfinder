@@ -29,6 +29,47 @@ class User < ApplicationRecord
         role == ROLE_ADMIN
     end
 
+    # === Metodi per il profilo ===
+    def full_name
+        "#{first_name} #{last_name}".strip
+    end
+
+    def role_display
+        case role
+        when ROLE_STUDENT then "Studente"
+        when ROLE_ADMIN then "Amministratore"
+        else "Utente"
+        end
+    end
+
+    def registration_year
+        registration_date&.year || created_at&.year
+    end
+
+    def registration_month_year
+        date = registration_date || created_at
+        date&.strftime("%B %Y")
+    end
+
+    # Metodi per le statistiche (da implementare in base alle tue esigenze)
+    def routes_count
+        # Implementa il conteggio dei percorsi cercati dall'utente
+        # Esempio: Route.where(user: self).count
+        0 # Placeholder
+    end
+
+    def favorites_count
+        # Implementa il conteggio dei percorsi preferiti
+        # Esempio: FavoriteRoute.where(user: self).count
+        0 # Placeholder
+    end
+
+    def notifications_count
+        # Implementa il conteggio delle notifiche non lette
+        # Esempio: Notification.where(user: self, read: false).count
+        3 # Placeholder
+    end
+
     # === Relazioni ===
     has_one :student_profile, dependent: :destroy
     has_one :admin_profile, dependent: :destroy
