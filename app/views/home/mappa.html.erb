@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<meta name="turbo-cache-control" content="no-cache">
 
 <!-- Librerie Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -373,6 +374,7 @@
         <div id="loadingIndicator" class="loading-indicator">
             <div>🗺️ Caricamento mappa...</div>
         </div>
+        
 
         <!-- Pulsanti -->
         <section class="button-section">
@@ -425,295 +427,195 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script>
-    // Sedi dal DB con lat e long
-    const sedi = <%= @sedi.to_json(only: [:id, :nome, :indirizzo, :lat, :long]).html_safe %>;
+    // Definiamo la funzione di setup che conterrà tutta la logica della pagina.
+    // In questo modo, le variabili come sedi vengono dichiarate solo dentro questa funzione,
+    // evitando conflitti quando Turbo naviga tra le pagine.
+    const initializeMapPage = () => {
 
-    // Inizializza la mappa centrata su Roma
-    var map = L.map('map').setView([41.8902, 12.4922], 14);
+        // =====================================================================
+        // 1. DATI E VARIABILI PRINCIPALI
+        // =====================================================================
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Layer per marker meteo
-    var weatherLayer = L.layerGroup().addTo(map);
-
-    // Routing
-    var routingControl = L.Routing.control({
-        waypoints: [],
-        routeWhileDragging: true,
-        geocoder: L.Control.Geocoder.nominatim(),
-        show: false
-    }).addTo(map);
-
-    var directionsContainer = document.getElementById('directionsContent');
-
-    // Marker generali per tutte le sedi
-    function addMarkers() {
-        sedi.forEach(sede => {
-            if (sede.lat != null && sede.long != null) {
-                L.marker([parseFloat(sede.lat), parseFloat(sede.long)])
-                    .addTo(map)
-                    .bindPopup(`<b>${sede.nome}</b><br>${sede.indirizzo}`);
-            }
-        });
-    }
-
-    // Marker per partenza e destinazione selezionate
-    let routeMarkers = [];
-
-    function addRouteMarkers(startSede, endSede) {
-        // Rimuovi vecchi marker
-        routeMarkers.forEach(m => map.removeLayer(m));
-        routeMarkers = [];
-
-        const startMarker = L.marker([parseFloat(startSede.lat), parseFloat(startSede.long)])
-            .addTo(map)
-            .bindPopup('Partenza');
-
-        const endMarker = L.marker([parseFloat(endSede.lat), parseFloat(endSede.long)])
-            .addTo(map)
-            .bindPopup('Destinazione');
-
-        routeMarkers.push(startMarker, endMarker);
-    }
-
-    // Percorso di default (Colosseo → Fontana di Trevi)
-    function initializeDefaultRoute() {
-        routingControl.setWaypoints([
-            L.latLng(41.8902, 12.4922),
-            L.latLng(41.9028, 12.4964)
-        ]);
-    }
-
-    // Calcola percorso dai dropdown
-    document.getElementById('calculateRouteBtn').addEventListener('click', () => {
-        const startId = parseInt(document.getElementById('startSelect').value);
-        const endId = parseInt(document.getElementById('endSelect').value);
-
-        if (!startId || !endId) {
-            alert('Seleziona sia partenza che destinazione!');
-            return;
-        }
-
-        const startSede = sedi.find(s => s.id === startId);
-        const endSede = sedi.find(s => s.id === endId);
-
-        if (!startSede || !endSede) {
-            alert('Sede non trovata!');
-            return;
-        }
-
-        routingControl.setWaypoints([
-            L.latLng(parseFloat(startSede.lat), parseFloat(startSede.long)),
-            L.latLng(parseFloat(endSede.lat), parseFloat(endSede.long))
-        ]);
-
-        map.fitBounds([
-            [parseFloat(startSede.lat), parseFloat(startSede.long)],
-            [parseFloat(endSede.lat), parseFloat(endSede.long)]
-        ]);
-
-        addRouteMarkers(startSede, endSede);
-    });
-
-    // Mostra alert di navigazione
-    function showNavigationAlert(destinationName, destinationAddress) {
-        const alert = document.getElementById('navigationAlert');
-        const alertText = document.getElementById('alertText');
-        alertText.textContent = `Destinazione: ${destinationName} (${destinationAddress})`;
-        alert.style.display = 'block';
-        setTimeout(() => alert.classList.add('show'), 10);
-    }
-
-    // Pulisce navigazione e resetta mappa
-    function clearNavigation() {
-        const alert = document.getElementById('navigationAlert');
-        alert.classList.remove('show');
-        setTimeout(() => alert.style.display = 'none', 300);
-
-        document.getElementById('startSelect').value = '';
-        document.getElementById('endSelect').value = '';
-
-        initializeDefaultRoute();
-        weatherLayer.clearLayers();
-        routeMarkers.forEach(m => map.removeLayer(m));
-        routeMarkers = [];
-
-        directionsContainer.innerHTML = '<div class="placeholder-text">Le indicazioni appariranno qui dopo aver calcolato un percorso</div>';
-    }
-
-    // Inizializza la mappa con tutti i marker e percorso di default
-    addMarkers();
-
-    // Controllo eventuali dati di navigazione salvati
-    function checkForNavigationData() {
-        const navigationData = sessionStorage.getItem('navigationData');
-        if (navigationData) {
-            try {
-                const data = JSON.parse(navigationData);
-
-                showNavigationAlert(data.destinationName, data.destination);
-
-                document.getElementById('endSelect').value = data.destinationId || '';
-
-                // Qui puoi eventualmente calcolare percorso automatico se vuoi
-                // calculateRouteFromData(data);
-
-                sessionStorage.removeItem('navigationData');
-            } catch (error) {
-                console.error('Errore nel parsing dei dati di navigazione:', error);
-                initializeDefaultRoute();
-            }
-        }
-    }
-
-    checkForNavigationData();
-
-
-
-
-    // Mostra istruzioni + meteo
-    routingControl.on('routesfound', function(e) {
-        var route = e.routes[0];
-        var instructions = `
-            <h3>🚦 Riepilogo Percorso</h3>
-            <p>Distanza: ${(route.summary.totalDistance / 1000).toFixed(1)} km</p>
-            <p>Durata: ${Math.round(route.summary.totalTime / 60)} min</p>
-            <h3>🧾 Indicazioni:</h3><ol>
-        `;
-
-        route.instructions.forEach(function(inst) {
-            instructions += `<li>${inst.text}</li>`;
-        });
-        instructions += `</ol>`;
-        directionsContainer.innerHTML = instructions;
-
-        // Meteo per start e end
-        const startLL = e.waypoints[0].latLng;
-        const endLL = e.waypoints[e.waypoints.length - 1].latLng;
-
-        //Debug
-        console.log('Waypoint start:', startLL);
-        console.log('Waypoint end:', endLL);
-
-        weatherLayer.clearLayers();
-        addWeatherMarker(startLL.lat, startLL.lng, "📍 Partenza");
-        addWeatherMarker(endLL.lat, endLL.lng, "🏁 Arrivo");
-    });
-
+        // I dati vengono passati dal backend Rails.
+        const sedi = <%= @sedi.to_json(only: [:id, :nome, :indirizzo, :lat, :long]).html_safe %>;
         
+        // Selezioniamo gli elementi del DOM una sola volta per efficienza.
+        const directionsContainer = document.getElementById('directionsContent');
+        const calculateBtn = document.getElementById('calculateRouteBtn');
+        const startSelect = document.getElementById('startSelect');
+        const endSelect = document.getElementById('endSelect');
 
+        // Questa variabile terrà traccia dei marker di partenza/arrivo.
+        let routeMarkers = [];
 
-    // Geocoding
-    async function geocode(query) {
-        const url = new URL('https://nominatim.openstreetmap.org/search');
-        url.searchParams.set('q', query);
-        url.searchParams.set('format', 'json');
-        url.searchParams.set('limit', '1');
+        // =====================================================================
+        // 2. PULIZIA E INIZIALIZZAZIONE DELLA MAPPA (FIX PER TURBO)
+        // =====================================================================
 
-        const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
-        const data = await res.json();
-        if (!data || data.length === 0) throw new Error('Nessun risultato per: ' + query);
-        const { lat, lon } = data[0];
-        return { lat: parseFloat(lat), lon: parseFloat(lon) };
-    }
-
-        // Calcolo percorso
-    async function calculateRoute() {
-        const start = document.getElementById('startSelect').value;
-        const end = document.getElementById('endSelect').value;
-        if (!start || !end) {
-            alert('Seleziona sia partenza che destinazione!');
-            return;
+        // Controlla se un'istanza della mappa esiste già (da una visita precedente della pagina).
+        // Se sì, la rimuoviamo completamente per evitare errori.
+        if (window.map instanceof L.Map) {
+            window.map.remove();
         }
 
-        const startSede = sedi.find(s => s.id === parseInt(start));
-        const endSede = sedi.find(s => s.id === parseInt(end));
+        // Inizializza la nuova mappa e la assegna a una variabile globale `window.map`
+        // in modo da poterla trovare e rimuovere alla prossima navigazione Turbo.
+        window.map = L.map('map').setView([41.8990, 12.5012], 13.5);
 
-        if (!startSede || !endSede) {
-            alert('Sede non trovata!');
-            return;
-        }
+        // Aggiunge il layer di base della mappa da OpenStreetMap.
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(window.map);
 
-        routingControl.setWaypoints([
-            L.latLng(parseFloat(startSede.lat), parseFloat(startSede.long)),
-            L.latLng(parseFloat(endSede.lat), parseFloat(endSede.long))
-        ]);
+        // Inizializza i layer per il meteo e il routing.
+        const weatherLayer = L.layerGroup().addTo(window.map);
+        const routingControl = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            show: false // Nascondiamo le indicazioni di default di Leaflet per usare le nostre.
+        }).addTo(window.map);
 
-        map.fitBounds([
-            [parseFloat(startSede.lat), parseFloat(startSede.long)],
-            [parseFloat(endSede.lat), parseFloat(endSede.long)]
-        ]);
-
-        addRouteMarkers(startSede, endSede);
-    }
-
-
-    document.getElementById('calculateRouteBtn').addEventListener('click', calculateRoute);
-
-        // Funzione per aggiungere meteo
-    function addWeatherMarker(lat, lon, label) {
-        const marker = L.marker([lat, lon]).addTo(weatherLayer).bindPopup('Caricamento meteo...');
-        fetch(`/home/weather?lat=${lat}&lon=${lon}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.temperature !== undefined) {
-                    marker.setPopupContent(`
-                        <b>${label}</b><br>
-                        🌡️ ${data.temperature} °C<br>
-                        💨 ${data.windspeed} km/h<br>
-                        ⏰ ${data.time}
-                    `);
-                    marker.openPopup();
+        // =====================================================================
+        // 3. FUNZIONI HELPER
+        // =====================================================================
+        
+        // Mostra l'indicatore di caricamento.
+        const showLoading = () => document.getElementById('loadingIndicator').classList.add('show');
+        
+        // Nasconde l'indicatore di caricamento.
+        const hideLoading = () => document.getElementById('loadingIndicator').classList.remove('show');
+        
+        // Aggiunge i marker di tutte le sedi sulla mappa.
+        const addAllSediMarkers = () => {
+            sedi.forEach(sede => {
+                if (sede.lat && sede.long) {
+                    L.marker([parseFloat(sede.lat), parseFloat(sede.long)])
+                        .addTo(window.map)
+                        .bindPopup(`<b>${sede.nome}</b><br>${sede.indirizzo}`);
                 }
             });
-
-    }
-
-    function saveRoute() {
-        const startId = parseInt(document.getElementById('startSelect').value);
-        const endId = parseInt(document.getElementById('endSelect').value);
-
-        if (!startId || !endId) {
-            alert('Seleziona partenza e destinazione prima di salvare.');
-            return;
-        }
-
-        const data = {
-            partenza: startId,
-            arrivo: endId
         };
 
-        fetch('/percorsi', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Errore nel salvataggio del percorso');
+        // Aggiunge/aggiorna i marker specifici per il percorso calcolato.
+        const addRouteMarkers = (startSede, endSede) => {
+            routeMarkers.forEach(m => window.map.removeLayer(m));
+            routeMarkers = [];
+            
+            const startMarker = L.marker([parseFloat(startSede.lat), parseFloat(startSede.long)]).addTo(window.map).bindPopup('📍 Partenza');
+            const endMarker = L.marker([parseFloat(endSede.lat), parseFloat(endSede.long)]).addTo(window.map).bindPopup('🏁 Destinazione');
+            
+            routeMarkers.push(startMarker, endMarker);
+        };
+        
+        // Aggiunge un marker con le informazioni meteo.
+        const addWeatherMarker = (lat, lon, label) => {
+            const marker = L.marker([lat, lon]).addTo(weatherLayer).bindPopup('Caricamento meteo...');
+            fetch(`/home/weather?lat=${lat}&lon=${lon}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.temperature !== undefined) {
+                        marker.setPopupContent(`<b>${label}</b><br>🌡️ ${data.temperature} °C<br>💨 ${data.windspeed} km/h`);
+                        marker.openPopup();
+                    }
+                });
+        };
+
+        // Funzione per pulire il percorso e resettare la vista.
+        const clearNavigation = () => {
+            document.getElementById('navigationAlert').classList.remove('show');
+            startSelect.value = '';
+            endSelect.value = '';
+            weatherLayer.clearLayers();
+            routeMarkers.forEach(m => window.map.removeLayer(m));
+            routeMarkers = [];
+            routingControl.setWaypoints([]); // Rimuove il percorso dalla mappa
+            directionsContainer.innerHTML = '<div class="placeholder-text">Le indicazioni appariranno qui...</div>';
+            window.map.setView([41.8902, 13.4922], 14); // Ricentra la mappa
+        };
+        
+        // Rende la funzione `clearNavigation` accessibile dall'HTML (`onclick`).
+        window.clearNavigation = clearNavigation;
+
+        // =====================================================================
+        // 4. EVENT LISTENERS E LOGICA PRINCIPALE
+        // =====================================================================
+
+        // Event listener per il pulsante "Calcola Percorso".
+        calculateBtn.addEventListener('click', () => {
+            showLoading();
+
+            const startSede = sedi.find(s => s.id === parseInt(startSelect.value));
+            const endSede = sedi.find(s => s.id === parseInt(endSelect.value));
+
+            if (!startSede || !endSede) {
+                alert('Seleziona sia una partenza che una destinazione valide!');
+                hideLoading();
+                return;
             }
-            return response.json();
-        })
-        .then(result => {
-            console.log('Percorso salvato:', result);
-            alert('Percorso salvato correttamente!');
-        })
-        .catch(error => {
-            console.error(error);
-            alert('Errore durante il salvataggio');
+
+            routingControl.setWaypoints([
+                L.latLng(parseFloat(startSede.lat), parseFloat(startSede.long)),
+                L.latLng(parseFloat(endSede.lat), parseFloat(endSede.long))
+            ]);
+
+            window.map.fitBounds([
+                [parseFloat(startSede.lat), parseFloat(startSede.long)],
+                [parseFloat(endSede.lat), parseFloat(endSede.long)]
+            ], { padding: [50, 50] });
+
+            addRouteMarkers(startSede, endSede);
         });
-    }
 
+        // Event listener per quando il percorso è stato calcolato con successo.
+        routingControl.on('routesfound', function(e) {
+            hideLoading();
+            
+            const route = e.routes[0];
+            let instructionsHTML = `
+                <h3>🚦 Riepilogo Percorso</h3>
+                <p><b>Distanza:</b> ${(route.summary.totalDistance / 1000).toFixed(1)} km</p>
+                <p><b>Durata:</b> ${Math.round(route.summary.totalTime / 60)} min</p>
+                <h3>🧾 Indicazioni:</h3>
+                <ol>`;
+            
+            route.instructions.forEach(inst => {
+                instructionsHTML += `<li>${inst.text}</li>`;
+            });
+            
+            instructionsHTML += `</ol>`;
+            directionsContainer.innerHTML = instructionsHTML;
 
+            // Aggiorna il meteo per i punti di inizio e fine
+            const startLL = e.waypoints[0].latLng;
+            const endLL = e.waypoints[e.waypoints.length - 1].latLng;
+            weatherLayer.clearLayers();
+            addWeatherMarker(startLL.lat, startLL.lng, "Partenza");
+            addWeatherMarker(endLL.lat, endLL.lng, "Arrivo");
+        });
+        
+        // Event listener per quando si verifica un errore nel calcolo del percorso.
+        routingControl.on('routingerror', function(e) {
+            hideLoading();
+            alert("Impossibile calcolare il percorso. Controlla i punti selezionati e riprova.");
+            console.error("Errore di routing:", e.error);
+        });
 
-    // Rendi la funzione globale per il pulsante
-    window.clearNavigation = clearNavigation;
-    </script>
+        // =====================================================================
+        // 5. ESECUZIONE INIZIALE
+        // =====================================================================
+        addAllSediMarkers();
+
+    }; // Fine della funzione `initializeMapPage`
+
+    // =====================================================================
+    // 6. AGGANCIO AL CICLO DI VITA DI TURBO
+    // =====================================================================
+    
+    // Esegui la nostra funzione di setup ogni volta che Turbo carica una pagina.
+    // Questo è il fix principale per tutti gli errori legati a Turbo.
+    document.addEventListener('turbo:load', initializeMapPage);
+</script>
 </body>
 </html>
