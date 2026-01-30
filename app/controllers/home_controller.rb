@@ -1,4 +1,5 @@
 class HomeController < ApplicationController
+  before_action :require_login, only: [:profilo]
   def index
   end
 

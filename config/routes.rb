@@ -4,10 +4,7 @@ Rails.application.routes.draw do
 
   get 'percorsi', to: 'percorsi#index'
   get 'news', to: 'news#index'
-  get 'profilo', to: 'profilo#index'
-  get 'login', to: 'auth#login'
-
-  get "home/profilo"
+  get 'home/profilo'
 
   get "home/sedi"
 
