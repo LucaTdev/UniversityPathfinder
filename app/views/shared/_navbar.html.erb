@@ -10,10 +10,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                      <%= link_to "Sedi", home_sedi_path, class: "nav-link nav-link-custom" %>
+                      <%= link_to "Sedi", home_sedi_path, class: "nav-link nav-link-custom", data: { turbo: false } %>
                     </li>
                     <li class="nav-item">
-                        <%= link_to "Percorsi", home_mappa_path, class: "nav-link nav-link-custom" %>
+                        <%= link_to "Percorsi", home_mappa_path, class: "nav-link nav-link-custom", data: { turbo: false } %>
                     </li>
                     <li class="nav-item">
                         <%= link_to "News", home_meteo_path, class: "nav-link nav-link-custom" %>
