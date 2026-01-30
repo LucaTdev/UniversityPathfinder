@@ -1,14 +1,11 @@
 Rails.application.routes.draw do  
+  
   get "home/index"
   root 'home#index'
 
   get 'percorsi', to: 'percorsi#index'
   get 'news', to: 'news#index'
-  get 'supporto', to: 'supporto#index'
-  get 'profilo', to: 'profilo#index'
-  get 'login', to: 'auth#login'
-
-  get "home/profilo"
+  get 'home/profilo'
 
   get "home/sedi"
 
@@ -17,16 +14,39 @@ Rails.application.routes.draw do
   get 'home/weather', to: 'weather#show'
 
   resources :sedi, only: [:index, :show, :create, :update, :destroy]
+  #Per ottenere le info di profilo dal database
+  resources :users do
+    member do
+      get:profile
+      patch :update_profile
+    end
+  end
+  # Rotta per il profilo dell'utente corrente
+  get 'profile', to: 'users#profile'
+  get 'profile/edit', to: 'users#edit_profile'
+  patch 'profile', to: 'users#update_profile'
 
-  get "home/login"
+  get "sessions/new"
+  get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  get 'users/new'
   get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
   post 'registration', to: 'users#create'
 
-  get 'users/new'
 
-  get "home/supporto"
+#LUCA
+  #Path 
+  get 'admin/faqs', to: 'faqs#admin', as: 'admin_faqs'
+  get 'user/faqs', to: 'faqs#user', as: 'user_faqs'
+  get 'visitors/faqs', to: 'faqs#visitor', as: 'visitor_faqs'
+
+  #FAQ
+  resources :faqs, only: [:create, :update, :destroy]
+
+
 
   get "home/meteo", to: "home#meteo"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -155,7 +155,7 @@
                       </div>
                       <h5 class="mb-3">Supporto</h5>
                       <p class="text-muted mb-4">Ricevi assistenza personalizzata per tutte le tue domande e necessità.</p>
-                      <%= link_to "Contatta supporto", home_supporto_path, class: "btn btn-outline-primary" %>
+                      <%= link_to "Contatta supporto", admin_faqs_path, class: "btn btn-outline-primary" %>
                   </div>
               </div> 
 
@@ -193,26 +193,11 @@
               class: "btn btn-primary me-3",
               style: "padding: 12px 30px; border-radius: 25px; background: #667eea; border-color: #667eea;" %>
  
-            <%= link_to "Login", home_login_path,
+            <%= link_to "Login", sessions_new_path,
               class: "btn btn-outline-primary",
               style: "padding: 12px 30px; border-radius: 25px; color: #667eea; border-color: #667eea;" %>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="footer-custom">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5>University Pathfinder</h5>
-                    <p class="mb-0" style="opacity: 0.8;">La tua app di navigazione universitaria</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0" style="opacity: 0.8;">&copy; 2025 University Pathfinder. Tutti i diritti riservati.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>

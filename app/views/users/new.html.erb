@@ -1,129 +1,262 @@
-<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-gradient py-4">
-  <div class="row justify-content-center w-100">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-lg border-0">
-        <div class="card-body p-5">
-          <!-- Header -->
-          <div class="text-center mb-4">
-            <h2 class="fw-bold text-primary mb-3">University Path Finder</h2>
-            <p class="text-muted">Crea il tuo account</p>
-          </div>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrazione - University Path Finder</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .card {
+      border-radius: 15px;
+    }
+    
+    .form-control:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .text-primary {
+      color: #667eea !important;
+    }
+    
+    a.text-primary:hover {
+      color: #764ba2 !important;
+    }
 
-          <!-- Errori -->
-          <% if @user.errors.any? %>
-            <div class="alert alert-danger">
+    .bg-gradient {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    .btn-outline-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+    
+    .btn-outline-secondary:hover {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      color: white;
+    }
+    
+    .input-group .form-control:focus {
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-gradient py-4">
+    <div class="row justify-content-center w-100">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-5">
+            <!-- Header -->
+            <div class="text-center mb-4">
+              <h2 class="fw-bold text-primary mb-3">University Pathfinder</h2>
+              <p class="text-muted">Crea il tuo account</p>
+            </div>
+
+            <!-- Errori di esempio -->
+            <div class="alert alert-danger" style="display: none;" id="error-alert">
               <h5>Correggi i seguenti errori:</h5>
-              <ul>
-                <% @user.errors.full_messages.each do |msg| %>
-                  <li><%= msg %></li>
-                <% end %>
+              <ul id="error-list">
               </ul>
             </div>
-          <% end %>
 
-          <!-- Registration Form -->
-          <%= form_with model: @user, url: registration_path, local: true, class: "needs-validation", novalidate: true do |f| %>
-            
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :first_name, "Nome", class: "form-label fw-semibold" %>
-                <%= f.text_field :first_name, class: "form-control form-control-lg", placeholder: "Inserisci il tuo nome", required: true %>
+            <!-- Registration Form -->
+            <form class="needs-validation" novalidate>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="first_name" class="form-label fw-semibold">Nome</label>
+                  <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" placeholder="Inserisci il tuo nome" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="last_name" class="form-label fw-semibold">Cognome</label>
+                  <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" placeholder="Inserisci il tuo cognome" required>
+                </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :last_name, "Cognome", class: "form-label fw-semibold" %>
-                <%= f.text_field :last_name, class: "form-control form-control-lg", placeholder: "Inserisci il tuo cognome", required: true %>
+
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="Inserisci la tua email" required>
               </div>
-            </div>
 
-            <div class="mb-3">
-              <%= f.label :email, "Email", class: "form-label fw-semibold" %>
-              <%= f.email_field :email, class: "form-control form-control-lg", placeholder: "Inserisci la tua email", required: true %>
-            </div>
-
-            <div class="mb-3">
-              <%= f.label :password, "Password", class: "form-label fw-semibold" %>
-              <%= f.password_field :password, class: "form-control form-control-lg", placeholder: "Crea una password sicura", minlength: 8, required: true %>
-              <div class="form-text text-muted">La password deve contenere almeno 8 caratteri.</div>
-            </div>
-
-            <div class="mb-4">
-              <%= f.label :password_confirmation, "Conferma Password", class: "form-label fw-semibold" %>
-              <%= f.password_field :password_confirmation, class: "form-control form-control-lg", placeholder: "Ripeti la password", minlength: 8, required: true %>
-            </div>
-
-            <div class="mb-4">
-              <%= f.label :registration_date, "Data di Registrazione", class: "form-label fw-semibold" %>
-              <%= f.date_field :registration_date, class: "form-control form-control-lg", value: Date.today, required: true %>
-            </div>
-
-            <!-- Tipo Account -->
-            <div class="mb-3">
-              <%= f.label :role, "Tipo di Account", class: "form-label fw-semibold" %>
-              <%= f.select :role, [["Altro", 0], ["Studente", 1], ["Amministratore", 2]], {}, class: "form-select form-select-lg", id: "role_select" %>
-            </div>
-
-            <!-- Campi Studente -->
-            <div id="student_fields" style="display:none;">
-              <%= label_tag :student_id, "Matricola", class: "form-label fw-semibold" %>
-              <%= text_field_tag :student_id, nil, class: "form-control form-control-lg", placeholder: "Inserisci la tua matricola" %>
-
-              <%= label_tag :university, "Università", class: "form-label fw-semibold mt-2" %>
-              <%= text_field_tag :university, nil, class: "form-control form-control-lg", placeholder: "Nome dell'università" %>
-            </div>
-
-            <!-- Campi Admin -->
-            <div id="admin_fields" style="display:none;">
-              <%= label_tag :admin_token, "Token Amministratore", class: "form-label fw-semibold" %>
-              <%= password_field_tag :admin_token, nil, class: "form-control form-control-lg", placeholder: "Inserisci il token amministratore" %>
-            </div>
-
-            <div class="mb-4 mt-3">
-              <div class="form-check">
-                <%= f.check_box :terms_accepted, class: "form-check-input", required: true %>
-                <label for="user_terms_accepted" class="form-check-label">
-                  Accetto i <a href="#">Termini e Condizioni</a> e la <a href="#">Privacy Policy</a>
-                </label>
+              <!-- Password Field con Toggle -->
+              <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                  <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Crea una password sicura" minlength="8" required>
+                  <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                  </button>
+                </div>
+                <div class="form-text text-muted">La password deve contenere almeno 8 caratteri.</div>
               </div>
-            </div>
 
-            <div class="d-grid gap-2 mb-3">
-              <%= f.submit "Registrati", class: "btn btn-primary btn-lg" %>
-            </div>
-          <% end %>
+              <!-- Password Confirmation Field con Toggle -->
+              <div class="mb-4">
+                <label for="password_confirmation" class="form-label fw-semibold">Conferma Password</label>
+                <div class="input-group">
+                  <input type="password" class="form-control form-control-lg" id="password_confirmation" name="password_confirmation" placeholder="Ripeti la password" minlength="8" required>
+                  <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirmation">
+                    <i class="fas fa-eye" id="togglePasswordConfirmationIcon"></i>
+                  </button>
+                </div>
+              </div>
 
-          <hr class="my-4">
-          <div class="text-center">
-            <p class="text-muted mb-0">
-              Hai già un account? <%= link_to "Accedi qui", login_path, class: "text-primary fw-semibold" %>
-            </p>
+              <div class="mb-4">
+                <label for="registration_date" class="form-label fw-semibold">Data di Registrazione</label>
+                <input type="date" class="form-control form-control-lg" id="registration_date" name="registration_date" required>
+              </div>
+
+              <!-- Tipo Account -->
+              <div class="mb-3">
+                <label for="role_select" class="form-label fw-semibold">Tipo di Account</label>
+                <select class="form-select form-select-lg" id="role_select" name="role">
+                  <option value="0">Altro</option>
+                  <option value="1">Studente</option>
+                  <option value="2">Amministratore</option>
+                </select>
+              </div>
+
+              <!-- Campi Studente -->
+              <div id="student_fields" style="display:none;">
+                <label for="student_id" class="form-label fw-semibold">Matricola</label>
+                <input type="text" class="form-control form-control-lg" id="student_id" name="student_id" placeholder="Inserisci la tua matricola">
+
+                <label for="university" class="form-label fw-semibold mt-2">Università</label>
+                <input type="text" class="form-control form-control-lg" id="university" name="university" placeholder="Nome dell'università">
+              </div>
+
+              <!-- Campi Admin -->
+              <div id="admin_fields" style="display:none;">
+                <label for="admin_token" class="form-label fw-semibold">Token Amministratore</label>
+                <div class="input-group">
+                  <input type="password" class="form-control form-control-lg" id="admin_token" name="admin_token" placeholder="Inserisci il token amministratore">
+                  <button class="btn btn-outline-secondary" type="button" id="toggleAdminToken">
+                    <i class="fas fa-eye" id="toggleAdminTokenIcon"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mb-4 mt-3">
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="terms_accepted" name="terms_accepted" required>
+                  <label for="terms_accepted" class="form-check-label">
+                    Accetto i <a href="#">Termini e Condizioni</a> e la <a href="#">Privacy Policy</a>
+                  </label>
+                </div>
+              </div>
+
+              <div class="d-grid gap-2 mb-3">
+                <button type="submit" class="btn btn-primary btn-lg">Registrati</button>
+              </div>
+            </form>
+
+            <hr class="my-4">
+            <div class="text-center">
+              <p class="text-muted mb-0">
+                Hai già un account? <%= link_to "Accedi qui", sessions_new_path, class: "text-primary fw-semibold" %>
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Script per mostrare/nascondere i campi extra -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const roleSelect = document.getElementById("role_select");
-    const studentFields = document.getElementById("student_fields");
-    const adminFields = document.getElementById("admin_fields");
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Imposta la data di oggi come default
+      const today = new Date();
+      const formattedDate = today.getFullYear() + '-' + 
+                          String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(today.getDate()).padStart(2, '0');
+      document.getElementById('registration_date').value = formattedDate;
 
-    function toggleFields() {
-      if (roleSelect.value == "1") { // studente
-        studentFields.style.display = "block";
-        adminFields.style.display = "none";
-      } else if (roleSelect.value == "2") { // admin
-        studentFields.style.display = "none";
-        adminFields.style.display = "block";
-      } else {
-        studentFields.style.display = "none";
-        adminFields.style.display = "none";
+      // Role selection logic
+      const roleSelect = document.getElementById("role_select");
+      const studentFields = document.getElementById("student_fields");
+      const adminFields = document.getElementById("admin_fields");
+
+      function toggleFields() {
+        if (roleSelect.value == "1") { // studente
+          studentFields.style.display = "block";
+          adminFields.style.display = "none";
+        } else if (roleSelect.value == "2") { // admin
+          studentFields.style.display = "none";
+          adminFields.style.display = "block";
+        } else {
+          studentFields.style.display = "none";
+          adminFields.style.display = "none";
+        }
       }
-    }
 
-    roleSelect.addEventListener("change", toggleFields);
-    toggleFields(); // inizializza
-  });
-</script>
+      roleSelect.addEventListener("change", toggleFields);
+      toggleFields(); // inizializza
+
+      // Password visibility toggles
+      function setupPasswordToggle(toggleId, passwordId, iconId) {
+        const toggle = document.getElementById(toggleId);
+        const passwordField = document.getElementById(passwordId);
+        const icon = document.getElementById(iconId);
+
+        toggle.addEventListener('click', function() {
+          const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordField.setAttribute('type', type);
+          
+          // Toggle icon
+          if (type === 'text') {
+            icon.className = 'fas fa-eye-slash';
+          } else {
+            icon.className = 'fas fa-eye';
+          }
+        });
+      }
+
+      // Setup password toggles
+      setupPasswordToggle('togglePassword', 'password', 'togglePasswordIcon');
+      setupPasswordToggle('togglePasswordConfirmation', 'password_confirmation', 'togglePasswordConfirmationIcon');
+      setupPasswordToggle('toggleAdminToken', 'admin_token', 'toggleAdminTokenIcon');
+
+      // Bootstrap form validation
+      const forms = document.getElementsByClassName('needs-validation');
+      Array.prototype.forEach.call(forms, function(form) {
+        form.addEventListener('submit', function(event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+
+      // Button hover effect
+      const submitBtn = document.querySelector('.btn-primary');
+      if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        
+        submitBtn.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
