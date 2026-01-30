@@ -1,16 +1,16 @@
 class UsersController < ApplicationController
-
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_user!, only: [:show, :edit, :update, :destroy] # Assumendo che tu abbia un sistema di autenticazione
+  before_action :authenticate_user!, only: [:show, :edit, :update, :destroy]
   before_action :authorize_user!, only: [:show, :edit, :update, :destroy]
-  
+
   def new
     @user = User.new
   end
 
   def create
     @user = User.new(user_params)
-
+    
+    # Imposta il ruolo in base alla selezione
     case params[:user][:role]
     when "1" # studente
       @user.role = User::ROLE_STUDENT
@@ -21,38 +21,50 @@ class UsersController < ApplicationController
     end
 
     if @user.save
+      # Gestione profilo studente (SOLO se i campi sono compilati)
       if @user.student?
-        StudentProfile.create!(
-          user: @user,
-          student_id: params[:student_id],
-          university: params[:university]
-        )
+        student_id = params[:user][:student_id]
+        university = params[:user][:university]
+        
+        # Crea il profilo studente solo se almeno uno dei campi è presente
+        if student_id.present? || university.present?
+          StudentProfile.create(
+            user: @user,
+            student_id: student_id,
+            university: university
+          )
+        end
+      
+      # Gestione profilo admin (SOLO se il token è presente)
       elsif @user.admin?
-        if params[:admin_token] == "1234"
-          AdminProfile.create!(user: @user, token: params[:admin_token])
-        else
-          @user.errors.add(:base, "Token amministratore non valido")
-          @user.destroy
-          render :new and return
+        admin_token = params[:user][:admin_token]
+        
+        if admin_token.present?
+          # Verifica il token solo se è stato inserito
+          if admin_token == "1234"
+            AdminProfile.create(user: @user, token: admin_token)
+          else
+            @user.errors.add(:base, "Token amministratore non valido")
+            @user.destroy
+            render :new, status: :unprocessable_entity and return
+          end
         end
       end
 
-      redirect_to sessions_new_path, notice: "Registrazione completata con successo!"
+      redirect_to login_path, notice: "Registrazione completata con successo!"
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    # @user è già settato dal before_action
     respond_to do |format|
-      format.html # Renderizza la vista HTML
+      format.html
       format.json { render json: user_profile_json }
     end
   end
 
   def edit
-    # @user è già settato dal before_action
   end
 
   def update
@@ -63,7 +75,7 @@ class UsersController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :edit }
+        format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity }
       end
     end
@@ -77,15 +89,14 @@ class UsersController < ApplicationController
     end
   end
 
-   # Action per ottenere il profilo dell'utente corrente
   def profile
-    @user = current_user # Assumendo che tu abbia current_user helper
+    @user = current_user
     respond_to do |format|
       format.html { render 'show' }
       format.json { render json: user_profile_json }
     end
   end
-  
+
   private
 
   def set_user
@@ -98,12 +109,22 @@ class UsersController < ApplicationController
   end
 
   def authorize_user!
-    # Verifica che l'utente possa accedere al profilo
     redirect_to root_path unless current_user&.id == @user.id || current_user&.admin?
   end
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, :registration_date, :terms_accepted, :role)
+    # IMPORTANTE: Rimuovi student_id, university e admin_token da qui
+    # perché NON sono campi della tabella users
+    params.require(:user).permit(
+      :first_name, 
+      :last_name, 
+      :email, 
+      :password, 
+      :password_confirmation, 
+      :registration_date, 
+      :terms_accepted, 
+      :role
+    )
   end
 
   def user_update_params
