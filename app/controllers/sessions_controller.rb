@@ -25,6 +25,7 @@ class SessionsController < ApplicationController
   def destroy
     session.delete(:user_id)
     cookies.delete(:user_id)
-    redirect_to login_path, notice: "Logout effettuato con successo"
+    session[:user_id] = nil # Rimuove l'ID utente dalla sessione
+    redirect_to root_path, notice: "Ti sei disconnesso con successo!"
   end
 end
