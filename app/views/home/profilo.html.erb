@@ -188,7 +188,7 @@
                             <i class="fas fa-edit me-2"></i>Modifica Profilo
                         </button>
                         
-                        <%= button_to logout_path, method: :delete, form: { class: 'd-inline' }, class: "btn btn-danger" do %>
+                        <%= button_to logout_path, method: :delete, form: { class: 'd-inline' }, bclass: "btn btn-danger" do %>
                             <i class="fas fa-sign-out-alt me-2"></i>Disconnetti
                         <% end %>
                     </div>
@@ -239,7 +239,7 @@
                     
                     <div class="stats-container mt-3">
                         <div class="stat-item">
-                            <div class="stat-number"><%= @user.routes_count %></div>
+                            <div class="stat-number" id="routes-counter"><%= @user.routes.count %></div>
                             <small class="text-muted">Percorsi Cercati</small>
                         </div>
                         <div class="stat-item">
@@ -252,6 +252,23 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5>Ultime Ricerche</h5>
+                <ul class="list-group" id="recent-routes-list">
+                <% @recent_routes.each do |route| %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><%= route.destination_name %></span>
+                        <!-- Aggiunto data-timestamp per il calcolo JS -->
+                        <small class="text-muted time-ago" data-timestamp="<%= route.searched_at.iso8601 %>">
+                            <%= time_ago_in_words(route.searched_at) %> fa
+                        </small>
+                    </li>
+                <% end %>
+                </ul>
             </div>
         </div>
 
@@ -447,7 +464,11 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        // Variabile globale per il timer così possiamo pulirlo
+        let profileTimer;
+
         document.addEventListener('turbo:load', function() {
             
             // ========= GESTIONE MODIFICA PROFILO =========
@@ -475,7 +496,6 @@
             if (editProfileForm) {
                 editProfileForm.addEventListener('submit', function(event) {
                     event.preventDefault(); 
-
                     const userId = <%= @user.id %>;
                     const formData = new FormData(editProfileForm);
 
@@ -487,107 +507,87 @@
                         },
                         body: formData
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Errore durante l-aggiornamento del profilo.');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         document.querySelector('#view-profile-info h2').textContent = data.full_name;
                         document.querySelector('#view-profile-info p:nth-of-type(1)').innerHTML = 
                             `<i class="fas fa-envelope text-muted me-2"></i> ${data.email}`;
-                        
                         cancelEditBtn.click();
-                        // Potresti usare una notifica più elegante, ma per ora un alert va bene
-                        // alert('Profilo aggiornato con successo!'); 
                     })
-                    .catch(error => {
-                        console.error('Errore:', error);
-                        alert('Si è verificato un errore. Riprova.');
-                    });
+                    .catch(error => console.error('Errore:', error));
                 });
             }
 
-            // ========= GESTIONE SWITCH PREFERENZE =========
-            document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
-                switchElement.addEventListener('change', function() {
-                    const preferenceItem = this.closest('.preference-item');
-                    // ... (il resto della tua logica per gli switch)
-                });
-            });
+            // ========= GESTIONE TEMPO "QUANTO TEMPO FA" =========
+            function updateTimeLabels() {
+                const timeElements = document.querySelectorAll('.time-ago');
+                const now = new Date();
 
-            // ========= AGGIORNAMENTO STATISTICHE PROFILO (AJAX) =========
-            // Funzione per aggiornare il profilo via AJAX
-            function updateProfileStats() {
-                const userId = <%= @user.id %>;
-                
-                fetch(`/users/${userId}.json`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Se hai degli id per questi elementi, puoi aggiornarli.
-                    // Es: document.getElementById('routes-count').textContent = data.routes_count;
-                })
-                .catch(error => {
-                    console.error('Errore nel caricamento delle statistiche:', error);
+                timeElements.forEach(el => {
+                    const timestamp = new Date(el.getAttribute('data-timestamp'));
+                    const diffInSeconds = Math.floor((now - timestamp) / 1000);
+                    const diffInMinutes = Math.floor(diffInSeconds / 60);
+                    const diffInHours = Math.floor(diffInMinutes / 60);
+
+                    let text = "";
+                    if (diffInMinutes < 1) text = "meno di un minuto fa";
+                    else if (diffInMinutes < 60) text = `${diffInMinutes} min fa`;
+                    else if (diffInHours < 24) text = `${diffInHours} ore fa`;
+                    else text = `${Math.floor(diffInHours/24)} giorni fa`;
+                    
+                    el.textContent = text;
                 });
             }
+
+            // Avvia l'aggiornamento subito e imposta l'intervallo
+            updateTimeLabels();
             
-            // Aggiorna le statistiche ogni 30 secondi (opzionale)
-            // setInterval(updateProfileStats, 30000);
+            // Puliamo eventuali timer precedenti per evitare duplicati
+            if (profileTimer) clearInterval(profileTimer);
+            profileTimer = setInterval(updateTimeLabels, 300000); // 5 minuti
 
-            // ========= GESTIONE HOVER E ANIMAZIONI =========
-            document.querySelectorAll('.notification-item.unread').forEach(function(item) {
+            // ========= ALTRE ANIMAZIONI =========
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
                 item.addEventListener('click', function() {
                     this.classList.remove('unread');
                     this.style.background = '#fff';
                 });
             });
-
-            document.querySelectorAll('.route-item').forEach(function(item) {
-                item.addEventListener('mouseenter', function() {
-                    this.style.borderColor = '#667eea';
-                });
-                item.addEventListener('mouseleave', function() {
-                    this.style.borderColor = '#dee2e6';
-                });
-            });
         });
 
-        // La funzione deleteProfile può rimanere fuori perché è globale
+        // Funzioni globali (fuori dal turbo:load perché chiamate da attributi HTML o altri script)
+        
+        window.refreshProfileCounter = function(newCount) {
+            const counter = document.getElementById('routes-counter');
+            if (counter) {
+                counter.textContent = newCount;
+                counter.style.transition = "transform 0.3s ease";
+                counter.style.transform = "scale(1.3)";
+                setTimeout(() => counter.style.transform = "scale(1)", 300);
+            }
+        };
+
         function deleteProfile() {
-            // ... (la tua logica di eliminazione è corretta)
-            const confirmation = prompt('Digita "ELIMINA" per confermare la cancellazione:');
+            const confirmation = prompt('Digita "ELIMINA" per confermare:');
             if (confirmation === 'ELIMINA') {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '<%= user_path(@user) %>';
-                
                 const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'DELETE';
-                
+                methodInput.type = 'hidden'; methodInput.name = '_method'; methodInput.value = 'DELETE';
                 const tokenInput = document.createElement('input');
-                tokenInput.type = 'hidden';
-                tokenInput.name = 'authenticity_token';
+                tokenInput.type = 'hidden'; tokenInput.name = 'authenticity_token';
                 tokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                
-                form.appendChild(methodInput);
-                form.appendChild(tokenInput);
+                form.appendChild(methodInput); form.appendChild(tokenInput);
                 document.body.appendChild(form);
                 form.submit();
-            } else {
-                alert('Cancellazione annullata.');
             }
         }
+
+        // Pulizia definitiva prima di cambiare pagina
+        document.addEventListener("turbo:before-cache", () => {
+            if (profileTimer) clearInterval(profileTimer);
+        });
     </script>
 </body>
 </html>

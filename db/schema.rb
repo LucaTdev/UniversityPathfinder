@@ -10,12 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_28_143606) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_24_170037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "admin_profiles", force: :cascade do |t|
-    t.string "email"
     t.string "token"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -62,19 +61,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_143606) do
   end
 
   create_table "student_profiles", force: :cascade do |t|
-    t.string "email"
     t.string "student_id"
     t.string "university"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_student_profiles_on_user_id"
-  end
-
-  create_table "test_enums", force: :cascade do |t|
-    t.integer "role"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -87,6 +79,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_143606) do
     t.boolean "terms_accepted"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "routes_count", default: 0, null: false
   end
 
   add_foreign_key "admin_profiles", "users"
