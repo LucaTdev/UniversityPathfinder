@@ -21,6 +21,14 @@ Rails.application.routes.draw do
       patch :update_profile
     end
   end
+
+  #Questo serve per aggiornare il counter sul profilo
+  resources :routes, only: [:create] do
+    collection do
+      get 'stats'
+    end
+  end
+
   # Rotta per il profilo dell'utente corrente
   get 'profile', to: 'users#profile'
   get 'profile/edit', to: 'users#edit_profile'
