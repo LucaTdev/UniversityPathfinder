@@ -73,6 +73,7 @@ class User < ApplicationRecord
     # === Relazioni ===
     has_one :student_profile, dependent: :destroy
     has_one :admin_profile, dependent: :destroy
+    has_many :routes, dependent: :destroy
 
     private
 
