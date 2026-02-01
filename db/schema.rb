@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_24_170037) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_01_093632) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -28,6 +28,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_170037) do
     t.text "categoria", null: false
     t.datetime "created_at", precision: nil, default: -> { "now()" }
     t.datetime "updated_at", precision: nil, default: -> { "now()" }
+  end
+
+  create_table "news", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.string "category"
+    t.string "icon_class"
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "percorsi", force: :cascade do |t|
@@ -48,6 +58,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_170037) do
     t.json "notifiche"
 
     t.unique_constraint ["persona"], name: "profilo_persona_key"
+  end
+
+  create_table "routes", id: :serial, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "destination", limit: 255
+    t.string "destination_name", limit: 255
+    t.datetime "searched_at", precision: nil
+    t.datetime "created_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", precision: nil, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["user_id", "searched_at"], name: "index_routes_on_user_id_and_searched_at"
   end
 
   create_table "sedi", id: :integer, default: nil, force: :cascade do |t|
@@ -83,5 +103,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_170037) do
   end
 
   add_foreign_key "admin_profiles", "users"
+  add_foreign_key "routes", "users", name: "fk_routes_user", on_delete: :cascade
   add_foreign_key "student_profiles", "users"
 end
