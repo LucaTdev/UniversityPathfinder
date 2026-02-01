@@ -38,6 +38,7 @@ class HomeController < ApplicationController
   end
 
   def meteo
+    @news = News.order(published_at: :desc).limit(10)
   end
   
 end
