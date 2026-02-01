@@ -1,31 +1,42 @@
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-        <div class="container">
-            <%= link_to "University Pathfinder", home_index_path, class: "navbar-brand navbar-brand-custom" %>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                      <%= link_to "Sedi", home_sedi_path, class: "nav-link nav-link-custom", data: { turbo: false } %>
-                    </li>
-                    <li class="nav-item">
-                        <%= link_to "Percorsi", home_mappa_path, class: "nav-link nav-link-custom", data: { turbo: false } %>
-                    </li>
-                    <li class="nav-item">
-                        <%= link_to "News", home_meteo_path, class: "nav-link nav-link-custom" %>
-                    </li>
-                    <li class="nav-item">
-                        <%= link_to "Supporto", admin_faqs_path, class: "nav-link nav-link-custom" %>
-                    </li>
-                    <li class="nav-item">
-                        <%= link_to "Profilo", home_profilo_path, class: "nav-link nav-link-custom" %>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+  <div class="container">
+    <%= link_to "University Pathfinder", home_index_path, class: "navbar-brand navbar-brand-custom" %>
 
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <%= link_to "Sedi", home_sedi_path, class: "nav-link nav-link-custom" %>
+        </li>
+
+        <li class="nav-item">
+          <%= link_to "Percorsi", home_mappa_path, class: "nav-link nav-link-custom" %>
+        </li>
+
+        <li class="nav-item">
+          <%= link_to "News", home_meteo_path, class: "nav-link nav-link-custom" %>
+        </li>
+
+        <li class="nav-item">
+          <% supporto_path =
+               case current_user&.role.to_i
+               when 2 then admin_faqs_path
+               when 1 then user_faqs_path
+               else        visitor_faqs_path
+               end
+          %>
+
+          <%= link_to "Supporto", supporto_path, class: "nav-link nav-link-custom" %>
+        </li>
+
+        <li class="nav-item">
+          <%= link_to "Profilo", home_profilo_path, class: "nav-link nav-link-custom" %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
