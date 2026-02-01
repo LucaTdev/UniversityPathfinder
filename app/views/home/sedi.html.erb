@@ -575,9 +575,36 @@
 
 
         // Funzione per navigare alla sede
-        function navigateToUniversity(id) {
+        // Funzione per navigare alla sede
+        async function navigateToUniversity(id) {
             const uni = universities.find(u => u.id === id);
             if (!uni) return;
+
+            // Salva la ricerca nel database
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const response = await fetch('/routes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({
+                        route: {
+                            destination: uni.indirizzo,
+                            destination_name: uni.nome
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('Ricerca salvata con successo!');
+                } else {
+                    console.error('Errore nel salvare la ricerca:', await response.text());
+                }
+            } catch (error) {
+                console.error('Errore nel salvare la ricerca:', error);
+            }
 
             // Chiudi il modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('universityModal'));
@@ -592,8 +619,8 @@
             
             sessionStorage.setItem('navigationData', JSON.stringify(navigationData));
             
-            // Reindirizza alla pagina mappa (modifica il path secondo la tua struttura Rails)
-            window.location.href = '<%= home_mappa_path %>';
+            // Reindirizza alla pagina mappa
+            window.location.href = '/home/mappa';
         }
 
         function showAddForm() {
