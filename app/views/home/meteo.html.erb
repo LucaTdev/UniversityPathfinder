@@ -77,6 +77,20 @@
             color: white;
             border-radius: 12px 12px 0 0;
         }
+
+        .news-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+            .news-item:hover .news-actions {
+            opacity: 1;
+        }
+
+            .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
         
         .widget-body {
             padding: 25px;
@@ -302,130 +316,127 @@
                 <!-- Header -->
                 <div style="margin-bottom: 30px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h1 style="margin: 0; color: #2d3436; display: flex; align-items: center; gap: 10px;">
-                            <i class="fas fa-tachometer-alt" style="color: #74b9ff;"></i>
-                            Dashboard News & Meteo
-                        </h1>
+                        
                         <span style="color: #636e72;">23 Agosto 2025</span>
                     </div>
                     <hr style="border-color: #ddd;">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 30px;" class="news-grid">
-                    <!-- Widget News Unificato -->
-                    <div class="widget unified-news-widget">
-                        <div class="widget-header" style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; border-radius: 12px 12px 0 0;">
-                            <h3 class="widget-title">
-                                <i class="fas fa-newspaper"></i>
-                                News
-                            </h3>
-                            <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">10 nuove</span>
-                        </div>
-                        <div class="widget-body" style="padding: 0; max-height: 350px; overflow-y: auto;">
-                            <div style="padding: 0 25px;">
-                                <!-- News Università -->
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #6c5ce7;">
-                                        <i class="fas fa-calendar-alt"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Sessione Esami Autunnale</h6>
-                                        <p>Pubblicato il calendario degli esami per la sessione autunnale. Iscrizioni aperte dal 1° settembre.</p>
-                                        <span class="news-time">30 min fa</span>
-                                        <span class="badge-custom" style="background: #6c5ce7; color: white; margin-left: 10px;">Università</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon news">
-                                        <i class="fas fa-city"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Ultime Notizie Locali</h6>
-                                        <p>Inaugurazione del nuovo centro commerciale in città. Grande affluenza prevista per l'apertura.</p>
-                                        <span class="news-time">45 min fa</span>
-                                        <span class="badge-custom" style="background: #74b9ff; color: white; margin-left: 10px;">Locale</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #fd79a8;">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Orientamento Matricole</h6>
-                                        <p>Welcome week per i nuovi studenti dal 2 al 6 settembre. Programma completo disponibile online.</p>
-                                        <span class="news-time">1 ora fa</span>
-                                        <span class="badge-custom" style="background: #fd79a8; color: white; margin-left: 10px;">Università</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon sport">
-                                        <i class="fas fa-futbol"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Sport</h6>
-                                        <p>La squadra locale vince 3-1 nel match di ieri sera. Prossimo incontro domenica prossima.</p>
-                                        <span class="news-time">1 ora fa</span>
-                                        <span class="badge-custom" style="background: #00b894; color: white; margin-left: 10px;">Sport</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon economy">
-                                        <i class="fas fa-chart-line"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Mercati Finanziari</h6>
-                                        <p>Borsa italiana in crescita del 2.3%. Settore tecnologico in evidenza questa settimana.</p>
-                                        <span class="news-time">2 ore fa</span>
-                                        <span class="badge-custom" style="background: #636e72; color: white; margin-left: 10px;">Economia</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #00b894;">
-                                        <i class="fas fa-book-open"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Nuovi Corsi Online</h6>
-                                        <p>Disponibili 5 nuovi corsi di formazione digitale. Certificazione gratuita per tutti gli studenti.</p>
-                                        <span class="news-time">2 ore fa</span>
-                                        <span class="badge-custom" style="background: #00b894; color: white; margin-left: 10px;">Università</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #00cec9;">
-                                        <i class="fas fa-leaf"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Ambiente</h6>
-                                        <p>Nuova iniziativa per la raccolta differenziata. Obiettivo: ridurre i rifiuti del 30% entro fine anno.</p>
-                                        <span class="news-time">3 ore fa</span>
-                                        <span class="badge-custom" style="background: #00cec9; color: white; margin-left: 10px;">Ambiente</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="news-item">
-                                    <div class="news-icon" style="background: #e17055;">
-                                        <i class="fas fa-euro-sign"></i>
-                                    </div>
-                                    <div class="news-content">
-                                        <h6>Borse di Studio</h6>
-                                        <p>Aperto il bando per le borse di studio 2025/2026. Scadenza domande: 15 settembre.</p>
-                                        <span class="news-time">4 ore fa</span>
-                                        <span class="badge-custom" style="background: #e17055; color: white; margin-left: 10px;">Università</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
-                            <small style="color: #666;">Ultimo aggiornamento: 14:30 - Mostrando le ultime 8 news</small>
-                        </div>
-                    </div>
-                </div>
+                <!-- Pulsante per aggiungere news -->
+<div style="margin-bottom: 20px;">
+  <button class="btn btn-primary" id="add-news-btn">
+    <i class="fas fa-plus"></i> Aggiungi News
+  </button>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 30px;" class="news-grid">
+  <!-- Widget News Unificato -->
+  <div class="widget unified-news-widget">
+    <div class="widget-header" style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; border-radius: 12px 12px 0 0;">
+      <h3 class="widget-title">
+        <i class="fas fa-newspaper"></i>
+        News
+      </h3>
+      <span id="news-count" style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">
+        <%= @news.count %> nuove
+      </span>
+    </div>
+    <div class="widget-body" style="padding: 0; max-height: 350px; overflow-y: auto;">
+      <div style="padding: 0 25px;" id="news-container">
+        <%= render partial: 'news/news_item', collection: @news, as: :news %>
+      </div>
+    </div>
+    <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
+      <small style="color: #666;">
+        Ultimo aggiornamento: <%= Time.current.strftime("%H:%M") %> - Mostrando le ultime <%= @news.count %> news
+      </small>
+    </div>
+  </div>
+</div>
+
+<!-- Modal per creare/modificare news -->
+<div class="modal fade" id="newsModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newsModalLabel">Nuova News</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="news-form">
+          <input type="hidden" id="news-id" name="news_id">
+          
+          <div class="mb-3">
+            <label for="news-title" class="form-label">Titolo</label>
+            <input type="text" class="form-control" id="news-title" name="title" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="news-content" class="form-label">Contenuto</label>
+            <textarea class="form-control" id="news-content" name="content" rows="3" required></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <label for="news-category" class="form-label">Categoria</label>
+            <select class="form-control" id="news-category" name="category" required>
+              <option value="">Seleziona categoria</option>
+              <option value="Università">Università</option>
+              <option value="Locale">Locale</option>
+              <option value="Sport">Sport</option>
+              <option value="Economia">Economia</option>
+              <option value="Ambiente">Ambiente</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="news-icon" class="form-label">Icona</label>
+            <select class="form-control" id="news-icon" name="icon_class">
+                <optgroup label="Università">
+                <option value="fas fa-graduation-cap">🎓 Cappello laurea</option>
+                <option value="fas fa-book-open">📖 Libro aperto</option>
+                <option value="fas fa-calendar-alt">📅 Calendario</option>
+                <option value="fas fa-users">👥 Gruppo</option>
+                <option value="fas fa-euro-sign">💰 Euro</option>
+                </optgroup>
+                <optgroup label="News/Locale">
+                <option value="fas fa-newspaper">📰 Giornale</option>
+                <option value="fas fa-city">🏙️ Città</option>
+                <option value="fas fa-building">🏢 Edificio</option>
+                <option value="fas fa-bell">🔔 Campanella</option>
+                </optgroup>
+                <optgroup label="Sport">
+                <option value="fas fa-futbol">⚽ Calcio</option>
+                <option value="fas fa-basketball-ball">🏀 Basket</option>
+                <option value="fas fa-trophy">🏆 Trofeo</option>
+                <option value="fas fa-running">🏃 Corsa</option>
+                </optgroup>
+                <optgroup label="Economia">
+                <option value="fas fa-chart-line">📈 Grafico</option>
+                <option value="fas fa-chart-bar">📊 Barre</option>
+                <option value="fas fa-coins">💰 Monete</option>
+                <option value="fas fa-briefcase">💼 Valigetta</option>
+                </optgroup>
+                <optgroup label="Ambiente">
+                <option value="fas fa-leaf">🍃 Foglia</option>
+                <option value="fas fa-tree">🌳 Albero</option>
+                <option value="fas fa-recycle">♻️ Riciclo</option>
+                <option value="fas fa-sun">☀️ Sole</option>
+                </optgroup>
+            </select>
+            <small class="form-text text-muted">Oppure inserisci manualmente una classe Font Awesome</small>
+            <input type="text" class="form-control mt-2" id="news-icon-custom" placeholder="es: fas fa-star">
+        </div>
+        </form>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button type="button" class="btn btn-primary" id="save-news-btn">Salva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= javascript_include_tag 'news_management' %>
 
                 <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
                     <!-- Widget Meteo -->
