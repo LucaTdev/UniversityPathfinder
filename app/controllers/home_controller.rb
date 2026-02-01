@@ -5,6 +5,7 @@ class HomeController < ApplicationController
 
   def profilo
     @user = current_user
+    @recent_routes = @user.routes.recent.limit(5)
   end
 
   def sedi

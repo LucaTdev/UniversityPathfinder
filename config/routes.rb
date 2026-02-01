@@ -21,6 +21,14 @@ Rails.application.routes.draw do
       patch :update_profile
     end
   end
+
+  #Questo serve per aggiornare il counter sul profilo
+  resources :routes, only: [:create] do
+    collection do
+      get 'stats'
+    end
+  end
+
   # Rotta per il profilo dell'utente corrente
   get 'profile', to: 'users#profile'
   get 'profile/edit', to: 'users#edit_profile'
@@ -29,7 +37,7 @@ Rails.application.routes.draw do
   get "sessions/new"
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
+  delete '/logout', to: 'sessions#destroy', as: :logout #delete 'logout', to: 'sessions#destroy'
 
   get 'users/new'
   get 'forgot_password', to: 'passwords#new'
