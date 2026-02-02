@@ -1,133 +1,135 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>University Pathfinder - FAQ</title>
-
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<% content_for :title, "FAQ" %>
+<% content_for :head do %>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-</head>
+<% end %>
 
-<body>
-  <div class="main-content">
-    <div class="container">
+<div class="faqs-page">
+<div class="page-header text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-4">
+      <i class="fas fa-question-circle me-2"></i>
+      FAQ
+    </h1>
+  </div>
+</div>
 
-      <!-- Header + bottone (stesso stile di "Aggiungi FAQ" in admin) -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
-          <i class="fas fa-user me-2"></i>Utente registrato
-        </h2>
+<div class="main-content">
+  <div
+    class="container"
+    data-controller="faqs-admin valutazione-faqs"
+    data-valutazione-faqs-guest-value="false"
+  >
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">
+        <i class="fas fa-user me-2"></i>
+        Utente registrato
+      </h2>
 
-        <button
-          type="button"
-          class="btn btn-success"
-          data-bs-toggle="collapse"
-          data-bs-target="#suggest-faq-form"
-          aria-expanded="false"
-          aria-controls="suggest-faq-form"
-        >
-          <i class="fas fa-plus me-2"></i>Suggerisci FAQ
-        </button>
+      <button
+        type="button"
+        class="btn btn-success"
+        data-bs-toggle="collapse"
+        data-bs-target="#suggest-faq-form"
+        aria-expanded="false"
+        aria-controls="suggest-faq-form"
+      >
+        <i class="fas fa-plus me-2"></i>
+        Suggerisci FAQ
+      </button>
+    </div>
+
+    <div id="suggest-faq-form" class="card mb-4 collapse">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="fas fa-plus me-2"></i>
+          Nuovo suggerimento FAQ
+        </h5>
       </div>
 
-      <!-- Form Suggerisci FAQ (stesso format della card "inserisci FAQ" dell'admin) -->
-      <div id="suggest-faq-form" class="card mb-4 collapse">
-        <div class="card-header">
-          <h5 class="mb-0">
-            <i class="fas fa-plus me-2"></i>Nuovo suggerimento FAQ
-          </h5>
-        </div>
+      <div class="card-body">
+        <form method="post" action="#">
+          <div class="mb-3">
+            <label for="suggest_domanda" class="form-label">Domanda *</label>
+            <input
+              type="text"
+              id="suggest_domanda"
+              class="form-control"
+              placeholder="Inserisci la domanda"
+              required
+            >
+          </div>
 
-        <div class="card-body">
-          <!-- SOLO UI per ora -->
-          <form method="post" action="#">
-            <div class="mb-3">
-              <label for="suggest_domanda" class="form-label">Domanda *</label>
-              <input
-                type="text"
-                id="suggest_domanda"
-                class="form-control"
-                placeholder="Inserisci la domanda"
-                required
-              >
-            </div>
+          <div class="mb-3">
+            <label for="suggest_dettagli" class="form-label">Dettagli (opzionale)</label>
+            <textarea
+              id="suggest_dettagli"
+              rows="4"
+              class="form-control"
+              placeholder="Aggiungi contesto o dettagli utili"
+            ></textarea>
+          </div>
 
-            <div class="mb-3">
-              <label for="suggest_dettagli" class="form-label">Dettagli (opzionale)</label>
-              <textarea
-                id="suggest_dettagli"
-                rows="4"
-                class="form-control"
-                placeholder="Aggiungi contesto o dettagli utili"
-              ></textarea>
-            </div>
+          <div class="mb-3">
+            <label for="suggest_categoria" class="form-label">Categoria *</label>
+            <input
+              type="text"
+              id="suggest_categoria"
+              class="form-control"
+              placeholder="Es. Iscrizioni, Segreteria, Esami"
+              required
+            >
+          </div>
 
-            <div class="mb-3">
-              <label for="suggest_categoria" class="form-label">Categoria *</label>
-              <input
-                type="text"
-                id="suggest_categoria"
-                class="form-control"
-                placeholder="Es. Iscrizioni, Segreteria, Esami"
-                required
-              >
-            </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-paper-plane me-2"></i>
+              Invia suggerimento
+            </button>
 
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-paper-plane me-2"></i>Invia suggerimento
-              </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-toggle="collapse"
+              data-bs-target="#suggest-faq-form"
+            >
+              <i class="fas fa-times me-2"></i>
+              Annulla
+            </button>
+          </div>
 
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-toggle="collapse"
-                data-bs-target="#suggest-faq-form"
-              >
-                <i class="fas fa-times me-2"></i>Annulla
-              </button>
-            </div>
-
-            <div class="mt-3 text-muted small">
-              * Per ora è solo UI: colleghiamo il database dopo.
-            </div>
-          </form>
-        </div>
+          <div class="mt-3 text-muted small">
+            * Per ora e' solo UI: colleghiamo il database dopo.
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- FAQ List -->
+    <% if @faqs.any? %>
       <div class="row">
         <% @faqs.each do |faq| %>
           <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card faq-card h-100">
-              <div class="card-body">
+              <div class="card faq-card h-100">
+              <div class="card-body d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <span class="category-badge"><%= faq.categoria %></span>
                 </div>
+
                 <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                <p class="card-text text-muted"><%= faq.risposta %></p>
+                <p class="card-text text-muted flex-grow-1"><%= faq.risposta %></p>
+
+                <%= render "shared/faqs/votes", faq: faq, up_count: nil, down_count: nil %>
               </div>
             </div>
           </div>
         <% end %>
       </div>
-
-      <!-- Empty State -->
-      <% if @faqs.empty? %>
-        <div class="col-12 text-center py-5">
-          <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-          <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-          <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
-        </div>
-      <% end %>
-
+    <% else %>
+      <div class="text-center py-5">
+        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">Nessuna FAQ disponibile</h4>
+      <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
     </div>
+  <% end %>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+</div>
