@@ -1,49 +1,92 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Pathfinder - FAQ</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-</head>
+<% content_for :title, "FAQ" %>
+<% content_for :head do %>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<% end %>
 
-<body>
-    <div class="main-content">
-        <div class="container" data-controller="faqs-admin">
-            <h2>
-                Utente VISITATORE
-            </h2> 
-            <!-- FAQ List -->
-            <div class="row">
-                <% @faqs.each do |faq| %>
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card faq-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="category-badge"><%= faq.categoria %></span>
-                                </div>
-                                <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                                <p class="card-text text-muted"><%= faq.risposta %></p>
-                            </div>
-                        </div>
-                    </div>
-                <% end %>
-            </div>
+<div class="faqs-page">
+<div class="page-header text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-4">
+      <i class="fas fa-question-circle me-2"></i>
+      FAQ
+    </h1>
+  </div>
+</div>
 
-            <!-- Empty State -->
-            <% if @faqs.empty? %>
-                <div class="col-12 text-center py-5">
-                    <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-                    <p class="text-muted">Aggiungi la prima FAQ cliccando sul pulsante "Aggiungi FAQ".</p>
-                </div>
-            <% end %>
-        </div>
+<div class="main-content">
+  <div
+    class="container"
+    data-controller="faqs-admin valutazione-faqs"
+    data-valutazione-faqs-guest-value="true"
+    data-valutazione-faqs-login-url-value="<%= login_path %>"
+  >
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Utente visitatore</h2>
     </div>
 
+    <% if @faqs.any? %>
+      <div class="row">
+        <% @faqs.each do |faq| %>
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card faq-card h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="category-badge"><%= faq.categoria %></span>
+                </div>
 
+                <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
+                <p class="card-text text-muted"><%= faq.risposta %></p>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+                <%= render "shared/faqs/votes", faq: faq, up_count: nil, down_count: nil %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-5">
+        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">Nessuna FAQ disponibile</h4>
+      <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
+    </div>
+  <% end %>
+
+  <div
+    class="modal fade"
+    id="faqVoteLoginModal"
+    tabindex="-1"
+    aria-labelledby="faqVoteLoginModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="faqVoteLoginModalLabel">Accedi per votare</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            data-action="click->valutazione-faqs#closeLoginModal"
+            aria-label="Chiudi"
+          ></button>
+        </div>
+        <div class="modal-body">
+          Il tuo giudizio e' importante, accedi per votare.
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+            data-action="click->valutazione-faqs#closeLoginModal"
+          >
+            Annulla
+          </button>
+          <a class="btn btn-primary" href="<%= login_path %>">Accedi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+</div>
