@@ -1,20 +1,50 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initializeNewsManagement() {
   // Verifica se l'utente è admin
   const newsContainer = document.getElementById('news-container');
-  const isAdmin = newsContainer?.dataset.isAdmin === 'true';
   
-  console.log('Is Admin:', isAdmin); // Debug
+  if (!newsContainer) {
+    console.log('News container non trovato');
+    return;
+  }
+  
+  // Evita inizializzazioni multiple
+  if (newsContainer.dataset.jsInitialized === 'true') {
+    console.log('News management già inizializzato');
+    return;
+  }
+  
+  newsContainer.dataset.jsInitialized = 'true';
+  
+  const isAdmin = newsContainer.dataset.isAdmin === 'true';
+  
+  console.log('Is Admin:', isAdmin);
+  
+  // Funzione per nascondere pulsanti admin se l'utente non è admin
+  function hideAdminButtonsIfNeeded() {
+    if (!isAdmin) {
+      const allEditButtons = document.querySelectorAll('.edit-news-btn');
+      const allDeleteButtons = document.querySelectorAll('.delete-news-btn');
+      const allNewsActions = document.querySelectorAll('.news-actions');
+      
+      allEditButtons.forEach(btn => btn.remove());
+      allDeleteButtons.forEach(btn => btn.remove());
+      allNewsActions.forEach(actions => actions.remove());
+      
+      console.log('Pulsanti admin rimossi');
+    }
+  }
+  
+  // Esegui subito la pulizia al caricamento
+  hideAdminButtonsIfNeeded();
   
   if (!isAdmin) {
     console.log('Utente non admin - funzionalità di modifica disabilitate');
-    // Non caricare nessuna funzionalità di modifica
     return;
   }
   
   // Da qui in poi, solo gli admin arrivano
   console.log('Caricamento funzionalità admin...');
   
-  // Verifica che Bootstrap sia caricato
   if (typeof bootstrap === 'undefined') {
     console.error('Bootstrap non è caricato!');
     return;
@@ -22,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const newsModalElement = document.getElementById('newsModal');
   if (!newsModalElement) {
-    console.error('Modal non trovato! (Normale se non sei admin)');
+    console.error('Modal non trovato!');
     return;
   }
 
@@ -31,13 +61,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const saveBtn = document.getElementById('save-news-btn');
   const addBtn = document.getElementById('add-news-btn');
   
-  // Ottieni il CSRF token
   const csrfToken = document.querySelector('[name="csrf-token"]')?.content;
   if (!csrfToken) {
     console.error('CSRF token non trovato!');
   }
   
-  // Aggiungi nuova news
   if (addBtn) {
     addBtn.addEventListener('click', function() {
       console.log('Apertura modal per nuova news');
@@ -47,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Salva news (create o update)
   if (saveBtn) {
     saveBtn.addEventListener('click', function() {
       const newsId = document.getElementById('news-id').value;
@@ -104,6 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
             container.insertAdjacentHTML('afterbegin', result.news);
           }
           
+          hideAdminButtonsIfNeeded();
+          
           updateNewsCount();
           newsModal.hide();
           resetForm();
@@ -120,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Edit news (delegated event)
   document.addEventListener('click', function(e) {
     if (e.target.closest('.edit-news-btn')) {
       const btn = e.target.closest('.edit-news-btn');
@@ -142,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Delete news (delegated event)
   document.addEventListener('click', function(e) {
     if (e.target.closest('.delete-news-btn')) {
       if (!confirm('Sei sicuro di voler eliminare questa news?')) return;
@@ -211,4 +238,15 @@ document.addEventListener('DOMContentLoaded', function() {
       alertDiv.remove();
     }, 3000);
   }
-});
+}
+
+// Esegui immediatamente se il DOM è già caricato
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initializeNewsManagement);
+} else {
+    initializeNewsManagement();
+}
+
+// Ascolta anche gli eventi Turbo
+document.addEventListener("turbo:load", initializeNewsManagement);
+document.addEventListener("turbo:render", initializeNewsManagement);

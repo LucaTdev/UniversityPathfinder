@@ -467,45 +467,59 @@
 <% end %>
 <%= javascript_include_tag 'news_management' %>
 
-                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
-                    <!-- Widget Meteo -->
-                    <div class="widget weather-widget">
-                        <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
-                            <div class="container py-5">
-                                <h1 class="text-center mb-4">Previsioni Meteo</h1>
-                                <div id="meteo-card" class="card shadow-sm p-4 text-center">
-                                    <p>Caricamento posizione...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Widget Notifiche Meteo -->
-                    <div class="widget weather-notifications-widget">
-                        <div class="widget-header" style="background: linear-gradient(135deg, #e17055, #f39c12); color: white; border-radius: 12px 12px 0 0;">
-                            <h3 class="widget-title">
-                                <i class="fas fa-bell"></i>
-                                Notifiche Meteo
-                            </h3>
-                            <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">2 attive</span>
-                        </div>
-                        <div class="widget-body" style="padding: 0; max-height: 450px; overflow-y: auto;">
-                            <div style="padding: 0 25px;">
-                                <div id="weather-alerts" class="p-3 card shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 15px;">
-                                    <p>Caricamento allerte...</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
-                            <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
-                        </div>
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
+        <!-- Widget Meteo -->
+        <div class="widget weather-widget">
+            <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
+                <div class="container py-5">
+                    <h1 class="text-center mb-4">Previsioni Meteo</h1>
+                    <div id="meteo-card" class="card shadow-sm p-4 text-center">
+                        <p>Caricamento posizione...</p>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Widget Notifiche Meteo -->
+        <div class="widget weather-notifications-widget">
+            <div class="widget-header" style="background: linear-gradient(135deg, #e17055, #f39c12); color: white; border-radius: 12px 12px 0 0;">
+                <h3 class="widget-title">
+                    <i class="fas fa-bell"></i>
+                    Notifiche Meteo
+                </h3>
+                <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">2 attive</span>
+            </div>
+            <div class="widget-body" style="padding: 0; max-height: 450px; overflow-y: auto;">
+                <div style="padding: 0 25px;">
+                    <div id="weather-alerts" class="p-3 card shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 15px;">
+                        <p>Caricamento allerte...</p>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
+                <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+function initializeMeteo() {
     const meteoCard = document.getElementById('meteo-card');
+    
+    // Evita inizializzazioni multiple
+    if (!meteoCard) {
+        console.log('Meteo card non trovato');
+        return;
+    }
+    
+    if (meteoCard.dataset.initialized === 'true') {
+        console.log('Meteo già inizializzato');
+        return;
+    }
+    
+    console.log('Inizializzazione meteo...');
+    meteoCard.dataset.initialized = 'true';
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
@@ -558,7 +572,10 @@
 
     function error() {
         meteoCard.innerHTML = "<div class='alert alert-warning'>Impossibile ottenere la posizione.</div>";
-        document.getElementById('weather-alerts').innerHTML = '<div class="alert alert-warning">Allerte non disponibili senza posizione.</div>';
+        const alertsContainer = document.getElementById('weather-alerts');
+        if (alertsContainer) {
+            alertsContainer.innerHTML = '<div class="alert alert-warning">Allerte non disponibili senza posizione.</div>';
+        }
     }
 
     function getWeatherDescription(code) {
@@ -583,31 +600,42 @@
     }
 
     function getWeatherAlerts(lat, lon) {
+        const alertsContainer = document.getElementById('weather-alerts');
+        if (!alertsContainer) return;
+        
         fetch(`https://api.open-meteo.com/v1/weather-alerts?latitude=${lat}&longitude=${lon}`)
         .then(response => response.json())
         .then(data => {
-            const alertsContainer = document.getElementById('weather-alerts');
             if (data.alerts && data.alerts.length > 0) {
-            let html = '';
-            data.alerts.forEach(alert => {
-                html += `
-                <div class="alert alert-warning mb-3">
-                    <strong>${alert.event}</strong><br>
-                    <small><em>${alert.sender_name}</em></small><br>
-                    <span>${alert.description}</span><br>
-                    <small><strong>Validità:</strong> ${alert.effective} - ${alert.expires}</small>
-                </div>
-                `;
-            });
-            alertsContainer.innerHTML = html;
+                let html = '';
+                data.alerts.forEach(alert => {
+                    html += `
+                    <div class="alert alert-warning mb-3">
+                        <strong>${alert.event}</strong><br>
+                        <small><em>${alert.sender_name}</em></small><br>
+                        <span>${alert.description}</span><br>
+                        <small><strong>Validità:</strong> ${alert.effective} - ${alert.expires}</small>
+                    </div>
+                    `;
+                });
+                alertsContainer.innerHTML = html;
             } else {
-            alertsContainer.innerHTML = '<div class="alert alert-success">Nessuna allerta meteo in corso.</div>';
+                alertsContainer.innerHTML = '<div class="alert alert-success">Nessuna allerta meteo in corso.</div>';
             }
         })
         .catch(err => {
-            document.getElementById('weather-alerts').innerHTML = '<div class="alert alert-danger">Errore nel recupero delle allerte.</div>';
+            alertsContainer.innerHTML = '<div class="alert alert-danger">Errore nel recupero delle allerte.</div>';
             console.error(err);
         });
     }
-    });
+}
+
+// Ascolta tutti gli eventi possibili
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initializeMeteo);
+} else {
+    initializeMeteo();
+}
+document.addEventListener("turbo:load", initializeMeteo);
+document.addEventListener("turbo:render", initializeMeteo);
 </script>
