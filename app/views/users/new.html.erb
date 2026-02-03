@@ -54,6 +54,15 @@
     .input-group .form-control:focus {
       z-index: 3;
     }
+
+    /* Indicatore forza password */
+    .password-strength {
+      margin-top: 10px;
+    }
+
+    .strength-weak { background-color: #dc3545; }
+    .strength-medium { background-color: #ffc107; }
+    .strength-strong { background-color: #28a745; }
   </style>
 </head>
 <body>
@@ -70,33 +79,37 @@
 
             <!-- Errori -->
             <% if @user && @user.errors.any? %>
-              <div class="alert alert-danger" id="error-alert">
-                <h5>Correggi i seguenti errori:</h5>
-                <ul id="error-list">
+              <div class="alert alert-danger alert-dismissible fade show" id="error-alert" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Correggi i seguenti errori:</h5>
+                <ul id="error-list" class="mb-0">
                   <% @user.errors.full_messages.each do |message| %>
                     <li><%= message %></li>
                   <% end %>
                 </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
             <% end %>
 
             <!-- Registration Form -->
-            <%= form_with model: @user, url: registration_path, method: :post, local: true, class: "needs-validation", html: { novalidate: true } do |f| %>
+            <%= form_with model: @user, url: registration_path, method: :post, local: true, id: "registration-form", class: "needs-validation", html: { novalidate: true } do |f| %>
               
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <%= f.label :first_name, "Nome", class: "form-label fw-semibold" %>
                   <%= f.text_field :first_name, class: "form-control form-control-lg", placeholder: "Inserisci il tuo nome", required: true %>
+                  <div class="invalid-feedback">Inserisci il tuo nome</div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <%= f.label :last_name, "Cognome", class: "form-label fw-semibold" %>
                   <%= f.text_field :last_name, class: "form-control form-control-lg", placeholder: "Inserisci il tuo cognome", required: true %>
+                  <div class="invalid-feedback">Inserisci il tuo cognome</div>
                 </div>
               </div>
 
               <div class="mb-3">
                 <%= f.label :email, "Email", class: "form-label fw-semibold" %>
-                <%= f.email_field :email, class: "form-control form-control-lg", placeholder: "Inserisci la tua email", required: true %>
+                <%= f.email_field :email, class: "form-control form-control-lg", id: "user_email", placeholder: "Inserisci la tua email", required: true %>
+                <div class="invalid-feedback">Inserisci un indirizzo email valido</div>
               </div>
 
               <!-- Password Field con Toggle -->
@@ -109,6 +122,13 @@
                   </button>
                 </div>
                 <div class="form-text text-muted">La password deve contenere almeno 8 caratteri.</div>
+                <div class="password-strength mt-2" id="password-strength" style="display: none;">
+                  <small class="text-muted">Forza password: <span id="strength-text">-</span></small>
+                  <div class="progress" style="height: 5px;">
+                    <div class="progress-bar" id="strength-bar" role="progressbar" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="invalid-feedback">La password deve essere di almeno 8 caratteri</div>
               </div>
 
               <!-- Password Confirmation Field con Toggle -->
@@ -120,11 +140,13 @@
                     <i class="fas fa-eye" id="togglePasswordConfirmationIcon"></i>
                   </button>
                 </div>
+                <div class="invalid-feedback" id="password-mismatch">Le password non corrispondono</div>
+                <div class="valid-feedback" id="password-match">Le password corrispondono!</div>
               </div>
 
               <div class="mb-4">
                 <%= f.label :registration_date, "Data di Registrazione", class: "form-label fw-semibold" %>
-                <%= f.date_field :registration_date, class: "form-control form-control-lg", required: true %>
+                <%= f.date_field :registration_date, class: "form-control form-control-lg", id: "user_registration_date", required: true %>
               </div>
 
               <!-- Tipo Account -->
@@ -158,15 +180,16 @@
 
               <div class="mb-4 mt-3">
                 <div class="form-check">
-                  <%= f.check_box :terms_accepted, class: "form-check-input", required: true %>
+                  <%= f.check_box :terms_accepted, class: "form-check-input", id: "terms_accepted", required: true %>
                   <%= f.label :terms_accepted, class: "form-check-label" do %>
                     Accetto i <a href="#">Termini e Condizioni</a> e la <a href="#">Privacy Policy</a>
                   <% end %>
+                  <div class="invalid-feedback">Devi accettare i termini e condizioni</div>
                 </div>
               </div>
 
               <div class="d-grid gap-2 mb-3">
-                <%= f.submit "Registrati", class: "btn btn-primary btn-lg" %>
+                <%= f.submit "Registrati", class: "btn btn-primary btn-lg", id: "submit-btn" %>
               </div>
             <% end %>
 
@@ -184,13 +207,33 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    function initializeRegistrationForm() {
+      const form = document.getElementById('registration-form');
+      
+      // Verifica che il form esista
+      if (!form) {
+        console.log('Form di registrazione non trovato');
+        return;
+      }
+      
+      // Evita inizializzazioni multiple
+      if (form.dataset.initialized === 'true') {
+        console.log('Form già inizializzato');
+        return;
+      }
+      
+      console.log('Inizializzazione form di registrazione...');
+      form.dataset.initialized = 'true';
+
       // Imposta la data di oggi come default
-      const today = new Date();
-      const formattedDate = today.getFullYear() + '-' + 
-                          String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                          String(today.getDate()).padStart(2, '0');
-      document.getElementById('user_registration_date').value = formattedDate;
+      const registrationDateField = document.getElementById('user_registration_date');
+      if (registrationDateField && !registrationDateField.value) {
+        const today = new Date();
+        const formattedDate = today.getFullYear() + '-' + 
+                            String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                            String(today.getDate()).padStart(2, '0');
+        registrationDateField.value = formattedDate;
+      }
 
       // Role selection logic
       const roleSelect = document.getElementById("role_select");
@@ -198,6 +241,8 @@
       const adminFields = document.getElementById("admin_fields");
 
       function toggleFields() {
+        if (!roleSelect || !studentFields || !adminFields) return;
+        
         if (roleSelect.value == "1") { // studente
           studentFields.style.display = "block";
           adminFields.style.display = "none";
@@ -210,19 +255,99 @@
         }
       }
 
-      roleSelect.addEventListener("change", toggleFields);
-      toggleFields(); // inizializza
+      if (roleSelect) {
+        roleSelect.addEventListener("change", toggleFields);
+        toggleFields(); // inizializza
+      }
+
+      // Calcola forza password
+      const passwordField = document.getElementById('password');
+      const strengthBar = document.getElementById('strength-bar');
+      const strengthText = document.getElementById('strength-text');
+      const strengthContainer = document.getElementById('password-strength');
+
+      function calculatePasswordStrength(password) {
+        let strength = 0;
+        
+        if (password.length >= 8) strength += 25;
+        if (password.length >= 12) strength += 25;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
+        if (/\d/.test(password)) strength += 15;
+        if (/[^a-zA-Z0-9]/.test(password)) strength += 15;
+        
+        return strength;
+      }
+
+      if (passwordField && strengthBar && strengthText && strengthContainer) {
+        passwordField.addEventListener('input', function() {
+          const password = this.value;
+          
+          if (password.length > 0) {
+            strengthContainer.style.display = 'block';
+            const strength = calculatePasswordStrength(password);
+            
+            strengthBar.style.width = strength + '%';
+            strengthBar.className = 'progress-bar';
+            
+            if (strength < 40) {
+              strengthBar.classList.add('strength-weak');
+              strengthText.textContent = 'Debole';
+              strengthText.className = 'text-danger';
+            } else if (strength < 70) {
+              strengthBar.classList.add('strength-medium');
+              strengthText.textContent = 'Media';
+              strengthText.className = 'text-warning';
+            } else {
+              strengthBar.classList.add('strength-strong');
+              strengthText.textContent = 'Forte';
+              strengthText.className = 'text-success';
+            }
+          } else {
+            strengthContainer.style.display = 'none';
+          }
+        });
+      }
+
+      // Validazione corrispondenza password
+      const passwordConfirmation = document.getElementById('password_confirmation');
+      
+      function validatePasswordMatch() {
+        if (!passwordField || !passwordConfirmation) return;
+        
+        if (passwordConfirmation.value === '') {
+          passwordConfirmation.classList.remove('is-valid', 'is-invalid');
+          return;
+        }
+        
+        if (passwordField.value !== passwordConfirmation.value) {
+          passwordConfirmation.setCustomValidity('Le password non corrispondono');
+          passwordConfirmation.classList.add('is-invalid');
+          passwordConfirmation.classList.remove('is-valid');
+        } else {
+          passwordConfirmation.setCustomValidity('');
+          passwordConfirmation.classList.remove('is-invalid');
+          passwordConfirmation.classList.add('is-valid');
+        }
+      }
+
+      if (passwordField) {
+        passwordField.addEventListener('input', validatePasswordMatch);
+      }
+
+      if (passwordConfirmation) {
+        passwordConfirmation.addEventListener('input', validatePasswordMatch);
+      }
 
       // Password visibility toggles
       function setupPasswordToggle(toggleId, passwordId, iconId) {
         const toggle = document.getElementById(toggleId);
-        const passwordField = document.getElementById(passwordId);
+        const passwordFieldLocal = document.getElementById(passwordId);
         const icon = document.getElementById(iconId);
 
-        if (toggle && passwordField && icon) {
+        if (toggle && passwordFieldLocal && icon) {
           toggle.addEventListener('click', function() {
-            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordField.setAttribute('type', type);
+            const type = passwordFieldLocal.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordFieldLocal.setAttribute('type', type);
             
             // Toggle icon
             if (type === 'text') {
@@ -239,30 +364,64 @@
       setupPasswordToggle('togglePasswordConfirmation', 'password_confirmation', 'togglePasswordConfirmationIcon');
       setupPasswordToggle('toggleAdminToken', 'admin_token', 'toggleAdminTokenIcon');
 
-      // Bootstrap form validation
-      const forms = document.getElementsByClassName('needs-validation');
-      Array.prototype.forEach.call(forms, function(form) {
-        form.addEventListener('submit', function(event) {
-          if (form.checkValidity() == false) {
-            event.preventDefault();
-            event.stopPropagation();
+      // Validazione email
+      const emailField = document.getElementById('user_email');
+      if (emailField) {
+        emailField.addEventListener('blur', function() {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (this.value && !emailRegex.test(this.value)) {
+            this.setCustomValidity('Inserisci un indirizzo email valido');
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+          } else if (this.value) {
+            this.setCustomValidity('');
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
           }
-          form.classList.add('was-validated');
-        }, false);
-      });
+        });
+      }
+
+      // Bootstrap form validation
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          // Disabilita il pulsante submit e mostra loading
+          const submitBtn = document.getElementById('submit-btn');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Registrazione in corso...';
+          }
+        }
+        form.classList.add('was-validated');
+      }, false);
 
       // Button hover effect
       const submitBtn = document.querySelector('.btn-primary');
       if (submitBtn) {
         submitBtn.addEventListener('mouseenter', function() {
-          this.style.transform = 'translateY(-2px)';
+          if (!this.disabled) {
+            this.style.transform = 'translateY(-2px)';
+          }
         });
         
         submitBtn.addEventListener('mouseleave', function() {
           this.style.transform = 'translateY(0)';
         });
       }
-    });
+
+      console.log('Form di registrazione inizializzato con successo');
+    }
+
+    // Pattern standard per Turbo - IMPORTANTE!
+    if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", initializeRegistrationForm);
+    } else {
+        initializeRegistrationForm();
+    }
+    document.addEventListener("turbo:load", initializeRegistrationForm);
+    document.addEventListener("turbo:render", initializeRegistrationForm);
   </script>
 </body>
 </html>
