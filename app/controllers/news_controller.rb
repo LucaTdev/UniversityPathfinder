@@ -1,7 +1,9 @@
 class NewsController < ApplicationController
-  before_action :set_news, only: [:update, :destroy]
   
   include NewsHelper  # <-- Aggiungi questa riga
+  before_action :log_request
+  before_action :authenticate_user!
+  before_action :authorize_admin!, only: [:create, :update, :destroy]
   before_action :set_news, only: [:update, :destroy]
 
   def index
@@ -81,4 +83,25 @@ class NewsController < ApplicationController
   def news_params
     params.require(:news).permit(:title, :content, :category, :icon_class)
   end
+
+  private
+  
+  def authorize_admin!
+    unless current_user&.admin?
+      Rails.logger.warn "Tentativo non autorizzato da user_id: #{current_user&.id}, role: #{current_user&.role}"
+      render json: { 
+        success: false, 
+        errors: ['Non hai i permessi per eseguire questa azione. Solo gli admin possono modificare le news.'] 
+      }, status: :forbidden
+      return false
+    end
+  end
+
+  def log_request
+    Rails.logger.info "=== NEWS CONTROLLER REQUEST ==="
+    Rails.logger.info "Action: #{action_name}"
+    Rails.logger.info "Current user: #{current_user&.id}"
+    Rails.logger.info "Is admin: #{current_user&.admin?}"
+  end
+
 end

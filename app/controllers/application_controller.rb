@@ -28,6 +28,12 @@ class ApplicationController < ActionController::Base
     redirect_to login_path unless user_signed_in?
   end
 
+  def authorize_admin!
+    unless current_user&.admin?
+      redirect_to root_path, alert: "Non hai i permessi per accedere a questa pagina"
+    end
+  end
+
   def logged_in?
     current_user.present?
   end
