@@ -5,6 +5,7 @@ class HomeController < ApplicationController
 
   def profilo
     @user = current_user
+    @recent_routes = @user.routes.recent.limit(5)
   end
 
   def sedi
@@ -18,10 +19,26 @@ class HomeController < ApplicationController
   def login
   end
   
+  def do_login
+    if params[:username].present?
+      session[:session] = params[:username]
+      redirect_to "/profilo"
+    else
+      flash[:alert] = "inserisci un nome utente"
+      redirect_to "profilo"
+    end
+  end
+
+  def logout
+    reset_session
+    redirect_to root_path
+  end
+
   def registrazione
   end
 
   def meteo
+    @news = News.order(published_at: :desc).limit(10)
   end
   
 end
