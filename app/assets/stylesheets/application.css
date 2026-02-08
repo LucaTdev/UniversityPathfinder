@@ -11,6 +11,25 @@
 @import "navbar.css";
 @import "faqs.css";
 
+html, body {
+  height: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 0 auto;
+}
+
+/* Keep footer at the bottom on short pages; scroll to reach it on long pages. */
+.footer {
+  margin-top: auto;
+}
+
 
 
 
