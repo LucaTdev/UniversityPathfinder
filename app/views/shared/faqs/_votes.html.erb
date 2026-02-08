@@ -1,0 +1,67 @@
+<% admin_mode = (defined?(admin_mode) && admin_mode) ? true : false %>
+
+<div class="faq-votes mt-3 pt-3 border-top">
+  <div class="d-flex justify-content-between align-items-center">
+    <small class="text-muted">
+      <i class="fas fa-chart-simple me-1"></i>
+      <%= admin_mode ? "Valutazioni" : "Questa risposta ti e' stata utile?" %>
+    </small>
+
+    <% unless admin_mode %>
+      <div class="btn-group" role="group" aria-label="Valutazione FAQ">
+        <button
+          type="button"
+          class="btn btn-outline-success btn-sm"
+          title="Utile"
+          data-action="click->valutazione-faqs#vote"
+          data-valutazione-faqs-faq-id-param="<%= faq.id %>"
+          data-valutazione-faqs-vote-param="up"
+        >
+          <i class="fas fa-thumbs-up"></i>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-danger btn-sm"
+          title="Non utile"
+          data-action="click->valutazione-faqs#vote"
+          data-valutazione-faqs-faq-id-param="<%= faq.id %>"
+          data-valutazione-faqs-vote-param="down"
+        >
+          <i class="fas fa-thumbs-down"></i>
+        </button>
+      </div>
+    <% else %>
+      <div class="dropdown">
+        <button
+          class="btn btn-outline-secondary btn-sm dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Utenti che hanno votato
+        </button>
+        <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 280px;">
+          <div class="text-muted small fst-italic">
+            Disponibile quando collegheremo il database (nessun dato mostrato per ora).
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="d-flex justify-content-end gap-3 mt-2 small text-muted">
+    <span>
+      <i class="fas fa-thumbs-up me-1"></i>
+      <span class="faq-vote-count" aria-label="Totale voti utili">
+        <%= defined?(up_count) && !up_count.nil? ? up_count : "—" %>
+      </span>
+    </span>
+    <span>
+      <i class="fas fa-thumbs-down me-1"></i>
+      <span class="faq-vote-count" aria-label="Totale voti non utili">
+        <%= defined?(down_count) && !down_count.nil? ? down_count : "—" %>
+      </span>
+    </span>
+  </div>
+</div>

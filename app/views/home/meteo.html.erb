@@ -83,11 +83,35 @@
             transition: opacity 0.2s ease;
         }
 
-            .news-item:hover .news-actions {
+        .news-item:hover .news-actions {
             opacity: 1;
         }
 
-            .btn-sm {
+        
+        .news-item .news-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .news-item:hover .news-actions {
+            opacity: 1;
+        }
+
+        [data-is-admin="false"] .news-actions {
+            display: none !important;
+        }
+
+        [data-is-admin="false"] .news-item {
+            cursor: default;
+        }
+
+        [data-is-admin="true"] .news-item:hover {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px 15px;
+        }
+
+        .btn-sm {
             padding: 4px 8px;
             font-size: 0.8rem;
         }
@@ -322,15 +346,18 @@
                     <hr style="border-color: #ddd;">
                 </div>
 
-                <!-- Pulsante per aggiungere news -->
-<div style="margin-bottom: 20px;">
-  <button class="btn btn-primary" id="add-news-btn">
-    <i class="fas fa-plus"></i> Aggiungi News
-  </button>
-</div>
 
+<!-- 1. PULSANTE AGGIUNGI NEWS - Deve essere protetto -->
+<% if current_user&.admin? %>
+  <div style="margin-bottom: 20px;">
+    <button class="btn btn-primary" id="add-news-btn">
+      <i class="fas fa-plus"></i> Aggiungi News
+    </button>
+  </div>
+<% end %>
+
+<!-- 2. WIDGET NEWS -->
 <div style="display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 30px;" class="news-grid">
-  <!-- Widget News Unificato -->
   <div class="widget unified-news-widget">
     <div class="widget-header" style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; border-radius: 12px 12px 0 0;">
       <h3 class="widget-title">
@@ -338,145 +365,161 @@
         News
       </h3>
       <span id="news-count" style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">
-        <%= @news.count %> nuove
+        <%= @news&.count || 0 %> nuove
       </span>
     </div>
     <div class="widget-body" style="padding: 0; max-height: 350px; overflow-y: auto;">
-      <div style="padding: 0 25px;" id="news-container">
-        <%= render partial: 'news/news_item', collection: @news, as: :news %>
+      <div style="padding: 0 25px;" id="news-container" data-is-admin="<%= current_user&.admin? %>">
+        <% if @news.present? %>
+          <%= render partial: 'news/news_item', collection: @news, as: :news %>
+        <% else %>
+          <div class="alert alert-info m-3">Nessuna news disponibile al momento.</div>
+        <% end %>
       </div>
     </div>
     <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
       <small style="color: #666;">
-        Ultimo aggiornamento: <%= Time.current.strftime("%H:%M") %> - Mostrando le ultime <%= @news.count %> news
+        Ultimo aggiornamento: <%= Time.current.strftime("%H:%M") %> - Mostrando le ultime <%= @news&.count || 0 %> news
       </small>
     </div>
   </div>
 </div>
 
-<!-- Modal per creare/modificare news -->
-<div class="modal fade" id="newsModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="newsModalLabel">Nuova News</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form id="news-form">
-          <input type="hidden" id="news-id" name="news_id">
-          
-          <div class="mb-3">
-            <label for="news-title" class="form-label">Titolo</label>
-            <input type="text" class="form-control" id="news-title" name="title" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="news-content" class="form-label">Contenuto</label>
-            <textarea class="form-control" id="news-content" name="content" rows="3" required></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label for="news-category" class="form-label">Categoria</label>
-            <select class="form-control" id="news-category" name="category" required>
-              <option value="">Seleziona categoria</option>
-              <option value="Università">Università</option>
-              <option value="Locale">Locale</option>
-              <option value="Sport">Sport</option>
-              <option value="Economia">Economia</option>
-              <option value="Ambiente">Ambiente</option>
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label for="news-icon" class="form-label">Icona</label>
-            <select class="form-control" id="news-icon" name="icon_class">
+<% if current_user&.admin? %>
+  <div class="modal fade" id="newsModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newsModalLabel">Nuova News</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="news-form">
+            <input type="hidden" id="news-id" name="news_id">
+            
+            <div class="mb-3">
+              <label for="news-title" class="form-label">Titolo</label>
+              <input type="text" class="form-control" id="news-title" name="title" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="news-content" class="form-label">Contenuto</label>
+              <textarea class="form-control" id="news-content" name="content" rows="3" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label for="news-category" class="form-label">Categoria</label>
+              <select class="form-control" id="news-category" name="category" required>
+                <option value="">Seleziona categoria</option>
+                <option value="Università">Università</option>
+                <option value="Locale">Locale</option>
+                <option value="Sport">Sport</option>
+                <option value="Economia">Economia</option>
+                <option value="Ambiente">Ambiente</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="news-icon" class="form-label">Icona</label>
+              <select class="form-control" id="news-icon" name="icon_class">
                 <optgroup label="Università">
-                <option value="fas fa-graduation-cap">🎓 Cappello laurea</option>
-                <option value="fas fa-book-open">📖 Libro aperto</option>
-                <option value="fas fa-calendar-alt">📅 Calendario</option>
-                <option value="fas fa-users">👥 Gruppo</option>
-                <option value="fas fa-euro-sign">💰 Euro</option>
+                  <option value="fas fa-graduation-cap">🎓 Cappello laurea</option>
+                  <option value="fas fa-book-open">📖 Libro aperto</option>
+                  <option value="fas fa-calendar-alt">📅 Calendario</option>
+                  <option value="fas fa-users">👥 Gruppo</option>
+                  <option value="fas fa-euro-sign">💰 Euro</option>
                 </optgroup>
                 <optgroup label="News/Locale">
-                <option value="fas fa-newspaper">📰 Giornale</option>
-                <option value="fas fa-city">🏙️ Città</option>
-                <option value="fas fa-building">🏢 Edificio</option>
-                <option value="fas fa-bell">🔔 Campanella</option>
+                  <option value="fas fa-newspaper">📰 Giornale</option>
+                  <option value="fas fa-city">🏙️ Città</option>
+                  <option value="fas fa-building">🏢 Edificio</option>
+                  <option value="fas fa-bell">🔔 Campanella</option>
                 </optgroup>
                 <optgroup label="Sport">
-                <option value="fas fa-futbol">⚽ Calcio</option>
-                <option value="fas fa-basketball-ball">🏀 Basket</option>
-                <option value="fas fa-trophy">🏆 Trofeo</option>
-                <option value="fas fa-running">🏃 Corsa</option>
+                  <option value="fas fa-futbol">⚽ Calcio</option>
+                  <option value="fas fa-basketball-ball">🏀 Basket</option>
+                  <option value="fas fa-trophy">🏆 Trofeo</option>
+                  <option value="fas fa-running">🏃 Corsa</option>
                 </optgroup>
                 <optgroup label="Economia">
-                <option value="fas fa-chart-line">📈 Grafico</option>
-                <option value="fas fa-chart-bar">📊 Barre</option>
-                <option value="fas fa-coins">💰 Monete</option>
-                <option value="fas fa-briefcase">💼 Valigetta</option>
+                  <option value="fas fa-chart-line">📈 Grafico</option>
+                  <option value="fas fa-chart-bar">📊 Barre</option>
+                  <option value="fas fa-coins">💰 Monete</option>
+                  <option value="fas fa-briefcase">💼 Valigetta</option>
                 </optgroup>
                 <optgroup label="Ambiente">
-                <option value="fas fa-leaf">🍃 Foglia</option>
-                <option value="fas fa-tree">🌳 Albero</option>
-                <option value="fas fa-recycle">♻️ Riciclo</option>
-                <option value="fas fa-sun">☀️ Sole</option>
+                  <option value="fas fa-leaf">🍃 Foglia</option>
+                  <option value="fas fa-tree">🌳 Albero</option>
+                  <option value="fas fa-recycle">♻️ Riciclo</option>
+                  <option value="fas fa-sun">☀️ Sole</option>
                 </optgroup>
-            </select>
-            <small class="form-text text-muted">Oppure inserisci manualmente una classe Font Awesome</small>
-            <input type="text" class="form-control mt-2" id="news-icon-custom" placeholder="es: fas fa-star">
+              </select>
+            </div>
+          </form>
         </div>
-        </form>
-    </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-        <button type="button" class="btn btn-primary" id="save-news-btn">Salva</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="button" class="btn btn-primary" id="save-news-btn">Salva</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
+<% end %>
 <%= javascript_include_tag 'news_management' %>
 
-                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
-                    <!-- Widget Meteo -->
-                    <div class="widget weather-widget">
-                        <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
-                            <div class="container py-5">
-                                <h1 class="text-center mb-4">Previsioni Meteo</h1>
-                                <div id="meteo-card" class="card shadow-sm p-4 text-center">
-                                    <p>Caricamento posizione...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Widget Notifiche Meteo -->
-                    <div class="widget weather-notifications-widget">
-                        <div class="widget-header" style="background: linear-gradient(135deg, #e17055, #f39c12); color: white; border-radius: 12px 12px 0 0;">
-                            <h3 class="widget-title">
-                                <i class="fas fa-bell"></i>
-                                Notifiche Meteo
-                            </h3>
-                            <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">2 attive</span>
-                        </div>
-                        <div class="widget-body" style="padding: 0; max-height: 450px; overflow-y: auto;">
-                            <div style="padding: 0 25px;">
-                                <div id="weather-alerts" class="p-3 card shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 15px;">
-                                    <p>Caricamento allerte...</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
-                            <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
-                        </div>
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
+        <!-- Widget Meteo -->
+        <div class="widget weather-widget">
+            <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
+                <div class="container py-5">
+                    <h1 class="text-center mb-4">Previsioni Meteo</h1>
+                    <div id="meteo-card" class="card shadow-sm p-4 text-center">
+                        <p>Caricamento posizione...</p>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Widget Notifiche Meteo -->
+        <div class="widget weather-notifications-widget">
+            <div class="widget-header" style="background: linear-gradient(135deg, #e17055, #f39c12); color: white; border-radius: 12px 12px 0 0;">
+                <h3 class="widget-title">
+                    <i class="fas fa-bell"></i>
+                    Notifiche Meteo
+                </h3>
+                <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">2 attive</span>
+            </div>
+            <div class="widget-body" style="padding: 0; max-height: 450px; overflow-y: auto;">
+                <div style="padding: 0 25px;">
+                    <div id="weather-alerts" class="p-3 card shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 15px;">
+                        <p>Caricamento allerte...</p>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
+                <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+function initializeMeteo() {
     const meteoCard = document.getElementById('meteo-card');
+    
+    // Evita inizializzazioni multiple
+    if (!meteoCard) {
+        console.log('Meteo card non trovato');
+        return;
+    }
+    
+    if (meteoCard.dataset.initialized === 'true') {
+        console.log('Meteo già inizializzato');
+        return;
+    }
+    
+    console.log('Inizializzazione meteo...');
+    meteoCard.dataset.initialized = 'true';
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
@@ -529,7 +572,10 @@
 
     function error() {
         meteoCard.innerHTML = "<div class='alert alert-warning'>Impossibile ottenere la posizione.</div>";
-        document.getElementById('weather-alerts').innerHTML = '<div class="alert alert-warning">Allerte non disponibili senza posizione.</div>';
+        const alertsContainer = document.getElementById('weather-alerts');
+        if (alertsContainer) {
+            alertsContainer.innerHTML = '<div class="alert alert-warning">Allerte non disponibili senza posizione.</div>';
+        }
     }
 
     function getWeatherDescription(code) {
@@ -554,31 +600,42 @@
     }
 
     function getWeatherAlerts(lat, lon) {
+        const alertsContainer = document.getElementById('weather-alerts');
+        if (!alertsContainer) return;
+        
         fetch(`https://api.open-meteo.com/v1/weather-alerts?latitude=${lat}&longitude=${lon}`)
         .then(response => response.json())
         .then(data => {
-            const alertsContainer = document.getElementById('weather-alerts');
             if (data.alerts && data.alerts.length > 0) {
-            let html = '';
-            data.alerts.forEach(alert => {
-                html += `
-                <div class="alert alert-warning mb-3">
-                    <strong>${alert.event}</strong><br>
-                    <small><em>${alert.sender_name}</em></small><br>
-                    <span>${alert.description}</span><br>
-                    <small><strong>Validità:</strong> ${alert.effective} - ${alert.expires}</small>
-                </div>
-                `;
-            });
-            alertsContainer.innerHTML = html;
+                let html = '';
+                data.alerts.forEach(alert => {
+                    html += `
+                    <div class="alert alert-warning mb-3">
+                        <strong>${alert.event}</strong><br>
+                        <small><em>${alert.sender_name}</em></small><br>
+                        <span>${alert.description}</span><br>
+                        <small><strong>Validità:</strong> ${alert.effective} - ${alert.expires}</small>
+                    </div>
+                    `;
+                });
+                alertsContainer.innerHTML = html;
             } else {
-            alertsContainer.innerHTML = '<div class="alert alert-success">Nessuna allerta meteo in corso.</div>';
+                alertsContainer.innerHTML = '<div class="alert alert-success">Nessuna allerta meteo in corso.</div>';
             }
         })
         .catch(err => {
-            document.getElementById('weather-alerts').innerHTML = '<div class="alert alert-danger">Errore nel recupero delle allerte.</div>';
+            alertsContainer.innerHTML = '<div class="alert alert-danger">Errore nel recupero delle allerte.</div>';
             console.error(err);
         });
     }
-    });
+}
+
+// Ascolta tutti gli eventi possibili
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initializeMeteo);
+} else {
+    initializeMeteo();
+}
+document.addEventListener("turbo:load", initializeMeteo);
+document.addEventListener("turbo:render", initializeMeteo);
 </script>
