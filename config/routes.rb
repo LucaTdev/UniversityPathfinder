@@ -21,6 +21,14 @@ Rails.application.routes.draw do
       patch :update_profile
     end
   end
+
+  #Questo serve per aggiornare il counter sul profilo
+  resources :routes, only: [:create] do
+    collection do
+      get 'stats'
+    end
+  end
+
   # Rotta per il profilo dell'utente corrente
   get 'profile', to: 'users#profile'
   get 'profile/edit', to: 'users#edit_profile'
@@ -29,7 +37,7 @@ Rails.application.routes.draw do
   get "sessions/new"
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
+  delete '/logout', to: 'sessions#destroy', as: :logout #delete 'logout', to: 'sessions#destroy'
 
   get 'users/new'
   get 'forgot_password', to: 'passwords#new'
@@ -57,6 +65,7 @@ Rails.application.routes.draw do
 
   resources :percorsi, only: [:create]
 
+  resources :news, only: [:index, :create, :update, :destroy]
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
