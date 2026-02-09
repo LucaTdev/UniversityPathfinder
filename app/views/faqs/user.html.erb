@@ -1,135 +1,151 @@
-<% content_for :title, "FAQ" %>
+<% content_for :title, "University Pathfinder - FAQ" %>
+<% content_for :body_class, "layout-sticky-footer" %>
+
 <% content_for :head do %>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <% end %>
 
+<% categories =
+  @faqs
+    .map(&:categoria)
+    .compact
+    .map { |c| c.to_s.strip }
+    .reject(&:blank?)
+    .uniq
+    .sort
+%>
+
 <div class="faqs-page">
-<div class="page-header text-center">
-  <div class="container">
-    <h1 class="display-4 fw-bold mb-4">
-      <i class="fas fa-question-circle me-2"></i>
-      FAQ
-    </h1>
+  <div class="page-header text-center">
+    <div class="container">
+      <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>Ciao utente.</h1>
+    </div>
   </div>
-</div>
 
-<div class="main-content">
-  <div
-    class="container"
-    data-controller="faqs-admin valutazione-faqs"
-    data-valutazione-faqs-guest-value="false"
-  >
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">
-        <i class="fas fa-user me-2"></i>
-        Utente registrato
-      </h2>
+  <div class="main-content">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+          <i class="fas fa-user me-2"></i>Utente registrato
+        </h2>
 
-      <button
-        type="button"
-        class="btn btn-success"
-        data-bs-toggle="collapse"
-        data-bs-target="#suggest-faq-form"
-        aria-expanded="false"
-        aria-controls="suggest-faq-form"
-      >
-        <i class="fas fa-plus me-2"></i>
-        Suggerisci FAQ
-      </button>
-    </div>
-
-    <div id="suggest-faq-form" class="card mb-4 collapse">
-      <div class="card-header">
-        <h5 class="mb-0">
-          <i class="fas fa-plus me-2"></i>
-          Nuovo suggerimento FAQ
-        </h5>
+        <div class="d-flex align-items-center gap-2">
+          <%= render "search", collapse_id: "faq-search-user" %>
+          <%= render "filter", categories: categories, dropdown_id: "faq-filter-user" %>
+          <%= render "notify", mode: :user, categories: categories %>
+          <%= render "language", dropdown_id: "faq-lang-user" %>
+          <button
+            type="button"
+            class="btn btn-success"
+            data-bs-toggle="collapse"
+            data-bs-target="#suggest-faq-form"
+            aria-expanded="false"
+            aria-controls="suggest-faq-form"
+          >
+            <i class="fas fa-plus me-2"></i>Suggerisci FAQ
+          </button>
+        </div>
       </div>
 
-      <div class="card-body">
-        <form method="post" action="#">
-          <div class="mb-3">
-            <label for="suggest_domanda" class="form-label">Domanda *</label>
-            <input
-              type="text"
-              id="suggest_domanda"
-              class="form-control"
-              placeholder="Inserisci la domanda"
-              required
-            >
+      <div id="faq-search-user" class="collapse faqs-collapse">
+        <div class="card">
+          <div class="card-body">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+              <input type="text" class="form-control" placeholder="Cerca per parola chiave (UI)">
+              <button class="btn btn-primary" type="button">Cerca</button>
+            </div>
           </div>
-
-          <div class="mb-3">
-            <label for="suggest_dettagli" class="form-label">Dettagli (opzionale)</label>
-            <textarea
-              id="suggest_dettagli"
-              rows="4"
-              class="form-control"
-              placeholder="Aggiungi contesto o dettagli utili"
-            ></textarea>
-          </div>
-
-          <div class="mb-3">
-            <label for="suggest_categoria" class="form-label">Categoria *</label>
-            <input
-              type="text"
-              id="suggest_categoria"
-              class="form-control"
-              placeholder="Es. Iscrizioni, Segreteria, Esami"
-              required
-            >
-          </div>
-
-          <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-paper-plane me-2"></i>
-              Invia suggerimento
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-toggle="collapse"
-              data-bs-target="#suggest-faq-form"
-            >
-              <i class="fas fa-times me-2"></i>
-              Annulla
-            </button>
-          </div>
-
-          <div class="mt-3 text-muted small">
-            * Per ora e' solo UI: colleghiamo il database dopo.
-          </div>
-        </form>
+        </div>
       </div>
-    </div>
 
-    <% if @faqs.any? %>
+      <div id="suggest-faq-form" class="card mb-4 collapse">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-plus me-2"></i>Nuovo suggerimento FAQ
+          </h5>
+        </div>
+
+        <div class="card-body">
+          <form method="post" action="#">
+            <div class="mb-3">
+              <label for="suggest_domanda" class="form-label">Domanda *</label>
+              <input
+                type="text"
+                id="suggest_domanda"
+                class="form-control"
+                placeholder="Inserisci la domanda"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label for="suggest_dettagli" class="form-label">Dettagli (opzionale)</label>
+              <textarea
+                id="suggest_dettagli"
+                rows="4"
+                class="form-control"
+                placeholder="Aggiungi contesto o dettagli utili"
+              ></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="suggest_categoria" class="form-label">Categoria *</label>
+              <input
+                type="text"
+                id="suggest_categoria"
+                class="form-control"
+                placeholder="Es. Iscrizioni, Segreteria, Esami"
+                required
+              >
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-2"></i>Invia suggerimento
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-toggle="collapse"
+                data-bs-target="#suggest-faq-form"
+              >
+                <i class="fas fa-times me-2"></i>Annulla
+              </button>
+            </div>
+
+            <div class="mt-3 text-muted small">
+              * Per ora è solo UI: colleghiamo il database dopo.
+            </div>
+          </form>
+        </div>
+      </div>
+
       <div class="row">
         <% @faqs.each do |faq| %>
           <div class="col-lg-4 col-md-6 mb-4">
-              <div class="card faq-card h-100">
-              <div class="card-body d-flex flex-column">
+            <div class="card faq-card h-100">
+              <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <span class="category-badge"><%= faq.categoria %></span>
                 </div>
-
                 <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                <p class="card-text text-muted flex-grow-1"><%= faq.risposta %></p>
-
-                <%= render "shared/faqs/votes", faq: faq, up_count: nil, down_count: nil %>
+                <p class="card-text text-muted"><%= faq.risposta %></p>
+                <%= render "votes", faq: faq, mode: :user %>
               </div>
             </div>
           </div>
         <% end %>
       </div>
-    <% else %>
-      <div class="text-center py-5">
-        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-        <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-      <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
+
+      <% if @faqs.empty? %>
+        <div class="col-12 text-center py-5">
+          <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+          <h4 class="text-muted">Nessuna FAQ disponibile</h4>
+          <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
+        </div>
+      <% end %>
     </div>
-  <% end %>
   </div>
-</div>
 </div>
