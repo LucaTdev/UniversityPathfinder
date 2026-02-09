@@ -1,0 +1,21 @@
+<% dropdown_id = local_assigns.fetch(:dropdown_id, "faq-language") %>
+
+<div class="dropdown">
+  <button
+    class="btn btn-outline-primary dropdown-toggle"
+    type="button"
+    id="<%= dropdown_id %>"
+    data-bs-toggle="dropdown"
+    data-bs-display="static"
+    aria-expanded="false"
+    title="Cambia lingua (UI)"
+  >
+    <i class="fas fa-globe me-2"></i>Lingua
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end faqs-lang-menu" aria-labelledby="<%= dropdown_id %>">
+    <li><button class="dropdown-item" type="button">Italiano</button></li>
+    <li><button class="dropdown-item" type="button">English</button></li>
+  </ul>
+</div>
+
