@@ -1,0 +1,174 @@
+<% faq_id = local_assigns[:faq]&.id || local_assigns[:faq_id] %>
+<% up_count = local_assigns.fetch(:up_count, 0) %>
+<% down_count = local_assigns.fetch(:down_count, 0) %>
+<% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+
+<% if mode == :visitor && !defined?(@_faq_vote_login_modal_added) %>
+  <% @_faq_vote_login_modal_added = true %>
+  <% content_for :modals do %>
+    <div class="modal fade" id="vote-login-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Accedi per votare</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+          </div>
+          <div class="modal-body">
+            La tua opinione è importante, accedi per votare.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+            <%= link_to "Accedi", login_path, class: "btn btn-primary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="faq-votes mt-3"
+     <% if mode == :user %>
+       data-controller="faqs-votes"
+       data-faqs-votes-faq-id-value="<%= faq_id %>"
+       data-faqs-votes-up-value="<%= up_count %>"
+       data-faqs-votes-down-value="<%= down_count %>"
+     <% end %>>
+  <% if mode == :user || mode == :visitor %>
+    <div class="faq-votes__row d-flex align-items-center justify-content-between gap-3">
+      <div class="faq-votes__prompt text-muted small">
+        Hai trovato utile questa risposta?
+      </div>
+
+      <div class="faq-votes__actions text-end">
+        <div class="btn-group" role="group" aria-label="Vota questa FAQ">
+        <% if mode == :user %>
+          <button type="button"
+                  class="btn btn-sm btn-outline-success faq-vote-btn"
+                  data-action="click->faqs-votes#toggleUp"
+                  data-faqs-votes-target="upButton"
+                  title="Pollice in su">
+            <i class="fa-regular fa-thumbs-up"></i>
+          </button>
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger faq-vote-btn"
+                  data-action="click->faqs-votes#toggleDown"
+                  data-faqs-votes-target="downButton"
+                  title="Pollice in giù">
+            <i class="fa-regular fa-thumbs-down"></i>
+          </button>
+        <% else %>
+          <button type="button"
+                  class="btn btn-sm btn-outline-success faq-vote-btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#vote-login-modal"
+                  title="Pollice in su">
+            <i class="fa-regular fa-thumbs-up"></i>
+          </button>
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger faq-vote-btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#vote-login-modal"
+                  title="Pollice in giù">
+            <i class="fa-regular fa-thumbs-down"></i>
+          </button>
+        <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-votes__counts small text-muted d-flex gap-3 justify-content-end mt-2">
+      <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
+        <i class="fa-regular fa-thumbs-up"></i>
+        <% if mode == :user %>
+          <span data-faqs-votes-target="upCount"><%= up_count %></span>
+        <% else %>
+          <span><%= up_count %></span>
+        <% end %>
+      </span>
+
+      <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
+        <i class="fa-regular fa-thumbs-down"></i>
+        <% if mode == :user %>
+          <span data-faqs-votes-target="downCount"><%= down_count %></span>
+        <% else %>
+          <span><%= down_count %></span>
+        <% end %>
+      </span>
+    </div>
+  <% else %>
+    <% if mode == :admin %>
+      <% sample_voters = [
+        ["prova", :up],
+        ["prova2", :down]
+      ] %>
+      <% visible_voters = sample_voters %>
+
+      <div class="faq-votes__admin-row d-flex align-items-start justify-content-between gap-3">
+        <div></div>
+
+        <div class="faq-votes__admin-right d-flex flex-column align-items-end gap-2">
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-primary dropdown-toggle"
+                    type="button"
+                    id="votersDropdown-<%= faq_id %>"
+                    data-bs-toggle="dropdown"
+                    data-bs-display="static"
+                    aria-expanded="false"
+                    title="Vedi chi ha votato">
+              <i class="fa-solid fa-users me-2"></i>Votanti (<%= visible_voters.length %>)
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end faq-votes__voters-menu" aria-labelledby="votersDropdown-<%= faq_id %>">
+              <% if visible_voters.empty? %>
+                <li>
+                  <span class="dropdown-item-text small text-muted">Nessun voto registrato.</span>
+                </li>
+              <% else %>
+                <% visible_voters.each do |email, vote| %>
+                  <li>
+                    <span class="dropdown-item-text d-flex align-items-center justify-content-between gap-3 small">
+                      <span><%= email %></span>
+                    <% if vote == :up %>
+                      <span class="badge bg-success-subtle text-success-emphasis" aria-label="Pollice in su" title="Pollice in su">
+                        <i class="fa-regular fa-thumbs-up"></i>
+                      </span>
+                    <% else %>
+                      <span class="badge bg-danger-subtle text-danger-emphasis" aria-label="Pollice in giù" title="Pollice in giù">
+                        <i class="fa-regular fa-thumbs-down"></i>
+                      </span>
+                    <% end %>
+                  </span>
+                  </li>
+                <% end %>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="faq-votes__counts small text-muted d-flex gap-3 justify-content-end">
+            <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
+              <i class="fa-regular fa-thumbs-up"></i>
+              <span><%= up_count %></span>
+            </span>
+
+            <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
+              <i class="fa-regular fa-thumbs-down"></i>
+              <span><%= down_count %></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="faq-votes__counts small text-muted d-flex gap-3">
+        <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
+          <i class="fa-regular fa-thumbs-up"></i>
+          <span><%= up_count %></span>
+        </span>
+
+        <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
+          <i class="fa-regular fa-thumbs-down"></i>
+          <span><%= down_count %></span>
+        </span>
+      </div>
+    <% end %>
+  <% end %>
+</div>
