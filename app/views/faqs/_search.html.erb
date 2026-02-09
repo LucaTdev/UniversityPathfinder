@@ -1,0 +1,13 @@
+<% collapse_id = local_assigns.fetch(:collapse_id, "faq-search") %>
+
+<button
+  type="button"
+  class="btn btn-outline-primary"
+  data-bs-toggle="collapse"
+  data-bs-target="#<%= collapse_id %>"
+  aria-expanded="false"
+  aria-controls="<%= collapse_id %>"
+>
+  <i class="fas fa-search me-2"></i>Cerca FAQ
+</button>
+

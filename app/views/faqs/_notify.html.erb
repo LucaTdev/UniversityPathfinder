@@ -1,0 +1,82 @@
+<% mode = local_assigns.fetch(:mode, :user).to_sym %>
+<% categories = Array(local_assigns[:categories]).compact.map { |c| c.to_s.strip }.reject(&:blank?).uniq.sort %>
+
+<% if mode == :visitor && !defined?(@_faq_notify_login_modal_added) %>
+  <% @_faq_notify_login_modal_added = true %>
+  <% content_for :modals do %>
+    <div class="modal fade" id="notify-login-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Accedi per ricevere avvisi</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+          </div>
+          <div class="modal-body">
+            Accedi per attivare le notifiche quando vengono aggiunte o aggiornate FAQ.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+            <%= link_to "Accedi", login_path, class: "btn btn-primary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<% if mode == :user && !defined?(@_faq_notify_settings_modal_added) %>
+  <% @_faq_notify_settings_modal_added = true %>
+  <% content_for :modals do %>
+    <div class="modal fade" id="notify-settings-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-bell me-2"></i>Avvisami</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" id="notify-enabled" checked>
+              <label class="form-check-label" for="notify-enabled">Ricevi avvisi per aggiornamenti FAQ</label>
+            </div>
+
+            <div class="mb-2 fw-semibold">Categorie (UI)</div>
+            <div class="list-group faqs-notify-categories">
+              <% if categories.empty? %>
+                <div class="list-group-item text-muted">Nessuna categoria disponibile.</div>
+              <% else %>
+                <% categories.each_with_index do |cat, idx| %>
+                  <label class="list-group-item d-flex align-items-center justify-content-between">
+                    <span><%= cat %></span>
+                    <input class="form-check-input m-0" type="checkbox" checked aria-label="Segui <%= cat %>" id="notify-cat-<%= idx %>">
+                  </label>
+                <% end %>
+              <% end %>
+            </div>
+
+            <div class="form-text mt-2">Solo UI: salveremo le preferenze dopo.</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salva</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<button
+  type="button"
+  class="btn btn-outline-primary"
+  <% if mode == :visitor %>
+    data-bs-toggle="modal"
+    data-bs-target="#notify-login-modal"
+  <% else %>
+    data-bs-toggle="modal"
+    data-bs-target="#notify-settings-modal"
+  <% end %>
+>
+  <i class="fas fa-bell me-2"></i>Avvisami
+</button>
+
