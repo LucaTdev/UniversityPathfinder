@@ -5,15 +5,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <% end %>
 
-<% categories =
-  @faqs
-    .map(&:categoria)
-    .compact
-    .map { |c| c.to_s.strip }
-    .reject(&:blank?)
-    .uniq
-    .sort
-%>
+<% categories = faq_categories(@faqs) %>
 
 <div class="faqs-page">
   <div class="page-header text-center">
@@ -25,16 +17,16 @@
   <div class="main-content">
     <div class="container" data-controller="faqs-admin">
       <div id="adminMode" class="mode-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2>
-            <i class="fas fa-cogs me-2"></i>Amministrazione FAQ
-          </h2>
-          <div class="d-flex align-items-center gap-2">
-            <%= render "search", collapse_id: "faq-search-admin" %>
-            <%= render "filter", categories: categories, dropdown_id: "faq-filter-admin" %>
-            <%= render "language", dropdown_id: "faq-lang-admin" %>
-            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#faq-categories-modal">
-              <i class="fas fa-tags me-2"></i>Categorie
+	        <div class="d-flex justify-content-between align-items-center mb-4">
+	          <h2>
+	            <i class="fas fa-cogs me-2"></i>Amministrazione FAQ
+	          </h2>
+	          <div class="d-flex align-items-center gap-2">
+	            <%= render "search", collapse_id: "faq-search-admin" %>
+	            <%= render "filter", categories: categories, dropdown_id: "faq-filter-admin" %>
+	            <%= render "language", dropdown_id: "faq-lang-admin" %>
+	            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#faq-categories-modal">
+	              <i class="fas fa-tags me-2"></i>Categorie
             </button>
             <button type="button" class="btn btn-success" data-action="click->faqs-admin#openAddForm">
               <i class="fas fa-plus me-2"></i>Aggiungi FAQ
@@ -42,17 +34,7 @@
           </div>
         </div>
 
-        <div id="faq-search-admin" class="collapse faqs-collapse">
-          <div class="card">
-            <div class="card-body">
-              <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" class="form-control" placeholder="Cerca per parola chiave (UI)">
-                <button class="btn btn-primary" type="button">Cerca</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <%= render "search_panel", collapse_id: "faq-search-admin" %>
 
         <div id="faq-form" class="card mb-4" style="display: none;">
           <div class="card-header">
@@ -92,99 +74,143 @@
           </div>
         </div>
 
-        <div class="row">
-          <% @faqs.each do |faq| %>
-            <div class="col-lg-4 col-md-6 mb-4">
-              <div class="card faq-card h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="category-badge"><%= faq.categoria %></span>
-                    <div class="btn-group faq-admin-actions" role="group" aria-label="Azioni FAQ">
-                      <button type="button" class="btn btn-outline-primary btn-sm"
-                              data-action="click->faqs-admin#openEditForm"
-                              data-faqs-admin-faq-id-param="<%= faq.id %>"
-                              data-faqs-admin-domanda-param="<%= faq.domanda %>"
-                              data-faqs-admin-risposta-param="<%= faq.risposta %>"
-                              data-faqs-admin-categoria-param="<%= faq.categoria %>"
-                              title="Modifica FAQ">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <%= button_to faq_path(faq), method: :delete,
-                        data: { turbo_confirm: "Sei sicuro di voler eliminare la FAQ?" },
-                        class: "btn btn-outline-danger btn-sm",
-                        title: "Elimina FAQ" do %>
-                        <i class="fas fa-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                  <p class="card-text text-muted"><%= faq.risposta %></p>
-                  <%= render "votes", faq: faq, mode: :admin %>
-                </div>
-              </div>
-            </div>
-          <% end %>
-        </div>
+	        <%= render "faq_grid",
+	          faqs: @faqs,
+	          mode: :admin,
+	          up_map: @faq_votes_up_map,
+	          down_map: @faq_votes_down_map,
+	          current_map: @faq_votes_current_map,
+	          empty_title: "Nessuna FAQ disponibile",
+	          empty_body: "Aggiungi la prima FAQ cliccando sul pulsante \"Aggiungi FAQ\"." %>
 
-        <% if @faqs.empty? %>
-          <div class="col-12 text-center py-5">
-            <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-            <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-            <p class="text-muted">Aggiungi la prima FAQ cliccando sul pulsante "Aggiungi FAQ".</p>
-          </div>
-        <% end %>
+	        <div class="mt-5" id="faq-suggestions">
+	          <div class="d-flex justify-content-between align-items-center mb-3">
+	            <h3 class="mb-0">
+	              <i class="fas fa-lightbulb me-2"></i>Suggerimenti FAQ
+	            </h3>
+	          </div>
 
-        <div class="d-flex gap-3 mt-4">
-          <%= link_to "Vista utente registrato", user_faqs_path, class: "link-secondary" %>
-          <%= link_to "Vista visitatore", visitor_faqs_path, class: "link-secondary" %>
-        </div>
+	          <% if @pending_faq_suggestions.empty? %>
+	            <div class="text-muted">Nessun suggerimento in attesa.</div>
+	          <% else %>
+	            <div class="row">
+	              <% @pending_faq_suggestions.each do |s| %>
+	                <div class="col-lg-6 mb-4">
+	                  <div class="card h-100">
+	                    <div class="card-header d-flex justify-content-between align-items-center">
+	                      <div class="fw-semibold">Suggerimento #<%= s.id %></div>
+	                      <div class="text-muted small"><%= s.created_at&.strftime("%d/%m/%Y %H:%M") %></div>
+	                    </div>
+
+	                    <div class="card-body">
+	                      <div class="mb-2 text-muted small">
+	                        Da: <%= s.user&.email || "utente" %>
+	                      </div>
+
+	                      <%= form_with url: publish_admin_faq_suggestion_path(s), scope: :publish, method: :post do |f| %>
+	                        <div class="mb-3">
+	                          <%= f.label :categoria, "Categoria", class: "form-label" %>
+	                          <%= f.text_field :categoria, class: "form-control", value: s.categoria, required: true %>
+	                        </div>
+
+	                        <div class="mb-3">
+	                          <%= f.label :domanda, "Domanda", class: "form-label" %>
+	                          <%= f.text_field :domanda, class: "form-control", value: s.domanda, required: true %>
+	                        </div>
+
+	                        <div class="mb-3">
+	                          <%= f.label :risposta, "Risposta", class: "form-label" %>
+	                          <%= f.text_area :risposta,
+	                            class: "form-control",
+	                            rows: 4,
+	                            value: s.risposta,
+	                            placeholder: "Scrivi la risposta (obbligatoria)",
+	                            required: true %>
+	                        </div>
+
+
+		                        <div class="mb-3">
+		                          <div class="form-label mb-1">Dettagli</div>
+		                          <div class="form-control" style="height: auto;">
+		                            <% if s.dettagli.present? %>
+		                              <%= s.dettagli %>
+		                            <% else %>
+		                              <span class="text-muted">Nessun dettaglio fornito</span>
+		                            <% end %>
+		                          </div>
+		                        </div>
+
+	                        <div class="d-flex gap-2">
+	                          <button type="submit" class="btn btn-success">
+	                            <i class="fas fa-check me-2"></i>Pubblica come FAQ
+	                          </button>
+	                        </div>
+	                      <% end %>
+
+	                      <div class="mt-3 pt-3 border-top">
+	                        <%= form_with url: reject_admin_faq_suggestion_path(s), method: :post do %>
+	                          <button type="submit" class="btn btn-outline-danger" data-turbo-confirm="Rifiutare questo suggerimento?">
+	                            <i class="fas fa-ban me-2"></i>Rifiuta
+	                          </button>
+	                        <% end %>
+	                      </div>
+	                    </div>
+	                  </div>
+	                </div>
+	              <% end %>
+	            </div>
+	          <% end %>
+	        </div>
+
+		        <div class="d-flex justify-content-end gap-4 mb-1">
+		          <%= link_to "Vista utente registrato", user_faqs_path, class: "link-secondary" %>
+		          <%= link_to "Vista visitatore", visitor_faqs_path, class: "link-secondary" %>
+		        </div>
       </div>
     </div>
   </div>
 </div>
 
-<% content_for :modals do %>
-  <div class="modal fade" id="faq-categories-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" data-controller="faqs-categories" data-faqs-categories-initial-value="<%= categories.to_json %>">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="fas fa-tags me-2"></i>Gestione categorie</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+<div class="modal fade" id="faq-categories-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" data-controller="faqs-categories" data-faqs-categories-initial-value="<%= categories.to_json %>">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-tags me-2"></i>Gestione categorie</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="new-category" class="form-label">Aggiungi categoria</label>
+          <div class="input-group">
+            <input id="new-category" type="text" class="form-control" placeholder="Es. Iscrizioni" data-faqs-categories-target="input">
+            <button type="button" class="btn btn-outline-primary" data-action="click->faqs-categories#add">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="form-text">La categoria sarà disponibile nella lista qui sotto.</div>
         </div>
 
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="new-category" class="form-label">Aggiungi categoria</label>
-            <div class="input-group">
-              <input id="new-category" type="text" class="form-control" placeholder="Es. Iscrizioni" data-faqs-categories-target="input">
-              <button type="button" class="btn btn-outline-primary" data-action="click->faqs-categories#add">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            <div class="form-text">La categoria sarà disponibile nella lista qui sotto.</div>
-          </div>
-
-          <div>
-            <div class="fw-semibold mb-2">Categorie presenti</div>
-            <div class="list-group" data-faqs-categories-target="list">
-              <% if categories.empty? %>
-                <div class="list-group-item text-muted">Nessuna categoria ancora.</div>
-              <% else %>
-                <% categories.each do |cat| %>
-                  <div class="list-group-item d-flex align-items-center justify-content-between">
-                    <span><%= cat %></span>
-                    <span class="badge text-bg-light">FAQ</span>
-                  </div>
-                <% end %>
+        <div>
+          <div class="fw-semibold mb-2">Categorie presenti</div>
+          <div class="list-group" data-faqs-categories-target="list">
+            <% if categories.empty? %>
+              <div class="list-group-item text-muted">Nessuna categoria ancora.</div>
+            <% else %>
+              <% categories.each do |cat| %>
+                <div class="list-group-item d-flex align-items-center justify-content-between">
+                  <span><%= cat %></span>
+                  <span class="badge text-bg-light">FAQ</span>
+                </div>
               <% end %>
-            </div>
+            <% end %>
           </div>
         </div>
+      </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
       </div>
     </div>
   </div>
-<% end %>
+</div>

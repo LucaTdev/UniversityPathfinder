@@ -5,69 +5,63 @@ export default class extends Controller {
   static values = {
     faqId: String,
     up: Number,
-    down: Number
+    down: Number,
+    current: String,
   }
 
   connect() {
-    this.restoreVote()
     this.refreshUI()
   }
 
   toggleUp() {
-    if (this.currentVote() === "up") {
-      this.setVote(null)
-    } else {
-      this.setVote("up")
-    }
+    this.submitVote("up")
   }
 
   toggleDown() {
-    if (this.currentVote() === "down") {
-      this.setVote(null)
-    } else {
-      this.setVote("down")
-    }
+    this.submitVote("down")
   }
 
-  // ---- internals (UI-only) ----
+  // ---- internals ----
 
-  storageKey() {
-    return `faq_vote_${this.faqIdValue}`
+  voteIs(v) {
+    return (this.currentValue || "").toString() === v
   }
 
-  currentVote() {
-    try {
-      return sessionStorage.getItem(this.storageKey())
-    } catch {
-      return null
-    }
-  }
-
-  restoreVote() {
-    const vote = this.currentVote()
-    if (vote === "up") this.upValue = Number(this.upValue) + 1
-    if (vote === "down") this.downValue = Number(this.downValue) + 1
-  }
-
-  setVote(nextVote) {
-    const prevVote = this.currentVote()
-    if (prevVote === nextVote) return
-
-    // remove previous
-    if (prevVote === "up") this.upValue = Math.max(0, Number(this.upValue) - 1)
-    if (prevVote === "down") this.downValue = Math.max(0, Number(this.downValue) - 1)
-
-    // add next
-    if (nextVote === "up") this.upValue = Number(this.upValue) + 1
-    if (nextVote === "down") this.downValue = Number(this.downValue) + 1
+  async submitVote(direction) {
+    const nextValue = direction === "up" ? 1 : -1
+    const endpoint = `/faqs/${this.faqIdValue}/vote`
 
     try {
-      if (nextVote) sessionStorage.setItem(this.storageKey(), nextVote)
-      else sessionStorage.removeItem(this.storageKey())
-    } catch {
-      // ignore: UI-only
-    }
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.csrfToken(),
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({ value: nextValue }),
+        credentials: "same-origin",
+      })
 
+      if (res.status === 401) {
+        const data = await res.json().catch(() => null)
+        window.location.href = data?.login_url || "/login"
+        return
+      }
+
+      if (!res.ok) return
+      const data = await res.json()
+      this.applyServerState(data)
+    } catch {
+      // UI-only: ignora errori di rete
+    }
+  }
+
+  applyServerState(data) {
+    if (!data) return
+    if (data.up != null) this.upValue = Number(data.up)
+    if (data.down != null) this.downValue = Number(data.down)
+    this.currentValue = data.current || ""
     this.refreshUI()
   }
 
@@ -75,9 +69,8 @@ export default class extends Controller {
     this.upCountTarget.textContent = this.upValue
     this.downCountTarget.textContent = this.downValue
 
-    const vote = this.currentVote()
-    this.toggleActive(this.upButtonTarget, vote === "up", "success")
-    this.toggleActive(this.downButtonTarget, vote === "down", "danger")
+    this.toggleActive(this.upButtonTarget, this.voteIs("up"), "success")
+    this.toggleActive(this.downButtonTarget, this.voteIs("down"), "danger")
   }
 
   toggleActive(button, isActive, variant) {
@@ -89,5 +82,9 @@ export default class extends Controller {
     icon.classList.toggle("fa-regular", !isActive)
     icon.classList.toggle("fa-solid", isActive)
   }
-}
 
+  csrfToken() {
+    const meta = document.querySelector("meta[name='csrf-token']")
+    return meta?.getAttribute("content") || ""
+  }
+}

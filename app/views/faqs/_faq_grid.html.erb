@@ -1,0 +1,58 @@
+<% faqs = Array(local_assigns.fetch(:faqs, [])) %>
+<% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% up_map = local_assigns.fetch(:up_map, {}) %>
+<% down_map = local_assigns.fetch(:down_map, {}) %>
+<% current_map = local_assigns.fetch(:current_map, {}) %>
+<% empty_title = local_assigns[:empty_title] %>
+<% empty_body = local_assigns[:empty_body] %>
+<% collapse_id = local_assigns.fetch(:collapse_id, "faqs-more") %>
+<% visible = faqs.first(9) %>
+<% hidden = faqs.drop(9) %>
+
+<% if faqs.empty? %>
+  <%= render "empty_state", title: empty_title, body: empty_body %>
+<% else %>
+  <div class="row">
+    <% visible.each do |faq| %>
+      <%= render "faq_card",
+        faq: faq,
+        mode: mode,
+        up_count: up_map[faq.id] || 0,
+        down_count: down_map[faq.id] || 0,
+        current_vote: current_map[faq.id] %>
+    <% end %>
+  </div>
+
+  <% if hidden.any? %>
+    <div data-controller="faqs-show-more-less">
+      <div class="text-center mt-2 mb-3">
+        <button
+          data-faqs-show-more-less-target="button"
+          data-show-text="Mostra altro"
+          data-hide-text="Mostra meno"
+          class="btn btn-outline-secondary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#<%= collapse_id %>"
+          aria-expanded="false"
+          aria-controls="<%= collapse_id %>"
+        >
+          Mostra altro
+        </button>
+      </div>
+
+      <div id="<%= collapse_id %>" class="collapse mt-3" data-faqs-show-more-less-target="collapse">
+        <div class="row">
+          <% hidden.each do |faq| %>
+            <%= render "faq_card",
+              faq: faq,
+              mode: mode,
+              up_count: up_map[faq.id] || 0,
+              down_count: down_map[faq.id] || 0,
+              current_vote: current_map[faq.id] %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

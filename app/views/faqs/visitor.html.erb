@@ -5,17 +5,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <% end %>
 
-<% categories =
-  @faqs
-    .map(&:categoria)
-    .compact
-    .map { |c| c.to_s.strip }
-    .reject(&:blank?)
-    .uniq
-    .sort
-%>
+<% categories = faq_categories(@faqs) %>
 
-<div class="faqs-page">
+<div class="faqs-page" data-controller="faqs-login-prompt" data-faqs-login-prompt-login-url-value="<%= login_path %>">
   <div class="page-header text-center">
     <div class="container">
       <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>FAQ</h1>
@@ -32,70 +24,30 @@
         <div class="d-flex align-items-center gap-2">
           <%= render "search", collapse_id: "faq-search-visitor" %>
           <%= render "filter", categories: categories, dropdown_id: "faq-filter-visitor" %>
-          <%= render "notify", mode: :visitor, categories: categories %>
+          <%= render "notify", mode: :visitor %>
           <%= render "language", dropdown_id: "faq-lang-visitor" %>
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#suggest-login-modal">
+          <button type="button"
+                  class="btn btn-success"
+                  data-action="click->faqs-login-prompt#prompt"
+                  data-faqs-login-prompt-title-param="Accedi per suggerire"
+                  data-faqs-login-prompt-message-param="La tua opinione è importante: accedi per suggerire una nuova FAQ.">
             <i class="fas fa-plus me-2"></i>Suggerisci FAQ
           </button>
         </div>
       </div>
 
-      <div id="faq-search-visitor" class="collapse faqs-collapse">
-        <div class="card">
-          <div class="card-body">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
-              <input type="text" class="form-control" placeholder="Cerca per parola chiave (UI)">
-              <button class="btn btn-primary" type="button">Cerca</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <%= render "search_panel", collapse_id: "faq-search-visitor" %>
 
-      <div class="row">
-        <% @faqs.each do |faq| %>
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card faq-card h-100">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <span class="category-badge"><%= faq.categoria %></span>
-                </div>
-                <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                <p class="card-text text-muted"><%= faq.risposta %></p>
-                <%= render "votes", faq: faq, mode: :visitor %>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-
-      <% if @faqs.empty? %>
-        <div class="col-12 text-center py-5">
-          <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-          <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-          <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
-        </div>
-      <% end %>
+      <%= render "faq_grid",
+        faqs: @faqs,
+        mode: :visitor,
+        up_map: @faq_votes_up_map,
+        down_map: @faq_votes_down_map,
+        current_map: @faq_votes_current_map,
+        empty_title: "Nessuna FAQ disponibile",
+        empty_body: "Quando saranno pubblicate, le vedrai qui." %>
     </div>
   </div>
 </div>
 
-<% content_for :modals do %>
-  <div class="modal fade" id="suggest-login-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Accedi per suggerire</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
-        </div>
-        <div class="modal-body">
-          La tua opinione è importante, accedi per suggerire una nuova FAQ.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-          <%= link_to "Accedi", login_path, class: "btn btn-primary" %>
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>
+<%= render "login_modal" %>

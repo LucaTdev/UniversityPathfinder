@@ -5,15 +5,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <% end %>
 
-<% categories =
-  @faqs
-    .map(&:categoria)
-    .compact
-    .map { |c| c.to_s.strip }
-    .reject(&:blank?)
-    .uniq
-    .sort
-%>
+<% categories = faq_categories(@faqs) %>
+<% pending_count = @my_faq_suggestions.count(&:attesa?) %>
 
 <div class="faqs-page">
   <div class="page-header text-center">
@@ -32,120 +25,158 @@
         <div class="d-flex align-items-center gap-2">
           <%= render "search", collapse_id: "faq-search-user" %>
           <%= render "filter", categories: categories, dropdown_id: "faq-filter-user" %>
-          <%= render "notify", mode: :user, categories: categories %>
+          <%= render "notify", mode: :user %>
           <%= render "language", dropdown_id: "faq-lang-user" %>
-          <button
-            type="button"
-            class="btn btn-success"
-            data-bs-toggle="collapse"
-            data-bs-target="#suggest-faq-form"
-            aria-expanded="false"
-            aria-controls="suggest-faq-form"
-          >
-            <i class="fas fa-plus me-2"></i>Suggerisci FAQ
-          </button>
+          <% if pending_count >= 3 %>
+            <button
+              type="button"
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#suggest-limit-modal"
+            >
+              <i class="fas fa-plus me-2"></i>Suggerisci FAQ
+            </button>
+          <% else %>
+            <button
+              type="button"
+              class="btn btn-success"
+              data-bs-toggle="collapse"
+              data-bs-target="#suggest-faq-form"
+              aria-expanded="false"
+              aria-controls="suggest-faq-form"
+            >
+              <i class="fas fa-plus me-2"></i>Suggerisci FAQ
+            </button>
+          <% end %>
         </div>
       </div>
 
-      <div id="faq-search-user" class="collapse faqs-collapse">
-        <div class="card">
-          <div class="card-body">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
-              <input type="text" class="form-control" placeholder="Cerca per parola chiave (UI)">
-              <button class="btn btn-primary" type="button">Cerca</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <%= render "search_panel", collapse_id: "faq-search-user" %>
 
-      <div id="suggest-faq-form" class="card mb-4 collapse">
-        <div class="card-header">
-          <h5 class="mb-0">
-            <i class="fas fa-plus me-2"></i>Nuovo suggerimento FAQ
-          </h5>
-        </div>
+	      <div id="suggest-faq-form" class="card mb-4 collapse">
+	        <div class="card-header">
+	          <h5 class="mb-0">
+	            <i class="fas fa-plus me-2"></i>Nuovo suggerimento FAQ
+	          </h5>
+	        </div>
 
-        <div class="card-body">
-          <form method="post" action="#">
-            <div class="mb-3">
-              <label for="suggest_domanda" class="form-label">Domanda *</label>
-              <input
-                type="text"
-                id="suggest_domanda"
-                class="form-control"
-                placeholder="Inserisci la domanda"
-                required
-              >
-            </div>
+	        <div class="card-body">
+	          <%= form_with url: faq_suggestions_path, scope: :faq_suggestion, method: :post do |f| %>
+	            <div class="mb-3">
+	              <label for="suggest_domanda" class="form-label">Domanda *</label>
+	              <%= f.text_field :domanda,
+	                id: "suggest_domanda",
+	                class: "form-control",
+	                placeholder: "Inserisci la domanda",
+	                required: true %>
+	            </div>
 
-            <div class="mb-3">
-              <label for="suggest_dettagli" class="form-label">Dettagli (opzionale)</label>
-              <textarea
-                id="suggest_dettagli"
-                rows="4"
-                class="form-control"
-                placeholder="Aggiungi contesto o dettagli utili"
-              ></textarea>
-            </div>
+	            <div class="mb-3">
+	              <label for="suggest_dettagli" class="form-label">Dettagli (opzionale)</label>
+	              <%= f.text_area :dettagli,
+	                id: "suggest_dettagli",
+	                rows: 4,
+	                class: "form-control",
+	                placeholder: "Aggiungi contesto o dettagli utili" %>
+	            </div>
 
-            <div class="mb-3">
-              <label for="suggest_categoria" class="form-label">Categoria *</label>
-              <input
-                type="text"
-                id="suggest_categoria"
-                class="form-control"
-                placeholder="Es. Iscrizioni, Segreteria, Esami"
-                required
-              >
-            </div>
+	            <div class="mb-3">
+	              <label for="suggest_risposta" class="form-label">Risposta (opzionale)</label>
+	              <%= f.text_area :risposta,
+	                id: "suggest_risposta",
+	                rows: 4,
+	                class: "form-control",
+	                placeholder: "Se vuoi, puoi proporre anche una risposta" %>
+	            </div>
 
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-paper-plane me-2"></i>Invia suggerimento
-              </button>
+	            <div class="mb-3">
+	              <label for="suggest_categoria" class="form-label">Categoria *</label>
+	              <%= f.text_field :categoria,
+	                id: "suggest_categoria",
+	                class: "form-control",
+	                placeholder: "Es. Iscrizioni, Segreteria, Esami",
+	                required: true %>
+	            </div>
 
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-toggle="collapse"
-                data-bs-target="#suggest-faq-form"
-              >
-                <i class="fas fa-times me-2"></i>Annulla
-              </button>
-            </div>
+	            <div class="d-flex gap-2">
+	              <button type="submit" class="btn btn-primary">
+	                <i class="fas fa-paper-plane me-2"></i>Invia suggerimento
+	              </button>
 
-            <div class="mt-3 text-muted small">
-              * Per ora è solo UI: colleghiamo il database dopo.
-            </div>
-          </form>
-        </div>
-      </div>
+	              <button
+	                type="button"
+	                class="btn btn-secondary"
+	                data-bs-toggle="collapse"
+	                data-bs-target="#suggest-faq-form"
+	              >
+	                <i class="fas fa-times me-2"></i>Annulla
+	              </button>
+	            </div>
+	          <% end %>
+	        </div>
+	      </div>
 
-      <div class="row">
-        <% @faqs.each do |faq| %>
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card faq-card h-100">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <span class="category-badge"><%= faq.categoria %></span>
-                </div>
-                <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-                <p class="card-text text-muted"><%= faq.risposta %></p>
-                <%= render "votes", faq: faq, mode: :user %>
-              </div>
-            </div>
+      <%= render "faq_grid",
+        faqs: @faqs,
+        mode: :user,
+        up_map: @faq_votes_up_map,
+	        down_map: @faq_votes_down_map,
+	        current_map: @faq_votes_current_map,
+	        empty_title: "Nessuna FAQ disponibile",
+	        empty_body: "Quando saranno pubblicate, le vedrai qui." %>
+
+	      <div class="card mt-4 mb-3">
+	        <div class="card-header">
+	          <h5 class="mb-0">
+	            <i class="fas fa-inbox me-2"></i>I tuoi suggerimenti
+	          </h5>
+	        </div>
+	        <div class="card-body">
+	          <% if @my_faq_suggestions.empty? %>
+	            <div class="text-muted">Non hai ancora inviato suggerimenti.</div>
+	          <% else %>
+	            <div class="list-group">
+	              <% @my_faq_suggestions.each do |s| %>
+	                <div class="list-group-item">
+	                  <div class="d-flex justify-content-between align-items-start gap-3">
+	                    <div class="fw-semibold"><%= s.domanda %></div>
+	                    <div class="d-flex align-items-center gap-2">
+	                      <% if s.attesa? %>
+	                        <%= button_to "Elimina",
+	                          faq_suggestion_path(s),
+	                          method: :delete,
+	                          class: "btn btn-sm btn-outline-danger",
+	                          data: { turbo_confirm: "Eliminare questo suggerimento?" } %>
+	                      <% end %>
+						  <span class="badge text-bg-light"><%= faq_suggestion_status_label(s.status) %></span>
+	                    </div>
+	                  </div>
+	                  <div class="text-muted small mt-1">
+	                    Categoria: <%= s.categoria %>
+	                  </div>
+	                </div>
+	              <% end %>
           </div>
         <% end %>
       </div>
-
-      <% if @faqs.empty? %>
-        <div class="col-12 text-center py-5">
-          <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-          <h4 class="text-muted">Nessuna FAQ disponibile</h4>
-          <p class="text-muted">Quando saranno pubblicate, le vedrai qui.</p>
-        </div>
-      <% end %>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="suggest-limit-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Limite suggerimenti</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        Hai 3 FAQ in attesa di essere accettate. Aspetta che un amministratore confermi le tue FAQ per suggerircene ancora.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
