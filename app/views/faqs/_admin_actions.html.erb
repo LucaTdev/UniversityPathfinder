@@ -1,0 +1,19 @@
+<div class="btn-group faq-admin-actions" role="group" aria-label="Azioni FAQ">
+  <button type="button" class="btn btn-outline-primary btn-sm"
+          data-action="click->faqs-admin#openEditForm"
+          data-faqs-admin-faq-id-param="<%= faq.id %>"
+          data-faqs-admin-domanda-param="<%= faq.domanda %>"
+          data-faqs-admin-risposta-param="<%= faq.risposta %>"
+          data-faqs-admin-categoria-param="<%= faq.categoria %>"
+          title="Modifica FAQ">
+    <i class="fas fa-edit"></i>
+  </button>
+
+  <%= button_to faq_path(faq), method: :delete,
+    data: { turbo_confirm: "Sei sicuro di voler eliminare la FAQ?" },
+    class: "btn btn-outline-danger btn-sm",
+    title: "Elimina FAQ" do %>
+    <i class="fas fa-trash"></i>
+  <% end %>
+</div>
+

@@ -1,0 +1,14 @@
+<% collapse_id = local_assigns.fetch(:collapse_id, "faq-search") %>
+
+<div id="<%= collapse_id %>" class="collapse faqs-collapse">
+  <div class="card">
+    <div class="card-body">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" class="form-control" placeholder="Cerca per parola chiave (UI)">
+        <button class="btn btn-primary" type="button">Cerca</button>
+      </div>
+    </div>
+  </div>
+</div>
+

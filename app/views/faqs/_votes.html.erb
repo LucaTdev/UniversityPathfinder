@@ -2,36 +2,22 @@
 <% up_count = local_assigns.fetch(:up_count, 0) %>
 <% down_count = local_assigns.fetch(:down_count, 0) %>
 <% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% current_vote = local_assigns[:current_vote] %>
+<% current =
+  case current_vote
+  when 1, "1", :up, "up" then "up"
+  when -1, "-1", :down, "down" then "down"
+  else ""
+  end
+%>
 
-<% if mode == :visitor && !defined?(@_faq_vote_login_modal_added) %>
-  <% @_faq_vote_login_modal_added = true %>
-  <% content_for :modals do %>
-    <div class="modal fade" id="vote-login-modal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Accedi per votare</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
-          </div>
-          <div class="modal-body">
-            La tua opinione è importante, accedi per votare.
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-            <%= link_to "Accedi", login_path, class: "btn btn-primary" %>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
-<% end %>
-
-<div class="faq-votes mt-3"
+<div class="faq-votes mt-3 pt-3 border-top"
      <% if mode == :user %>
        data-controller="faqs-votes"
        data-faqs-votes-faq-id-value="<%= faq_id %>"
        data-faqs-votes-up-value="<%= up_count %>"
        data-faqs-votes-down-value="<%= down_count %>"
+       data-faqs-votes-current-value="<%= current %>"
      <% end %>>
   <% if mode == :user || mode == :visitor %>
     <div class="faq-votes__row d-flex align-items-center justify-content-between gap-3">
@@ -59,15 +45,17 @@
         <% else %>
           <button type="button"
                   class="btn btn-sm btn-outline-success faq-vote-btn"
-                  data-bs-toggle="modal"
-                  data-bs-target="#vote-login-modal"
+                  data-action="click->faqs-login-prompt#prompt"
+                  data-faqs-login-prompt-title-param="Accedi per votare"
+                  data-faqs-login-prompt-message-param="La tua opinione è importante: accedi per votare questa FAQ."
                   title="Pollice in su">
             <i class="fa-regular fa-thumbs-up"></i>
           </button>
           <button type="button"
                   class="btn btn-sm btn-outline-danger faq-vote-btn"
-                  data-bs-toggle="modal"
-                  data-bs-target="#vote-login-modal"
+                  data-action="click->faqs-login-prompt#prompt"
+                  data-faqs-login-prompt-title-param="Accedi per votare"
+                  data-faqs-login-prompt-message-param="La tua opinione è importante: accedi per votare questa FAQ."
                   title="Pollice in giù">
             <i class="fa-regular fa-thumbs-down"></i>
           </button>

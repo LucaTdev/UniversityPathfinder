@@ -66,3 +66,26 @@
 .faqs-page .faq-vote-count {
     font-variant-numeric: tabular-nums;
 }
+
+/* FAQ admin: make Edit/Delete buttons join flush even with button_to form wrapper */
+.faqs-page .faq-admin-actions {
+    display: inline-flex;
+}
+
+.faqs-page .faq-admin-actions > form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* Left button (edit): square right corners */
+.faqs-page .faq-admin-actions > button.btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Right button (delete, generated inside a form): square left corners */
+.faqs-page .faq-admin-actions > form .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px; /* prevent double border seam */
+}
