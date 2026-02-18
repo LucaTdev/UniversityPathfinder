@@ -1,0 +1,25 @@
+<% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% up_count = local_assigns.fetch(:up_count, 0) %>
+<% down_count = local_assigns.fetch(:down_count, 0) %>
+<% current_vote = local_assigns[:current_vote] %>
+
+<div class="col-lg-4 col-md-6 mb-4">
+  <div class="card faq-card h-100">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="category-badge"><%= faq.categoria %></span>
+        <%= render "admin_actions", faq: faq if mode == :admin %>
+      </div>
+
+      <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
+      <p class="card-text text-muted"><%= faq.risposta %></p>
+
+      <%= render "votes",
+        faq: faq,
+        mode: mode,
+        up_count: up_count,
+        down_count: down_count,
+        current_vote: current_vote %>
+    </div>
+  </div>
+</div>
