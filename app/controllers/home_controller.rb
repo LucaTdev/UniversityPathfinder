@@ -41,4 +41,7 @@ class HomeController < ApplicationController
     @news = News.order(published_at: :desc).limit(10)
   end
   
+  def faqs
+    #@faqs = Faqs.all
+  end
 end

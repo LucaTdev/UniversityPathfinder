@@ -1,0 +1,37 @@
+<% categories = Array(local_assigns[:categories]).compact.map { |c| c.to_s.strip }.reject(&:blank?).uniq.sort %>
+<% dropdown_id = local_assigns.fetch(:dropdown_id, "faq-filter") %>
+
+<div class="dropdown">
+  <button
+    class="btn btn-outline-primary dropdown-toggle"
+    type="button"
+    id="<%= dropdown_id %>"
+    data-bs-toggle="dropdown"
+    data-bs-display="static"
+    aria-expanded="false"
+  >
+    <i class="fas fa-filter me-2"></i>Filtra
+  </button>
+
+  <ul class="dropdown-menu faqs-filter-menu" aria-labelledby="<%= dropdown_id %>">
+    <li>
+      <button class="dropdown-item" type="button">
+        Tutte le categorie
+      </button>
+    </li>
+    <li><hr class="dropdown-divider"></li>
+
+    <% if categories.empty? %>
+      <li>
+        <span class="dropdown-item-text text-muted">Nessuna categoria disponibile</span>
+      </li>
+    <% else %>
+      <% categories.each do |cat| %>
+        <li>
+          <button class="dropdown-item" type="button"><%= cat %></button>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
+
