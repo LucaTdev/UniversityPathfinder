@@ -1,4 +1,5 @@
 <% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% locale = local_assigns[:locale] %>
 <% up_count = local_assigns.fetch(:up_count, 0) %>
 <% down_count = local_assigns.fetch(:down_count, 0) %>
 <% current_vote = local_assigns[:current_vote] %>
@@ -8,11 +9,11 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-2">
         <span class="category-badge"><%= faq.categoria %></span>
-        <%= render "admin_actions", faq: faq if mode == :admin %>
+        <%= render "admin_actions", faq: faq, locale: locale if mode == :admin %>
       </div>
 
-      <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda %></h6>
-      <p class="card-text text-muted"><%= faq.risposta %></p>
+      <h6 class="card-subtitle mb-2 text-primary"><%= faq.domanda_for(locale) %></h6>
+      <p class="card-text text-muted"><%= faq.risposta_for(locale) %></p>
 
       <%= render "votes",
         faq: faq,

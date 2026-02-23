@@ -26,7 +26,7 @@
           <%= render "search", collapse_id: "faq-search-user" %>
           <%= render "filter", categories: categories, dropdown_id: "faq-filter-user" %>
           <%= render "notify", mode: :user %>
-          <%= render "language", dropdown_id: "faq-lang-user" %>
+          <%= render "language", dropdown_id: "faq-lang-user", current_locale: @faq_locale %>
           <% if pending_count >= 3 %>
             <button
               type="button"
@@ -119,6 +119,7 @@
       <%= render "faq_grid",
         faqs: @faqs,
         mode: :user,
+        locale: @faq_locale,
         up_map: @faq_votes_up_map,
 	        down_map: @faq_votes_down_map,
 	        current_map: @faq_votes_current_map,
