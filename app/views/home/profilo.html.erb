@@ -255,24 +255,28 @@
             </div>
         </div>
 
-        <div class="card mt-4">
-            <div class="card-body">
-                <h5>Ultime Ricerche</h5>
-                <ul class="list-group" id="recent-routes-list">
-                <% @recent_routes.each do |route| %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span><%= route.destination_name %></span>
-                        <!-- Aggiunto data-timestamp per il calcolo JS -->
-                        <small class="text-muted time-ago" data-timestamp="<%= route.searched_at.iso8601 %>">
-                            <%= time_ago_in_words(route.searched_at) %> fa
-                        </small>
-                    </li>
-                <% end %>
-                </ul>
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-12">
+                <div class="profile-card">
+                    <h4 class="section-title">
+                        <i class="fas fa-history text-primary"></i>
+                        Ultime Ricerche
+                    </h4>
+                    <ul class="list-group list-group-flush" id="recent-routes-list">
+                    <% @recent_routes.each do |route| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center" style="background: transparent; border-color: #dee2e6;">
+                            <span><strong><%= route.destination_name %></strong></span>
+                            <small class="text-muted time-ago" data-timestamp="<%= route.searched_at.iso8601 %>">
+                                <%= time_ago_in_words(route.searched_at) %> fa
+                            </small>
+                        </li>
+                    <% end %>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-2">
             <!-- Preferenze Mezzi di Trasporto -->
             <div class="col-lg-6 mb-4">
                 <div class="profile-card">
@@ -324,10 +328,31 @@
                             <input class="form-check-input" type="checkbox" id="bike-switch">
                         </div>
                     </div>
+
+                    <div class="preference-item active">
+                        <i class="fas fa-taxi text-info me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Taxi/Uber</strong>
+                            <small class="d-block text-muted">Disponibile</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="car-switch">
+                        </div>
+                    </div>
+
+                    <div class="preference-item">
+                        <i class="fas fa-motorcycle text-success me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Moto/Monopattino </strong>
+                            <small class="d-block text-muted">Su due ruote</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="bike-switch">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Percorsi Preferiti-->
             <div class="col-lg-6 mb-4">
                 <div class="profile-card">
                     <h4 class="section-title">
@@ -335,59 +360,43 @@
                         Percorsi Preferiti
                     </h4>
                     
-                    <div class="route-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Casa → Facoltà di Ingegneria</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    Via Roma, 123 → Viale Università, 45
-                                </small>
-                                <div class="mt-1">
-                                    <span class="badge bg-primary">15 min</span>
-                                    <span class="badge bg-success">A piedi</span>
+                    <% if @favorite_routes.any? %>
+                        <% @favorite_routes.each do |fav| %>
+                            <div class="route-item" id="<%= dom_id(fav) %>">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1"><%= fav.start_name %> → <%= fav.end_name %></h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            Distanza: <%= fav.distance_km %> km
+                                        </small>
+                                        <div class="mt-1">
+                                            <span class="badge bg-primary"><%= fav.duration_minutes %> min</span>
+                                            <span class="badge bg-<%= fav.transport_mode == 'auto' ? 'info' : 'success' %>">
+                                                <%= fav.transport_mode == 'auto' ? 'Auto' : 'A piedi' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-end gap-2">
+                                        <%= button_to favorite_route_path(fav), method: :delete, 
+                                            class: "btn btn-sm btn-outline-danger",
+                                            form: { data: { turbo_confirm: 'Rimuovere questo percorso dai preferiti?' } } do %>
+                                            <i class="fas fa-trash"></i>
+                                        <% end %>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="badge bg-secondary">23 ricerche</span>
+                        <% end %>
+                    <% else %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-star fa-3x mb-3 opacity-25"></i>
+                            <p>Nessun percorso preferito salvato.<br>
+                            Calcola un percorso nella mappa e clicca "Salva Percorso"!</p>
                         </div>
-                    </div>
+                    <% end %>
                     
-                    <div class="route-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Stazione → Biblioteca</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    Stazione Centrale → Biblioteca Universitaria
-                                </small>
-                                <div class="mt-1">
-                                    <span class="badge bg-info">8 min</span>
-                                    <span class="badge bg-warning">Bus</span>
-                                </div>
-                            </div>
-                            <span class="badge bg-secondary">18 ricerche</span>
-                        </div>
-                    </div>
-                    
-                    <div class="route-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Mensa → Aula Studio</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    Mensa Universitaria → Aula Studio Centrale
-                                </small>
-                                <div class="mt-1">
-                                    <span class="badge bg-primary">5 min</span>
-                                    <span class="badge bg-success">A piedi</span>
-                                </div>
-                            </div>
-                            <span class="badge bg-secondary">12 ricerche</span>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-outline-primary btn-sm mt-2">
-                        <i class="fas fa-history me-1"></i>Vedi Cronologia Completa
+                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="window.location.href='/home/mappa'">
+                        <i class="fas fa-map me-1"></i>Vai alla Mappa
                     </button>
                 </div>
             </div>
