@@ -24,7 +24,7 @@
 	          <div class="d-flex align-items-center gap-2">
 	            <%= render "search", collapse_id: "faq-search-admin" %>
 	            <%= render "filter", categories: categories, dropdown_id: "faq-filter-admin" %>
-	            <%= render "language", dropdown_id: "faq-lang-admin" %>
+	            <%= render "language", dropdown_id: "faq-lang-admin", current_locale: @faq_locale %>
 	            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#faq-categories-modal">
 	              <i class="fas fa-tags me-2"></i>Categorie
             </button>
@@ -46,6 +46,7 @@
             <form id="faq-form-element" method="post" action="/faqs">
               <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
               <input type="hidden" name="_method" value="" id="form-method">
+              <input type="hidden" name="faq_locale" value="<%= @faq_locale %>">
 
               <div class="mb-3">
                 <label for="faq_domanda" class="form-label">Domanda *</label>
@@ -77,6 +78,7 @@
 	        <%= render "faq_grid",
 	          faqs: @faqs,
 	          mode: :admin,
+	          locale: @faq_locale,
 	          up_map: @faq_votes_up_map,
 	          down_map: @faq_votes_down_map,
 	          current_map: @faq_votes_current_map,
@@ -163,8 +165,8 @@
 	        </div>
 
 		        <div class="d-flex justify-content-end gap-4 mb-1">
-		          <%= link_to "Vista utente registrato", user_faqs_path, class: "link-secondary" %>
-		          <%= link_to "Vista visitatore", visitor_faqs_path, class: "link-secondary" %>
+		          <%= link_to "Vista utente registrato", user_faqs_path(locale: @faq_locale), class: "link-secondary" %>
+		          <%= link_to "Vista visitatore", visitor_faqs_path(locale: @faq_locale), class: "link-secondary" %>
 		        </div>
       </div>
     </div>

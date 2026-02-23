@@ -1,5 +1,6 @@
 <% faqs = Array(local_assigns.fetch(:faqs, [])) %>
 <% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% locale = local_assigns[:locale] %>
 <% up_map = local_assigns.fetch(:up_map, {}) %>
 <% down_map = local_assigns.fetch(:down_map, {}) %>
 <% current_map = local_assigns.fetch(:current_map, {}) %>
@@ -8,15 +9,45 @@
 <% collapse_id = local_assigns.fetch(:collapse_id, "faqs-more") %>
 <% visible = faqs.first(9) %>
 <% hidden = faqs.drop(9) %>
+<% selected_locale = normalize_faq_locale(locale) %>
+<% base_locale = Faq::BASE_LOCALE.to_s %>
+<% show_translation_note = selected_locale.present? && selected_locale.split("-").first != base_locale %>
 
 <% if faqs.empty? %>
   <%= render "empty_state", title: empty_title, body: empty_body %>
 <% else %>
+  <% if show_translation_note %>
+    <% missing_count = faqs.count { |f| f.translation_for(selected_locale).nil? } %>
+    <% if missing_count.positive? %>
+      <div class="alert alert-info d-flex align-items-start gap-2 mb-3" role="alert">
+        <i class="fas fa-language mt-1"></i>
+        <div>
+          <% if missing_count == faqs.length %>
+            <div class="fw-semibold">
+              Nessuna traduzione disponibile in <%= faq_locale_label(selected_locale) %>.
+            </div>
+          <% else %>
+            <div class="fw-semibold">
+              Alcune FAQ non sono ancora tradotte in <%= faq_locale_label(selected_locale) %>.
+            </div>
+          <% end %>
+          <div class="small">
+            Le FAQ senza traduzione vengono mostrate in <%= faq_locale_label(base_locale) %>.
+            <% if mode == :admin %>
+              Puoi aggiungere le traduzioni cliccando su “Modifica” con la lingua selezionata.
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
   <div class="row">
     <% visible.each do |faq| %>
       <%= render "faq_card",
         faq: faq,
         mode: mode,
+        locale: locale,
         up_count: up_map[faq.id] || 0,
         down_count: down_map[faq.id] || 0,
         current_vote: current_map[faq.id] %>
@@ -47,6 +78,7 @@
             <%= render "faq_card",
               faq: faq,
               mode: mode,
+              locale: locale,
               up_count: up_map[faq.id] || 0,
               down_count: down_map[faq.id] || 0,
               current_vote: current_map[faq.id] %>

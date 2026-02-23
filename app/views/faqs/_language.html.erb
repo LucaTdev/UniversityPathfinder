@@ -1,4 +1,7 @@
 <% dropdown_id = local_assigns.fetch(:dropdown_id, "faq-language") %>
+<% current_locale = normalize_faq_locale(local_assigns[:current_locale] || params[:locale] || Faq::BASE_LOCALE) %>
+<% current_label = faq_locale_label(current_locale) %>
+<% options = local_assigns.fetch(:options, faq_locale_options) %>
 
 <div class="dropdown">
   <button
@@ -8,14 +11,27 @@
     data-bs-toggle="dropdown"
     data-bs-display="static"
     aria-expanded="false"
-    title="Cambia lingua (UI)"
+    title="Cambia lingua"
   >
-    <i class="fas fa-globe me-2"></i>Lingua
+    <i class="fas fa-globe me-2"></i>Lingua: <%= current_label %> <span class="badge text-bg-light ms-1"><%= current_locale.upcase %></span>
   </button>
 
   <ul class="dropdown-menu dropdown-menu-end faqs-lang-menu" aria-labelledby="<%= dropdown_id %>">
-    <li><button class="dropdown-item" type="button">Italiano</button></li>
-    <li><button class="dropdown-item" type="button">English</button></li>
+    <% options.each do |label, code| %>
+      <% active = normalize_faq_locale(code) == current_locale %>
+      <li>
+        <%= link_to url_for(locale: code), class: ["dropdown-item", ("active" if active)] do %>
+          <span class="d-flex align-items-center justify-content-between gap-3">
+            <span class="d-flex align-items-center gap-2">
+              <span><%= label %></span>
+              <span class="text-muted small"><%= normalize_faq_locale(code).upcase %></span>
+            </span>
+            <% if active %>
+              <i class="fas fa-check"></i>
+            <% end %>
+          </span>
+        <% end %>
+      </li>
+    <% end %>
   </ul>
 </div>
-
