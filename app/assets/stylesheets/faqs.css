@@ -89,3 +89,9 @@
     border-bottom-left-radius: 0;
     margin-left: -1px; /* prevent double border seam */
 }
+
+/* Language dropdown: keep usable with many locales */
+.faqs-page .faqs-lang-menu {
+    max-height: 320px;
+    overflow-y: auto;
+}
