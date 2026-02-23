@@ -29,6 +29,9 @@ Rails.application.routes.draw do
     end
   end
 
+  #Server per aggiornare i percorsi preferiti
+  resources :favorite_routes, only: [:create, :destroy]
+
   # Rotta per il profilo dell'utente corrente
   get 'profile', to: 'users#profile'
   get 'profile/edit', to: 'users#edit_profile'
