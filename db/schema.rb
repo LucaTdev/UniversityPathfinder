@@ -86,6 +86,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_16_141000) do
     t.index ["faq_category_id"], name: "index_faqs_on_faq_category_id"
   end
 
+  create_table "favorite_routes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "start_location"
+    t.string "end_location"
+    t.string "start_name"
+    t.string "end_name"
+    t.decimal "distance_km", precision: 8, scale: 2
+    t.integer "duration_minutes"
+    t.string "transport_mode"
+    t.integer "search_count", default: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "start_location", "end_location"], name: "index_favorite_routes_on_user_and_locations", unique: true
+    t.index ["user_id"], name: "index_favorite_routes_on_user_id"
+  end
+
   create_table "news", force: :cascade do |t|
     t.string "title"
     t.text "content"
@@ -167,6 +183,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_16_141000) do
   add_foreign_key "faq_votes", "faqs", on_delete: :cascade
   add_foreign_key "faq_votes", "users", on_delete: :cascade
   add_foreign_key "faqs", "faq_categories"
+  add_foreign_key "favorite_routes", "users"
   add_foreign_key "routes", "users", name: "fk_routes_user", on_delete: :cascade
   add_foreign_key "student_profiles", "users"
 end

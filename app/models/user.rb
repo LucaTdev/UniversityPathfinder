@@ -59,9 +59,11 @@ class User < ApplicationRecord
     end
 
     def favorites_count
-        # Implementa il conteggio dei percorsi preferiti
-        # Esempio: FavoriteRoute.where(user: self).count
-        0 # Placeholder
+        favorite_routes.count
+    end
+
+    def top_favorite_routes
+        favorite_routes.by_search_count.limit(3)
     end
 
     def notifications_count
@@ -74,12 +76,14 @@ class User < ApplicationRecord
     has_one :student_profile, dependent: :destroy
     has_one :admin_profile, dependent: :destroy
     has_many :routes, dependent: :destroy
+    has_many :favorite_routes, dependent: :destroy
 
     has_many :faq_votes, dependent: :destroy
     has_many :faq_suggestions, dependent: :destroy
     has_one :faq_notification_setting, dependent: :destroy
 
     private
+
 
     def cast_role_to_integer
         self.role = role.to_i if role.present?
