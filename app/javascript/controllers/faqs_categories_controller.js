@@ -23,13 +23,24 @@ export default class extends Controller {
     if (!current) return
     if (category?.general) return
 
-    const raw = window.prompt("Modifica categoria:", current)
-    if (raw === null) return
+    this.dialog()
+      ?.prompt({
+        title: "Modifica categoria",
+        message: "Inserisci il nuovo nome della categoria.",
+        inputLabel: "Nome categoria",
+        value: current,
+        placeholder: "Es. Iscrizioni",
+        confirmLabel: "Salva",
+        confirmVariant: "primary",
+      })
+      .then((raw) => {
+        if (raw === null) return
 
-    const next = raw.trim()
-    if (!next) return
+        const next = raw.trim()
+        if (!next) return
 
-    this.updateCategory(category.id, next)
+        this.updateCategory(category.id, next)
+      })
   }
 
   deleteCategory(category) {
@@ -37,10 +48,17 @@ export default class extends Controller {
     if (!value) return
     if (category?.general) return
 
-    const ok = window.confirm(`Eliminare la categoria “${value}” dalla lista?`)
-    if (!ok) return
-
-    this.destroyCategory(category.id)
+    this.dialog()
+      ?.confirm({
+        title: "Elimina categoria",
+        message: `Eliminare la categoria “${value}” dalla lista?`,
+        confirmLabel: "Elimina",
+        confirmVariant: "danger",
+      })
+      .then((ok) => {
+        if (!ok) return
+        this.destroyCategory(category.id)
+      })
   }
 
   render() {
@@ -258,11 +276,20 @@ export default class extends Controller {
   showErrors(data) {
     const messages = Array.isArray(data?.messages) ? data.messages : []
     const text = messages.length ? messages.join("\n") : "Operazione non riuscita."
-    window.alert(text)
+    this.dialog()?.alert({
+      title: "Operazione non riuscita",
+      message: text,
+      confirmLabel: "Chiudi",
+      confirmVariant: "primary",
+    })
   }
 
   csrfToken() {
     const meta = document.querySelector("meta[name='csrf-token']")
     return meta?.getAttribute("content") || ""
+  }
+
+  dialog() {
+    return window.FaqsDialog || null
   }
 }
