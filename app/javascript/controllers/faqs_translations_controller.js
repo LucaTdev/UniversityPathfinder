@@ -34,7 +34,7 @@ export default class extends Controller {
     this.faqId = String(faqId)
     this.showLoading()
 
-    this.modalTitleTarget.textContent = `Traduzioni FAQ #${this.faqId}`
+    this.modalTitleTarget.textContent = "Traduzioni FAQ"
 
     if (this.modalEl && window.bootstrap?.Modal) {
       this.modal = window.bootstrap.Modal.getOrCreateInstance(this.modalEl)
@@ -133,6 +133,11 @@ export default class extends Controller {
       const right = document.createElement("div")
       right.className = "d-flex align-items-center gap-2"
 
+      const actions = document.createElement("div")
+      actions.className = "btn-group"
+      actions.setAttribute("role", "group")
+      actions.setAttribute("aria-label", "Azioni traduzione")
+
       const statusBadge = document.createElement("span")
       statusBadge.className = hasTranslation ? "badge text-bg-success" : "badge text-bg-secondary"
       statusBadge.textContent = hasTranslation ? "OK" : "Manca"
@@ -140,13 +145,26 @@ export default class extends Controller {
       const actionBtn = document.createElement("button")
       actionBtn.type = "button"
       actionBtn.className = hasTranslation ? "btn btn-sm btn-outline-primary" : "btn btn-sm btn-outline-success"
+      actionBtn.title = hasTranslation ? "Modifica traduzione" : "Aggiungi traduzione"
       actionBtn.innerHTML = hasTranslation
-        ? '<i class="fas fa-edit me-1"></i>Modifica'
-        : '<i class="fas fa-plus me-1"></i>Aggiungi'
+        ? '<i class="fas fa-edit"></i>'
+        : '<i class="fas fa-plus"></i>'
       actionBtn.addEventListener("click", () => this.openEditor(code))
 
+      actions.appendChild(actionBtn)
+
+      if (hasTranslation && existing?.id) {
+        const deleteBtn = document.createElement("button")
+        deleteBtn.type = "button"
+        deleteBtn.className = "btn btn-sm btn-outline-danger"
+        deleteBtn.title = "Elimina traduzione"
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>'
+        deleteBtn.addEventListener("click", () => this.deleteTranslation(existing))
+        actions.appendChild(deleteBtn)
+      }
+
       right.appendChild(statusBadge)
-      right.appendChild(actionBtn)
+      right.appendChild(actions)
 
       item.appendChild(left)
       item.appendChild(right)
@@ -217,6 +235,41 @@ export default class extends Controller {
     } finally {
       button.disabled = false
       button.innerHTML = button.dataset.originalText
+    }
+  }
+
+  async deleteTranslation(translation) {
+    const id = translation?.id
+    const locale = this.normalizeLocale(translation?.locale)
+    if (!id || !locale) return
+
+    const confirmed = await this.confirmDelete(locale)
+    if (!confirmed) return
+
+    this.hideError()
+
+    try {
+      const res = await fetch(`/admin/faqs/${this.faqId}/faq_translations/${id}`, {
+        method: "DELETE",
+        headers: {
+          "X-CSRF-Token": this.csrfToken(),
+          Accept: "application/json",
+        },
+        credentials: "same-origin",
+      })
+
+      if (res.status === 401) {
+        const data = await res.json().catch(() => null)
+        window.location.href = data?.login_url || "/login"
+        return
+      }
+
+      const data = await res.json().catch(() => null)
+      if (!res.ok) return this.showErrors(data)
+
+      this.closeAndRefresh()
+    } catch {
+      this.showErrorText("Eliminazione non riuscita.")
     }
   }
 
@@ -315,6 +368,22 @@ export default class extends Controller {
   csrfToken() {
     const meta = document.querySelector("meta[name='csrf-token']")
     return meta?.getAttribute("content") || ""
+  }
+
+  dialog() {
+    return window.FaqsDialog || null
+  }
+
+  confirmDelete(locale) {
+    const dialog = this.dialog()
+    if (!dialog) return Promise.resolve(true)
+
+    return dialog.confirm({
+      title: "Elimina traduzione",
+      message: `Eliminare la traduzione ${locale.toUpperCase()}?`,
+      confirmLabel: "Elimina",
+      confirmVariant: "danger",
+    })
   }
 
   closeAndRefresh() {

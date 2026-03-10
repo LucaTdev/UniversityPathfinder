@@ -16,7 +16,7 @@
     "Quando saranno pubblicate, le vedrai qui."
   end %>
 
-<div class="faqs-page" data-controller="faqs-login-prompt faqs-category-filter" data-faqs-login-prompt-login-url-value="<%= login_path %>">
+<div class="faqs-page" data-controller="faqs-login-prompt faqs-category-filter faqs-dialog" data-faqs-login-prompt-login-url-value="<%= login_path %>">
   <div class="page-header text-center">
     <div class="container">
       <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>FAQ</h1>
@@ -61,3 +61,4 @@
 </div>
 
 <%= render "login_modal" %>
+<%= render "dialog_modal" %>
