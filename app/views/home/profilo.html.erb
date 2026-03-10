@@ -403,73 +403,54 @@
         </div>
 
         <!-- Notifiche Amministratore -->
-
+        <% if @user&.admin? %>
         <div class="row mb-4">
             <div class="col-12">
                 <div class="profile-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="section-title mb-0">
                             <i class="fas fa-bell text-info"></i>
-                            <span class="badge bg-danger">7</span> Notifiche Amministratore
+                            <span class="badge bg-danger"><%= @pending_faq_suggestions_count %></span> Notifiche Amministratore
                         </h4>
-                        <button class="btn btn-outline-secondary btn-sm">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="mark-all-admin-notifications">
                             <i class="fas fa-check-double me-1"></i>Segna tutte come lette
                         </button>
                     </div>
-                    
-                    <div class="notification-item unread">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-exclamation-circle text-info me-2"></i>
-                                    Aggiornamento del Sistema
-                                </h6>
-                                <p class="mb-1">Il sistema sarà aggiornato domenica 25 agosto dalle 02:00 alle 04:00. Durante questo periodo il servizio potrebbe essere temporaneamente non disponibile.</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>2 ore fa
-                                </small>
-                            </div>
+
+                    <% if @pending_faq_suggestions_count.to_i == 0 %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-bell-slash fa-3x mb-3 opacity-25"></i>
+                            <p class="mb-0">Nessuna nuova notifica.</p>
                         </div>
-                    </div>
-                    
-                    <div class="notification-item important">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-warning text-danger me-2"></i>
-                                    Interruzione Linea Bus 42
-                                </h6>
-                                <p class="mb-1">La linea bus 42 (Stazione-Università) sarà sospesa dal 22 al 24 agosto per lavori stradali. Utilizzare la linea alternativa 44A.</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>1 giorno fa
-                                </small>
+                    <% else %>
+                        <% @pending_faq_suggestions.each do |s| %>
+                            <div class="notification-item unread">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            <i class="fas fa-lightbulb text-info me-2"></i>
+                                            Nuova FAQ suggerita
+                                        </h6>
+                                        <p class="mb-1"><%= s.domanda %></p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            <span class="time-ago" data-timestamp="<%= s.created_at.iso8601 %>"><%= time_ago_in_words(s.created_at) %> fa</span>
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="notification-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-info-circle text-primary me-2"></i>
-                                    Nuove Funzionalità Disponibili
-                                </h6>
-                                <p class="mb-1">Ora puoi salvare i tuoi percorsi preferiti e ricevere notifiche sui ritardi dei mezzi pubblici in tempo reale!</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>3 giorni fa
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                    
+                        <% end %>
+                    <% end %>
+
                     <div class="text-center mt-3">
-                        <button class="btn btn-outline-info">
-                            <i class="fas fa-archive me-1"></i>Visualizza Archivio Notifiche
-                        </button>
+                        <%= link_to admin_faqs_path(anchor: "faq-suggestions"), class: "btn btn-outline-info" do %>
+                            <i class="fas fa-archive me-1"></i>Visualizza Suggerimenti FAQ
+                        <% end %>
                     </div>
                 </div>
             </div>
         </div>
+        <% end %>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
@@ -562,6 +543,17 @@
                     this.style.background = '#fff';
                 });
             });
+
+            const markAllAdminBtn = document.getElementById('mark-all-admin-notifications');
+            if (markAllAdminBtn) {
+                markAllAdminBtn.addEventListener('click', function() {
+                    const container = markAllAdminBtn.closest('.profile-card') || document;
+                    container.querySelectorAll('.notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                        item.style.background = '#fff';
+                    });
+                });
+            }
         });
 
         // Funzioni globali (fuori dal turbo:load perché chiamate da attributi HTML o altri script)
