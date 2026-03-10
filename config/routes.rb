@@ -56,6 +56,25 @@ Rails.application.routes.draw do
 
   #FAQ
   resources :faqs, only: [:create, :update, :destroy]
+  post "faqs/:faq_id/vote", to: "faq_votes#upsert", as: :faq_vote
+  delete "faqs/:faq_id/vote", to: "faq_votes#destroy"
+  resources :faq_suggestions, only: [:create, :destroy]
+  resource :faq_notification_setting, only: %i[show update]
+
+  namespace :admin do
+    resources :faq_suggestions, only: [] do
+      member do
+        post :publish
+        post :reject
+      end
+    end
+
+    resources :faq_categories, only: %i[index create update destroy]
+
+    resources :faqs, only: [] do
+      resources :faq_translations, only: %i[index create destroy]
+    end
+  end
 
 
 
