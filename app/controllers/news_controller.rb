@@ -7,7 +7,9 @@ class NewsController < ApplicationController
   before_action :set_news, only: [:update, :destroy]
 
   def index
-    @news = News.order(published_at: :desc).limit(10)
+    scope = News.order(published_at: :desc)
+    scope = scope.where.not(category: "FAQ") if current_user && !current_user.faq_notifications_enabled?
+    @news = scope.limit(10)
     render json: { news: @news }
   end
   
