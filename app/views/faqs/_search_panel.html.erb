@@ -1,14 +1,32 @@
 <% collapse_id = local_assigns.fetch(:collapse_id, "faq-search") %>
+<% query_value = params[:q].to_s.strip %>
+<% query_present = query_value.present? %>
 
-<div id="<%= collapse_id %>" class="collapse faqs-collapse">
+<div id="<%= collapse_id %>" class="collapse faqs-collapse <%= "show" if query_present %>">
   <div class="card">
     <div class="card-body">
-      <div class="input-group">
-        <span class="input-group-text"><i class="fas fa-search"></i></span>
-        <input type="text" class="form-control" placeholder="Cerca per parola chiave (UI)">
-        <button class="btn btn-primary" type="button">Cerca</button>
-      </div>
+      <%= form_with url: request.path, method: :get do %>
+        <%= hidden_field_tag :locale, @faq_locale %>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <%= text_field_tag :q,
+            query_value,
+            class: "form-control",
+            placeholder: "Cerca per parola chiave",
+            autocomplete: "off",
+            aria: { label: "Cerca nelle FAQ" } %>
+
+          <% if query_present %>
+            <%= link_to url_for(q: nil), class: "btn btn-outline-secondary", title: "Rimuovi ricerca" do %>
+              <i class="fas fa-rotate-left"></i>
+            <% end %>
+          <% end %>
+
+          <button class="btn btn-primary" type="submit">
+            Cerca
+          </button>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
-

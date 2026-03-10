@@ -1,5 +1,9 @@
 class FaqsController < ApplicationController
+  before_action :require_login, only: %i[admin create update destroy]
+  before_action :authorize_admin!, only: %i[admin create update destroy]
+
   before_action :set_faq_locale, only: %i[admin user visitor create update destroy]
+  before_action :set_faq_categories, only: %i[admin user visitor]
 
   def new
     @faq = Faq.new
@@ -7,13 +11,13 @@ class FaqsController < ApplicationController
 
   def admin
     @faq = Faq.new
-    @faqs = Faq.includes(:faq_translations).all.order(created_at: :desc)
+    @faqs = apply_search(Faq.includes(:faq_translations).order(created_at: :desc))
     @faq_votes_up_map, @faq_votes_down_map, @faq_votes_current_map = compute_vote_maps(@faqs)
     @pending_faq_suggestions = FaqSuggestion.attesa.order(created_at: :desc)
   end
 
   def user
-    @faqs = Faq.includes(:faq_translations).all.order(created_at: :desc)
+    @faqs = apply_search(Faq.includes(:faq_translations).order(created_at: :desc))
     @faq_votes_up_map, @faq_votes_down_map, @faq_votes_current_map = compute_vote_maps(@faqs)
     @my_faq_suggestions =
       if current_user
@@ -24,7 +28,7 @@ class FaqsController < ApplicationController
   end
 
   def visitor
-    @faqs = Faq.includes(:faq_translations).all.order(created_at: :desc)
+    @faqs = apply_search(Faq.includes(:faq_translations).order(created_at: :desc))
     @faq_votes_up_map, @faq_votes_down_map, @faq_votes_current_map = compute_vote_maps(@faqs)
   end
   
@@ -88,6 +92,59 @@ class FaqsController < ApplicationController
     [up_map, down_map, current_map]
   end
 
+  def apply_search(scope)
+    raw_query = params[:q].to_s
+    @faq_query = raw_query.strip
+    return scope if @faq_query.blank?
+
+    query_terms = @faq_query.split(/\s+/).reject(&:blank?)
+    return scope if query_terms.empty?
+
+    normalized_locale = normalize_faq_locale(@faq_locale)
+    base_locale = Faq::BASE_LOCALE.to_s
+    locale_base = normalized_locale.to_s.split("-").first
+
+    query_terms.reduce(scope) do |rel, term|
+      pattern = "%#{ActiveRecord::Base.sanitize_sql_like(term)}%"
+
+      base_match = <<~SQL.squish
+        faqs.domanda ILIKE :pattern
+        OR faqs.risposta ILIKE :pattern
+        OR faqs.categoria ILIKE :pattern
+      SQL
+
+      if locale_base.blank? || locale_base == base_locale
+        rel.where(base_match, pattern: pattern)
+      else
+        rel = rel.left_joins(:faq_translations).distinct
+
+        locale_sql, locale_binds = translation_locale_predicate(normalized_locale)
+        translated_match = <<~SQL.squish
+          (#{locale_sql})
+          AND (
+            faq_translations.domanda ILIKE :pattern
+            OR faq_translations.risposta ILIKE :pattern
+          )
+        SQL
+
+        rel.where("(#{base_match}) OR (#{translated_match})", { pattern: pattern, **locale_binds })
+      end
+    end
+  end
+
+  def translation_locale_predicate(normalized_locale)
+    loc = normalized_locale.to_s
+    return ["1=0", {}] if loc.blank?
+
+    base = loc.split("-").first
+
+    if loc.include?("-")
+      ["faq_translations.locale = :loc OR faq_translations.locale = :base", { loc: loc, base: base }]
+    else
+      ["faq_translations.locale = :loc OR faq_translations.locale LIKE :prefix", { loc: loc, prefix: "#{loc}-%" }]
+    end
+  end
+
   def normalize_faq_locale(raw)
     value = raw.to_s.strip.tr("_", "-").downcase
     value.presence || Faq::BASE_LOCALE.to_s
@@ -107,11 +164,22 @@ class FaqsController < ApplicationController
     translation.assign_attributes(attrs)
     translation.save!
 
-    categoria = faq_params[:categoria].to_s.strip
-    @faq.update!(categoria: categoria) if categoria.present?
+    if faq_params[:faq_category_id].present?
+      @faq.update!(faq_category_id: faq_params[:faq_category_id])
+    else
+      categoria = faq_params[:categoria].to_s.strip
+      @faq.update!(categoria: categoria) if categoria.present?
+    end
   end
 
   def faq_params
-    params.require(:faq).permit(:domanda, :risposta, :categoria)
+    params.require(:faq).permit(:domanda, :risposta, :categoria, :faq_category_id)
+  end
+
+  def set_faq_categories
+    FaqCategory.general!
+    @faq_categories = FaqCategory
+      .order(Arel.sql("CASE WHEN lower(name) = '#{FaqCategory::GENERAL_NAME.downcase}' THEN 0 ELSE 1 END"))
+      .order(Arel.sql("lower(name)"))
   end
 end

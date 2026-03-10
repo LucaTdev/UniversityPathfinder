@@ -37,6 +37,7 @@ module FaqsHelper
     locales.concat(extract_locales_from_i18n_load_path)
     locales << Faq::BASE_LOCALE.to_s
     locales << "en"
+    locales.concat(%w[fr es de])
 
     begin
       locales.concat(FaqTranslation.distinct.pluck(:locale))

@@ -85,59 +85,14 @@
     </div>
   <% else %>
     <% if mode == :admin %>
-      <% sample_voters = [
-        ["prova", :up],
-        ["prova2", :down]
-      ] %>
-      <% visible_voters = sample_voters %>
-
       <div class="faq-votes__admin-row d-flex align-items-start justify-content-between gap-3">
         <div></div>
-
         <div class="faq-votes__admin-right d-flex flex-column align-items-end gap-2">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-outline-primary dropdown-toggle"
-                    type="button"
-                    id="votersDropdown-<%= faq_id %>"
-                    data-bs-toggle="dropdown"
-                    data-bs-display="static"
-                    aria-expanded="false"
-                    title="Vedi chi ha votato">
-              <i class="fa-solid fa-users me-2"></i>Votanti (<%= visible_voters.length %>)
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end faq-votes__voters-menu" aria-labelledby="votersDropdown-<%= faq_id %>">
-              <% if visible_voters.empty? %>
-                <li>
-                  <span class="dropdown-item-text small text-muted">Nessun voto registrato.</span>
-                </li>
-              <% else %>
-                <% visible_voters.each do |email, vote| %>
-                  <li>
-                    <span class="dropdown-item-text d-flex align-items-center justify-content-between gap-3 small">
-                      <span><%= email %></span>
-                    <% if vote == :up %>
-                      <span class="badge bg-success-subtle text-success-emphasis" aria-label="Pollice in su" title="Pollice in su">
-                        <i class="fa-regular fa-thumbs-up"></i>
-                      </span>
-                    <% else %>
-                      <span class="badge bg-danger-subtle text-danger-emphasis" aria-label="Pollice in giù" title="Pollice in giù">
-                        <i class="fa-regular fa-thumbs-down"></i>
-                      </span>
-                    <% end %>
-                  </span>
-                  </li>
-                <% end %>
-              <% end %>
-            </ul>
-          </div>
-
           <div class="faq-votes__counts small text-muted d-flex gap-3 justify-content-end">
             <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
               <i class="fa-regular fa-thumbs-up"></i>
               <span><%= up_count %></span>
             </span>
-
             <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
               <i class="fa-regular fa-thumbs-down"></i>
               <span><%= down_count %></span>

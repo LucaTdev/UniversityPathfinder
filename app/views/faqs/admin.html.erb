@@ -5,9 +5,22 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <% end %>
 
-<% categories = faq_categories(@faqs) %>
+<% categories = Array(@faq_categories) %>
+<% category_names = categories.map(&:name) %>
+<% search_query = params[:q].to_s.strip %>
+<% searching = search_query.present? %>
+<% empty_title = searching ? "Nessun risultato" : "Nessuna FAQ disponibile" %>
+<% empty_body =
+  if searching
+    "Nessuna FAQ corrisponde a “#{search_query}”. Prova a cambiare parole chiave o la lingua."
+  else
+    "Aggiungi la prima FAQ cliccando sul pulsante \"Aggiungi FAQ\"."
+  end %>
 
-<div class="faqs-page">
+<% translation_locale_options = faq_locale_options.reject { |_, code| normalize_faq_locale(code).split("-").first == Faq::BASE_LOCALE.to_s } %>
+
+<div data-controller="faqs-translations" data-faqs-translations-locales-value="<%= translation_locale_options.to_json %>">
+<div class="faqs-page" data-controller="faqs-category-filter">
   <div class="page-header text-center">
     <div class="container">
       <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>FAQ Management</h1>
@@ -23,7 +36,7 @@
 	          </h2>
 	          <div class="d-flex align-items-center gap-2">
 	            <%= render "search", collapse_id: "faq-search-admin" %>
-	            <%= render "filter", categories: categories, dropdown_id: "faq-filter-admin" %>
+	            <%= render "filter", categories: category_names, dropdown_id: "faq-filter-admin" %>
 	            <%= render "language", dropdown_id: "faq-lang-admin", current_locale: @faq_locale %>
 	            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#faq-categories-modal">
 	              <i class="fas fa-tags me-2"></i>Categorie
@@ -58,10 +71,14 @@
                 <textarea name="faq[risposta]" id="faq_risposta" rows="4" class="form-control" placeholder="Inserisci la risposta" required></textarea>
               </div>
 
-              <div class="mb-3">
-                <label for="faq_categoria" class="form-label">Categoria *</label>
-                <input type="text" name="faq[categoria]" id="faq_categoria" class="form-control" placeholder="Es. Iscrizioni, Segreteria, Esami" required>
-              </div>
+		              <div class="mb-3">
+		                <label for="faq_faq_category_id" class="form-label">Categoria *</label>
+		                <select name="faq[faq_category_id]" id="faq_faq_category_id" class="form-select" required data-faqs-category-select>
+		                  <% categories.each do |cat| %>
+		                    <option value="<%= cat.id %>" <%= "selected" if cat.general? %>><%= cat.name %></option>
+		                  <% end %>
+		                </select>
+		              </div>
 
               <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary" id="submit-btn">
@@ -82,8 +99,8 @@
 	          up_map: @faq_votes_up_map,
 	          down_map: @faq_votes_down_map,
 	          current_map: @faq_votes_current_map,
-	          empty_title: "Nessuna FAQ disponibile",
-	          empty_body: "Aggiungi la prima FAQ cliccando sul pulsante \"Aggiungi FAQ\"." %>
+	          empty_title: empty_title,
+	          empty_body: empty_body %>
 
 	        <div class="mt-5" id="faq-suggestions">
 	          <div class="d-flex justify-content-between align-items-center mb-3">
@@ -173,9 +190,11 @@
   </div>
 </div>
 
+<%= render "translations_modal" %>
+
 <div class="modal fade" id="faq-categories-modal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" data-controller="faqs-categories" data-faqs-categories-initial-value="<%= categories.to_json %>">
+    <div class="modal-content" data-controller="faqs-categories" data-faqs-categories-initial-value="<%= categories.map { |c| { id: c.id, name: c.name, general: c.general? } }.to_json %>">
       <div class="modal-header">
         <h5 class="modal-title"><i class="fas fa-tags me-2"></i>Gestione categorie</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
@@ -201,7 +220,7 @@
             <% else %>
               <% categories.each do |cat| %>
                 <div class="list-group-item d-flex align-items-center justify-content-between">
-                  <span><%= cat %></span>
+                  <span><%= cat.name %></span>
                   <span class="badge text-bg-light">FAQ</span>
                 </div>
               <% end %>
@@ -215,4 +234,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>
