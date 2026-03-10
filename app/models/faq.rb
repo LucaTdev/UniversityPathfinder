@@ -6,9 +6,14 @@ class Faq < ApplicationRecord
   has_many :faq_votes, dependent: :destroy
   has_many :faq_translations, dependent: :destroy
 
+  before_validation :sync_category_fields
+  after_create_commit :publish_news_item
+  after_update_commit :publish_update_news_item, if: :publish_update_news_item?
+
   validates :domanda, presence: true
   validates :risposta, presence: true
   validates :categoria, presence: true
+  validates :faq_category, presence: true
 
   def domanda_for(locale)
     translated_attr_for(locale, :domanda)
@@ -46,6 +51,61 @@ class Faq < ApplicationRecord
 
   def normalize_locale(raw)
     raw.to_s.strip.tr("_", "-").downcase
+  end
+
+  def sync_category_fields
+    if faq_category_id.present? && faq_category.nil?
+      self.faq_category = FaqCategory.find_by(id: faq_category_id)
+    end
+
+    if faq_category.present?
+      self.categoria = faq_category.name
+    else
+      raw = categoria.to_s.strip.squish
+      if raw.present?
+        found = FaqCategory.where("lower(name) = ?", raw.downcase).first
+        if found
+          self.faq_category = found
+          self.categoria = found.name
+        end
+      end
+    end
+
+    if faq_category.blank?
+      general = FaqCategory.general!
+      self.faq_category = general
+      self.categoria = general.name
+    end
+
+    self.categoria = categoria.to_s.strip.squish
+  end
+
+  def publish_news_item
+    News.create!(
+      title: "Pubblicazione nuova FAQ",
+      content: domanda.to_s,
+      category: "FAQ",
+      icon_class: "fas fa-question-circle",
+      published_at: Time.current
+    )
+  rescue StandardError => e
+    Rails.logger.error("[FAQ] Impossibile creare news per FAQ ##{id}: #{e.class} #{e.message}")
+  end
+
+  def publish_update_news_item?
+    saved_change_to_domanda? || saved_change_to_risposta?
+  end
+
+  def publish_update_news_item
+    News.create!(
+      title: "Aggiornamento FAQ",
+      content: domanda.to_s,
+      category: "FAQ",
+      icon_class: "fas fa-pen",
+      published_at: Time.current
+    )
+  rescue StandardError => e
+    Rails.logger.error("[FAQ] Impossibile creare news aggiornamento per FAQ ##{id}: #{e.class} #{e.message}")
   end
 end
   

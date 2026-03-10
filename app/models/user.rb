@@ -67,9 +67,11 @@ class User < ApplicationRecord
     end
 
     def notifications_count
-        # Implementa il conteggio delle notifiche non lette
-        # Esempio: Notification.where(user: self, read: false).count
-        3 # Placeholder
+        return FaqSuggestion.attesa.count if admin?
+
+        news_scope = News.all
+        news_scope = news_scope.where.not(category: "FAQ") unless faq_notifications_enabled?
+        news_scope.count
     end
 
     # === Relazioni ===
@@ -81,6 +83,13 @@ class User < ApplicationRecord
     has_many :faq_votes, dependent: :destroy
     has_many :faq_suggestions, dependent: :destroy
     has_one :faq_notification_setting, dependent: :destroy
+
+    def faq_notifications_enabled?
+        setting = faq_notification_setting
+        return true if setting.nil?
+
+        setting.enabled?
+    end
 
     private
 

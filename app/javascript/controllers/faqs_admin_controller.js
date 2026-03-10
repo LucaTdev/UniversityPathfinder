@@ -11,7 +11,8 @@ export default class extends Controller {
     document.getElementById('form-method').value = '';
     document.getElementById('faq_domanda').value = '';
     document.getElementById('faq_risposta').value = '';
-    document.getElementById('faq_categoria').value = '';
+    const catSelect = document.getElementById('faq_faq_category_id');
+    if (catSelect) catSelect.selectedIndex = 0;
   }
   
   openEditForm(event) {
@@ -19,7 +20,7 @@ export default class extends Controller {
     const faqId = event.params.faqId;
     const domanda = event.params.domanda;
     const risposta = event.params.risposta;
-    const categoria = event.params.categoria;
+    const faqCategoryId = event.params.faqCategoryId;
     
     document.getElementById('faq-form').style.display = 'block';
     document.getElementById('form-title').textContent = 'Modifica FAQ';
@@ -30,7 +31,14 @@ export default class extends Controller {
     document.getElementById('form-method').value = 'patch';
     document.getElementById('faq_domanda').value = domanda;
     document.getElementById('faq_risposta').value = risposta;
-    document.getElementById('faq_categoria').value = categoria;
+    const catSelect = document.getElementById('faq_faq_category_id');
+    if (catSelect) {
+      if (faqCategoryId) {
+        catSelect.value = faqCategoryId;
+      } else {
+        catSelect.selectedIndex = 0;
+      }
+    }
   }
   
   closeForm() {

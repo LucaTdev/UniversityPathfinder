@@ -4,7 +4,7 @@
 <% down_count = local_assigns.fetch(:down_count, 0) %>
 <% current_vote = local_assigns[:current_vote] %>
 
-<div class="col-lg-4 col-md-6 mb-4">
+<div class="col-lg-4 col-md-6 mb-4" data-faqs-category-filter-target="card" data-faq-category="<%= faq.categoria %>">
   <div class="card faq-card h-100">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-2">
