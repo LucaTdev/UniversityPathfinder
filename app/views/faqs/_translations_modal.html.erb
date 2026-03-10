@@ -1,0 +1,70 @@
+<div
+  class="modal fade"
+  id="faq-translations-modal"
+  tabindex="-1"
+  aria-hidden="true"
+  data-controller="faqs-notify-modal"
+  data-action="hidden.bs.modal->faqs-translations#reset"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-language me-2"></i><span data-faqs-translations-target="modalTitle">Traduzioni FAQ</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" role="alert" data-faqs-translations-target="error"></div>
+
+        <div data-faqs-translations-target="listSection">
+          <div class="small text-muted mb-3">
+            FAQ: <span class="fw-semibold" data-faqs-translations-target="baseQuestion"></span>
+          </div>
+
+          <div class="list-group" data-faqs-translations-target="list"></div>
+        </div>
+
+        <div class="d-none" data-faqs-translations-target="editorSection">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <div>
+              <div class="fw-semibold">
+                Lingua:
+                <span data-faqs-translations-target="editorLocaleLabel"></span>
+                <span class="badge text-bg-light ms-2" data-faqs-translations-target="editorLocaleBadge"></span>
+              </div>
+              <div class="text-muted small">Compila domanda e risposta nella lingua scelta.</div>
+            </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-action="click->faqs-translations#backToList">
+              <i class="fas fa-arrow-left me-1"></i>Indietro
+            </button>
+          </div>
+
+          <input type="hidden" data-faqs-translations-target="editorLocale">
+
+          <div class="mb-3">
+            <label class="form-label" for="faq-translation-domanda">Domanda</label>
+            <textarea id="faq-translation-domanda" class="form-control" rows="2" data-faqs-translations-target="domanda"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="faq-translation-risposta">Risposta</label>
+            <textarea id="faq-translation-risposta" class="form-control" rows="4" data-faqs-translations-target="risposta"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        <button type="button"
+                class="btn btn-primary d-none"
+                data-action="click->faqs-translations#save"
+                data-faqs-translations-target="saveButton">
+          <i class="fas fa-save me-2"></i>Salva traduzione
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

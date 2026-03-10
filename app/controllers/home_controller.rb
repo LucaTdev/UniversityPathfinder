@@ -7,6 +7,14 @@ class HomeController < ApplicationController
     @user = current_user
     @recent_routes = @user.routes.recent.limit(5)
     @favorite_routes = @user.top_favorite_routes
+
+    if @user&.admin?
+      @pending_faq_suggestions_count = FaqSuggestion.attesa.count
+      @pending_faq_suggestions = FaqSuggestion.attesa.order(created_at: :desc).limit(10)
+    else
+      @pending_faq_suggestions_count = 0
+      @pending_faq_suggestions = []
+    end
   end
 
   def sedi
@@ -39,7 +47,9 @@ class HomeController < ApplicationController
   end
 
   def meteo
-    @news = News.order(published_at: :desc).limit(10)
+    scope = News.order(published_at: :desc)
+    scope = scope.where.not(category: "FAQ") if current_user && !current_user.faq_notifications_enabled?
+    @news = scope.limit(10)
   end
   
   def faqs

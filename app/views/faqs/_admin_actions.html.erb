@@ -1,18 +1,25 @@
 <% locale = local_assigns[:locale] %>
 
 <div class="btn-group faq-admin-actions" role="group" aria-label="Azioni FAQ">
+  <button type="button" class="btn btn-outline-secondary btn-sm"
+          data-action="click->faqs-translations#open"
+          data-faqs-translations-faq-id-param="<%= faq.id %>"
+          title="Traduzioni">
+    <i class="fas fa-language"></i>
+  </button>
+
   <button type="button" class="btn btn-outline-primary btn-sm"
           data-action="click->faqs-admin#openEditForm"
           data-faqs-admin-faq-id-param="<%= faq.id %>"
           data-faqs-admin-domanda-param="<%= faq.domanda_for(locale) %>"
           data-faqs-admin-risposta-param="<%= faq.risposta_for(locale) %>"
-          data-faqs-admin-categoria-param="<%= faq.categoria %>"
+          data-faqs-admin-faq-category-id-param="<%= faq.faq_category_id %>"
           title="Modifica FAQ">
     <i class="fas fa-edit"></i>
   </button>
 
   <%= button_to faq_path(faq), method: :delete,
-    data: { turbo_confirm: "Sei sicuro di voler eliminare la FAQ?" },
+    form: { data: { turbo_confirm: "Sei sicuro di voler eliminare la FAQ?" } },
     class: "btn btn-outline-danger btn-sm",
     title: "Elimina FAQ" do %>
     <i class="fas fa-trash"></i>

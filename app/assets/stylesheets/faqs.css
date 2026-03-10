@@ -95,3 +95,9 @@
     max-height: 320px;
     overflow-y: auto;
 }
+
+/* Filter dropdown: keep usable with many categories */
+.faqs-page .faqs-filter-menu {
+    max-height: 320px;
+    overflow-y: auto;
+}
