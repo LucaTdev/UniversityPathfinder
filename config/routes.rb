@@ -41,11 +41,15 @@ Rails.application.routes.draw do
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy', as: :logout #delete 'logout', to: 'sessions#destroy'
+  match '/auth/:provider/callback', to: 'sessions#omniauth', via: [:get, :post]
+  match '/auth/failure', to: 'sessions#omniauth_failure', via: [:get, :post]
 
   get 'users/new'
   get 'forgot_password', to: 'passwords#new'
   get 'registration', to: 'users#new'
   post 'registration', to: 'users#create'
+  get 'registration/oauth', to: 'users#oauth_new', as: :oauth_registration
+  post 'registration/oauth', to: 'users#oauth_create'
 
 
 #LUCA

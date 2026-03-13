@@ -2,9 +2,20 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!, only: [:show, :edit, :update, :destroy]
   before_action :authorize_user!, only: [:show, :edit, :update, :destroy]
+  before_action :set_oauth_registration, only: [:oauth_new, :oauth_create]
+  before_action :ensure_oauth_registration!, only: [:oauth_new, :oauth_create]
 
   def new
     @user = User.new
+  end
+
+  def oauth_new
+    @user = User.new(
+      first_name: @oauth_registration["first_name"],
+      last_name: @oauth_registration["last_name"],
+      email: @oauth_registration["email"],
+      role: User::ROLE_STUDENT
+    )
   end
 
   def create
@@ -41,7 +52,7 @@ class UsersController < ApplicationController
         
         if admin_token.present?
           # Verifica il token solo se è stato inserito
-          if admin_token == "1234"
+          if admin_token == admin_registration_token
             AdminProfile.create(user: @user, token: admin_token)
           else
             @user.errors.add(:base, "Token amministratore non valido")
@@ -54,6 +65,44 @@ class UsersController < ApplicationController
       redirect_to login_path, notice: "Registrazione completata con successo!"
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def oauth_create
+    existing_user = User.find_by(email: @oauth_registration["email"])
+
+    if existing_user
+      session.delete(:oauth_registration)
+      sign_in(existing_user)
+      redirect_to root_path, notice: "Accesso effettuato con Google."
+      return
+    end
+
+    @user = User.new(oauth_account_params)
+    @user.email = @oauth_registration["email"]
+    @user.registration_date = Date.current
+
+    generated_password = SecureRandom.base58(32)
+    @user.password = generated_password
+    @user.password_confirmation = generated_password
+
+    assign_role_from_param(@user, oauth_account_params[:role])
+
+    unless oauth_role_requirements_valid?
+      render :oauth_new, status: :unprocessable_entity
+      return
+    end
+
+    if @user.save
+      if setup_oauth_role_profile(@user)
+        session.delete(:oauth_registration)
+        sign_in(@user)
+        redirect_to root_path, notice: "Registrazione completata con Google!"
+      else
+        render :oauth_new, status: :unprocessable_entity
+      end
+    else
+      render :oauth_new, status: :unprocessable_entity
     end
   end
 
@@ -131,6 +180,23 @@ class UsersController < ApplicationController
     params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation)
   end
 
+  def oauth_account_params
+    params.fetch(:user, ActionController::Parameters.new).permit(
+      :first_name,
+      :last_name,
+      :terms_accepted,
+      :role
+    )
+  end
+
+  def oauth_profile_params
+    params.fetch(:user, ActionController::Parameters.new).permit(
+      :student_id,
+      :university,
+      :admin_token
+    )
+  end
+
   def user_profile_json
     {
       id: @user.id,
@@ -149,5 +215,66 @@ class UsersController < ApplicationController
       created_at: @user.created_at,
       updated_at: @user.updated_at
     }
+  end
+
+  def set_oauth_registration
+    @oauth_registration = session[:oauth_registration]
+  end
+
+  def ensure_oauth_registration!
+    return if @oauth_registration.present?
+
+    redirect_to login_path, alert: "Avvia prima l'accesso con Google."
+  end
+
+  def assign_role_from_param(user, role_param)
+    case role_param
+    when "1"
+      user.role = User::ROLE_STUDENT
+    when "2"
+      user.role = User::ROLE_ADMIN
+    else
+      user.role = User::ROLE_BASE
+    end
+  end
+
+  def setup_oauth_role_profile(user)
+    if user.student?
+      student_id = oauth_profile_params[:student_id]
+      university = oauth_profile_params[:university]
+
+      if student_id.present? || university.present?
+        StudentProfile.create(user: user, student_id: student_id, university: university)
+      end
+
+      return true
+    end
+
+    return true unless user.admin?
+
+    AdminProfile.create(user: user, token: oauth_profile_params[:admin_token])
+    true
+  end
+
+  def oauth_role_requirements_valid?
+    return true unless @user.admin?
+
+    admin_token = oauth_profile_params[:admin_token]
+
+    if admin_token.blank?
+      @user.errors.add(:admin_token, "è obbligatorio per gli amministratori")
+      return false
+    end
+
+    if admin_token != admin_registration_token
+      @user.errors.add(:base, "Token amministratore non valido")
+      return false
+    end
+
+    true
+  end
+
+  def admin_registration_token
+    ENV["ADMIN_REGISTRATION_TOKEN"].presence || "1234"
   end
 end
