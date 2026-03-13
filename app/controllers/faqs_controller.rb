@@ -1,6 +1,7 @@
 class FaqsController < ApplicationController
-  before_action :require_login, only: %i[admin create update destroy]
+  before_action :require_login, only: %i[admin user create update destroy]
   before_action :authorize_admin!, only: %i[admin create update destroy]
+  before_action :authorize_user!, only: %i[user]
 
   before_action :set_faq_locale, only: %i[admin user visitor create update destroy]
   before_action :set_faq_categories, only: %i[admin user visitor]
@@ -71,6 +72,11 @@ class FaqsController < ApplicationController
   end
 
   private
+
+  def authorize_user!
+    return unless current_user&.admin?
+    redirect_to admin_faqs_path, alert: "Non hai i permessi per accedere a questa pagina"
+  end
 
   def set_faq_locale
     @faq_locale = normalize_faq_locale(params[:faq_locale].presence || params[:locale].presence || session[:faq_locale].presence)
