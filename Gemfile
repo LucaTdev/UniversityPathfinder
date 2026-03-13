@@ -32,6 +32,10 @@ gem "solid_cable"
 gem 'dotenv-rails', groups: [:development, :test]
 gem 'rack-cors'
 
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -59,6 +63,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Aggiunta di cucumber e database_cleaner per i test
+  gem 'cucumber-rails', require: false
+
+  gem 'database_cleaner'
 end
 
 group :development do
