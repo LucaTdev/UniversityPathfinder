@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Completa Registrazione - University Path Finder</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .card {
+      border-radius: 15px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .text-primary {
+      color: #667eea !important;
+    }
+
+    .bg-gradient {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-gradient py-4">
+    <div class="row justify-content-center w-100">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-5">
+            <div class="text-center mb-4">
+              <h2 class="fw-bold text-primary mb-3">Completa il tuo account</h2>
+              <p class="text-muted mb-1">Hai già effettuato l'accesso con Google.</p>
+              <p class="text-muted mb-0">Manca solo la configurazione del profilo interno.</p>
+            </div>
+
+            <% if @user.errors.any? %>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Correggi i seguenti errori:</h5>
+                <ul class="mb-0">
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% end %>
+
+            <%= form_with model: @user, url: oauth_registration_path, method: :post, local: true, class: "needs-validation", html: { novalidate: true, id: "oauth-registration-form", data: { turbo: false } } do |f| %>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email Google</label>
+                <input type="email" class="form-control form-control-lg" value="<%= @oauth_registration["email"] %>" disabled>
+                <div class="form-text">L'email viene presa dal provider Google e non puo' essere modificata qui.</div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <%= f.label :first_name, "Nome", class: "form-label fw-semibold" %>
+                  <%= f.text_field :first_name, class: "form-control form-control-lg", required: true %>
+                  <div class="invalid-feedback">Inserisci il tuo nome</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :last_name, "Cognome", class: "form-label fw-semibold" %>
+                  <%= f.text_field :last_name, class: "form-control form-control-lg", required: true %>
+                  <div class="invalid-feedback">Inserisci il tuo cognome</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <%= f.label :role, "Tipo di Account", class: "form-label fw-semibold" %>
+                <%= f.select :role,
+                    options_for_select([["Studente", "1"], ["Amministratore", "2"]], @user.role.to_s),
+                    {},
+                    class: "form-select form-select-lg",
+                    id: "role_select" %>
+              </div>
+
+              <div id="student_fields">
+                <%= f.label :student_id, "Matricola", class: "form-label fw-semibold" %>
+                <%= f.text_field :student_id, class: "form-control form-control-lg", placeholder: "Inserisci la tua matricola" %>
+
+                <%= f.label :university, "Universita'", class: "form-label fw-semibold mt-2" %>
+                <%= f.text_field :university, class: "form-control form-control-lg", placeholder: "Nome dell'universita'" %>
+              </div>
+
+              <div id="admin_fields" style="display: none;">
+                <%= f.label :admin_token, "Token Amministratore", class: "form-label fw-semibold mt-3" %>
+                <%= f.password_field :admin_token, class: "form-control form-control-lg", placeholder: "Inserisci il token amministratore" %>
+                <div class="form-text">Per gli account admin il token e' obbligatorio.</div>
+              </div>
+
+              <div class="mb-4 mt-3">
+                <div class="form-check">
+                  <%= f.check_box :terms_accepted, class: "form-check-input", id: "terms_accepted", required: true %>
+                  <%= f.label :terms_accepted, class: "form-check-label" do %>
+                    Accetto i <a href="#">Termini e Condizioni</a> e la <a href="#">Privacy Policy</a>
+                  <% end %>
+                  <div class="invalid-feedback">Devi accettare i termini e condizioni</div>
+                </div>
+              </div>
+
+              <div class="d-grid gap-2 mb-3">
+                <%= f.submit "Completa registrazione", class: "btn btn-primary btn-lg" %>
+              </div>
+            <% end %>
+
+            <div class="text-center">
+              <%= link_to "Torna al login", login_path, class: "text-primary text-decoration-none fw-semibold" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const form = document.getElementById("oauth-registration-form");
+      const roleSelect = document.getElementById("role_select");
+      const studentFields = document.getElementById("student_fields");
+      const adminFields = document.getElementById("admin_fields");
+
+      function toggleFields() {
+        if (!roleSelect) return;
+
+        if (roleSelect.value === "2") {
+          studentFields.style.display = "none";
+          adminFields.style.display = "block";
+        } else {
+          studentFields.style.display = "block";
+          adminFields.style.display = "none";
+        }
+      }
+
+      toggleFields();
+      roleSelect.addEventListener("change", toggleFields);
+
+      form.addEventListener("submit", function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add("was-validated");
+      });
+    });
+  </script>
+</body>
+</html>
