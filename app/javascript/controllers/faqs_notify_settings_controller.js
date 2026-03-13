@@ -35,11 +35,22 @@ export default class extends Controller {
       if (!res.ok) {
         const data = await res.json().catch(() => null)
         const messages = Array.isArray(data?.messages) ? data.messages : []
-        if (messages.length) window.alert(messages.join("\n"))
+        const text = messages.length ? messages.join("\n") : "Impossibile salvare le impostazioni."
+        this.dialog()?.alert({
+          title: "Impostazioni notifiche",
+          message: text,
+          confirmLabel: "Chiudi",
+          confirmVariant: "primary",
+        })
         return
       }
     } catch {
-      // ignore network errors
+      this.dialog()?.alert({
+        title: "Impostazioni notifiche",
+        message: "Impossibile salvare le impostazioni.",
+        confirmLabel: "Chiudi",
+        confirmVariant: "primary",
+      })
     } finally {
       button.disabled = false
       button.textContent = button.dataset.originalText
@@ -50,5 +61,8 @@ export default class extends Controller {
     const meta = document.querySelector("meta[name='csrf-token']")
     return meta?.getAttribute("content") || ""
   }
-}
 
+  dialog() {
+    return window.FaqsDialog || null
+  }
+}

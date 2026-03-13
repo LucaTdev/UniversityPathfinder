@@ -17,7 +17,7 @@
     "Quando saranno pubblicate, le vedrai qui."
   end %>
 
-<div class="faqs-page" data-controller="faqs-category-filter">
+<div class="faqs-page" data-controller="faqs-category-filter faqs-dialog">
   <div class="page-header text-center">
     <div class="container">
       <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>Ciao utente.</h1>
@@ -152,11 +152,18 @@
 	                    <div class="fw-semibold"><%= s.domanda %></div>
 	                    <div class="d-flex align-items-center gap-2">
 	                      <% if s.attesa? %>
-	                        <%= button_to "Elimina",
-	                          faq_suggestion_path(s),
+	                        <%= button_to faq_suggestion_path(s),
 	                          method: :delete,
 	                          class: "btn btn-sm btn-outline-danger",
-	                          data: { turbo_confirm: "Eliminare questo suggerimento?" } %>
+                            data: {
+                              action: "click->faqs-dialog#confirmForm",
+                              faqs_dialog_title_param: "Elimina suggerimento",
+                              faqs_dialog_message_param: "Eliminare questo suggerimento?",
+                              faqs_dialog_confirm_label_param: "Elimina",
+                              faqs_dialog_confirm_variant_param: "danger",
+                            } do %>
+                            Elimina
+                          <% end %>
 	                      <% end %>
 						  <span class="badge text-bg-light"><%= faq_suggestion_status_label(s.status) %></span>
 	                    </div>
@@ -189,4 +196,5 @@
     </div>
   </div>
 </div>
+<%= render "dialog_modal" %>
 </div>
