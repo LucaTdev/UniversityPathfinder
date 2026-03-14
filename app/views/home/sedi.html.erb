@@ -739,56 +739,6 @@
             }
         }
 
-        // Form submission
-        document.getElementById('universityForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const universityId = document.getElementById('universityId').value;
-            const nome = document.getElementById('nomeSede').value.trim();
-            const indirizzo = document.getElementById('indirizzoSede').value.trim();
-            const lat = document.getElementById('latSede').value.trim();
-            const long = document.getElementById('longSede').value.trim();
-
-            const edificiInputs = document.querySelectorAll('.edificio-input');
-            const edifici = Array.from(edificiInputs)
-                .map(input => input.value.trim())
-                .filter(value => value !== '');
-
-            if (!nome || !indirizzo || !lat || !long || edifici.length === 0) {
-                showError('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
-                return;
-            }
-
-            const sedeData = {
-                nome: nome,
-                indirizzo: indirizzo,
-                latitudine:lat,
-                long: long,
-                edifici: edifici
-            };
-
-            try {
-                showLoading();
-                
-                if (universityId) {
-                    // Update existing university
-                    await updateUniversity(universityId, sedeData);
-                    showSuccess('Sede universitaria aggiornata!');
-                } else {
-                    // Add new university
-                    await createUniversity(sedeData);
-                    showSuccess('Sede universitaria aggiunta!');
-                }
-
-                await fetchUniversities(); // Ricarica la lista
-                hideAddForm();
-                
-            } catch (error) {
-                hideLoading();
-                showError('Errore nel salvataggio: ' + error.message);
-            }
-        });
-
         // Initialize - Carica le sedi in avvio
         document.addEventListener('turbo:load', function() {
             const userRole = document.body.dataset.userRole;
@@ -800,6 +750,55 @@
                 adminButton.style.display = 'none';
             }
             fetchUniversities();
+
+
+            // Form submission
+            document.getElementById('universityForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const universityId = document.getElementById('universityId').value;
+                const nome = document.getElementById('nomeSede').value.trim();
+                const indirizzo = document.getElementById('indirizzoSede').value.trim();
+                const lat = document.getElementById('latSede').value.trim();
+                const long = document.getElementById('longSede').value.trim();
+
+                const edificiInputs = document.querySelectorAll('.edificio-input');
+                const edifici = Array.from(edificiInputs)
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+
+                if (!nome || !indirizzo || !lat || !long || edifici.length === 0) {
+                    showError('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
+                    return;
+                }
+
+                const sedeData = {
+                    nome: nome,
+                    indirizzo: indirizzo,
+                    latitudine: lat,
+                    long: long,
+                    edifici: edifici
+                };
+
+                try {
+                    showLoading();
+                    
+                    if (universityId) {
+                        await updateUniversity(universityId, sedeData);
+                        showSuccess('Sede universitaria aggiornata!');
+                    } else {
+                        await createUniversity(sedeData);
+                        showSuccess('Sede universitaria aggiunta!');
+                    }
+
+                    await fetchUniversities();
+                    hideAddForm();
+                    
+                } catch (error) {
+                    hideLoading();
+                    showError('Errore nel salvataggio: ' + error.message);
+                }
+            });
         });
 
     </script>

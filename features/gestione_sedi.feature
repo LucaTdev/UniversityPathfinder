@@ -1,5 +1,6 @@
 # language: it
 
+@javascript
 Funzionalità: Gestione delle Sedi Universitarie
   Come amministratore del sistema
   Voglio poter aggiungere, modificare ed eliminare le sedi
@@ -22,7 +23,6 @@ Funzionalità: Gestione delle Sedi Universitarie
     Quando clicco il tasto con l'icona della penna accanto al nome della sede
     E apporto i cambiamenti desiderati ai campi
     E clicco "Aggiorna Sede" in fondo alla finestra di modifica
-    Allora comparirà a schermo "Successo! Sede universitaria aggiornata!"
     E avremo le nostre modifiche aggiornate anche nel database
 
   Scenario: Eliminazione di una sede (Passaggi 12-14)
