@@ -142,7 +142,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_03_120000) do
     t.index ["user_id", "searched_at"], name: "index_routes_on_user_id_and_searched_at"
   end
 
-  create_table "sedi", force: :cascade do |t|
+  create_table "sedi", id: :integer, default: nil, force: :cascade do |t|
     t.string "nome", null: false
     t.string "indirizzo", null: false
     t.json "edifici"
