@@ -1,0 +1,1 @@
+DatabaseCleaner.allow_remote_database_url = true
