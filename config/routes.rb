@@ -93,6 +93,10 @@ Rails.application.routes.draw do
 
   resources :news, only: [:index, :create, :update, :destroy]
 
+  if Rails.env.test?
+    get "__test__/login/:user_id", to: "test_sessions#create", as: :test_login
+  end
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker

@@ -1,3 +1,28 @@
+<%
+require "cgi"
+require "uri"
+
+def first_present(*values)
+  values.find { |value| value && !value.empty? }
+end
+
+def derived_test_database_url(url)
+  return nil if url.nil? || url.empty?
+
+  uri = URI.parse(url)
+  database_name = CGI.unescape(uri.path.to_s.delete_prefix("/"))
+  return url if database_name.empty?
+
+  encoded_name = CGI.escape("#{database_name}_test").gsub("+", "%20")
+  uri.path = "/#{encoded_name}"
+  uri.to_s
+rescue URI::InvalidURIError
+  url
+end
+
+default_database_url = first_present(ENV["DEV_DATABASE_URL"], ENV["DATABASE_URL"])
+%>
+
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -5,11 +30,11 @@ default: &default
 
 development:
   <<: *default
-  url: <%= ENV["DEV_DATABASE_URL"] %>
+  url: <%= default_database_url %>
 
 test:
   <<: *default
-  url: <%= ENV["TEST_DATABASE_URL"] %>
+  url: <%= first_present(ENV["TEST_DATABASE_URL"], derived_test_database_url(default_database_url)) %>
 
 production:
   url: <%= ENV["DATABASE_URL"] %>
