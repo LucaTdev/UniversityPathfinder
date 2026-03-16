@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   
   </head>
-  <body class="app-shell">
+  <body class="<%= ["app-shell", content_for?(:body_class) ? content_for(:body_class) : nil].compact.join(" ") %>" <%= raw(yield(:body_attributes)) if content_for?(:body_attributes) %>>
     <%= render "shared/navbar" %>
     <main class="app-main">
       <%= yield %>

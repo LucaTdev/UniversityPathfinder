@@ -1,93 +1,19 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrazione - University Path Finder</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<% content_for :title, "Registrazione - University Path Finder" %>
+<% content_for :body_class, "layout-sticky-footer auth-page" %>
+
+<% content_for :head do %>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    .card {
-      border-radius: 15px;
-    }
-    
-    .form-control:focus {
-      border-color: #0d6efd;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      border-radius: 8px;
-      transition: transform 0.2s;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    
-    .text-primary {
-      color: #667eea !important;
-    }
-    
-    a.text-primary:hover {
-      color: #764ba2 !important;
-    }
+<% end %>
 
-    .bg-gradient {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-    
-    .btn-outline-secondary {
-      border-color: #6c757d;
-      color: #6c757d;
-    }
-    
-    .btn-outline-secondary:hover {
-      background-color: #6c757d;
-      border-color: #6c757d;
-      color: white;
-    }
-
-    .btn-google {
-      border: 1px solid #dadce0;
-      border-radius: 8px;
-      color: #3c4043;
-      background-color: #fff;
-      font-weight: 600;
-    }
-
-    .btn-google:hover {
-      background-color: #f8f9fa;
-      color: #1f1f1f;
-    }
-    
-    .input-group .form-control:focus {
-      z-index: 3;
-    }
-
-    /* Indicatore forza password */
-    .password-strength {
-      margin-top: 10px;
-    }
-
-    .strength-weak { background-color: #dc3545; }
-    .strength-medium { background-color: #ffc107; }
-    .strength-strong { background-color: #28a745; }
-  </style>
-</head>
-<body>
-  <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-gradient py-4">
-    <div class="row justify-content-center w-100">
-      <div class="col-md-8 col-lg-6">
-        <div class="card shadow-lg border-0">
-          <div class="card-body p-5">
+  <div class="container-fluid auth-screen">
+    <div class="row justify-content-center w-100 g-0">
+      <div class="col-12 auth-shell auth-shell--register">
+        <div class="card auth-card shadow-lg border-0">
+          <div class="card-body auth-card-body">
             <!-- Header -->
-            <div class="text-center mb-4">
-              <h2 class="fw-bold text-primary mb-3">University Pathfinder</h2>
-              <p class="text-muted">Crea il tuo account</p>
+            <div class="auth-header">
+              <h1 class="auth-brand">University Pathfinder</h1>
+              <p class="auth-subtitle">Crea il tuo account e configura i dati necessari per studente o amministratore.</p>
             </div>
 
             <!-- Errori -->
@@ -106,7 +32,7 @@
             <!-- Registration Form -->
             <%= form_with model: @user, url: registration_path, method: :post, local: true, id: "registration-form", class: "needs-validation", html: { novalidate: true } do |f| %>
               
-              <div class="row">
+              <div class="row g-3">
                 <div class="col-md-6 mb-3">
                   <%= f.label :first_name, "Nome", class: "form-label fw-semibold" %>
                   <%= f.text_field :first_name, class: "form-control form-control-lg", placeholder: "Inserisci il tuo nome", required: true %>
@@ -172,7 +98,7 @@
               </div>
 
               <!-- Campi Studente -->
-              <div id="student_fields" style="display:none;">
+              <div id="student_fields" class="auth-role-panel" style="display:none;">
                 <%= f.label :student_id, "Matricola", class: "form-label fw-semibold" %>
                 <%= f.text_field :student_id, class: "form-control form-control-lg", placeholder: "Inserisci la tua matricola" %>
 
@@ -181,7 +107,7 @@
               </div>
 
               <!-- Campi Admin -->
-              <div id="admin_fields" style="display:none;">
+              <div id="admin_fields" class="auth-role-panel" style="display:none;">
                 <%= f.label :admin_token, "Token Amministratore", class: "form-label fw-semibold" %>
                 <div class="input-group">
                   <%= f.password_field :admin_token, class: "form-control form-control-lg", id: "admin_token", placeholder: "Inserisci il token amministratore" %>
@@ -207,7 +133,7 @@
             <% end %>
 
             <% if google_oauth_enabled? %>
-              <div class="text-center text-muted my-3">oppure</div>
+              <div class="auth-separator"><span>oppure</span></div>
               <div class="d-grid gap-2 mb-3">
                 <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "btn btn-google btn-lg" do %>
                   <i class="fab fa-google me-2"></i>Registrati con Google
@@ -215,8 +141,8 @@
               </div>
             <% end %>
 
-            <hr class="my-4">
-            <div class="text-center">
+            <hr class="auth-divider">
+            <div class="text-center auth-footer">
               <p class="text-muted mb-0">
                 Hai già un account? <%= link_to "Accedi qui", login_path, class: "text-primary fw-semibold" %>
               </p>
@@ -227,7 +153,6 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script>
     function initializeRegistrationForm() {
       const form = document.getElementById('registration-form');
@@ -445,5 +370,3 @@
     document.addEventListener("turbo:load", initializeRegistrationForm);
     document.addEventListener("turbo:render", initializeRegistrationForm);
   </script>
-</body>
-</html>

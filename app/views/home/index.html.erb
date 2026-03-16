@@ -1,204 +1,376 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Pathfinder - App di Navigazione</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 80px 0;
-            text-align: center;
-        }
-        
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .hero-subtitle {
-            font-size: 1.3rem;
-            font-weight: 300;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        
-        .btn-hero {
-            background-color: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            font-weight: 500;
-            padding: 12px 30px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-hero:hover {
-            background-color: white;
-            color: #667eea;
-            transform: translateY(-2px);
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            height: 100%;
-            border: none;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-        
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 15px;
-        }
-        
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: #718096;
-            margin-bottom: 50px;
-        }
-        
-        .cta-section {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            padding: 80px 0;
-        }
-        
-        .footer-custom {
-            background: #2d3748;
-            color: white;
-            padding: 40px 0;
-        }
+<% content_for :title, "University Pathfinder - App di Navigazione" %>
 
-        .notifications-container {
-            max-height: 180px;
-            overflow-y: auto;
-        }
+<% content_for :head do %>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .home-index-page {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top left, rgba(118, 75, 162, 0.12), transparent 28%),
+        linear-gradient(180deg, #f5f7fb 0%, #eef2f8 100%);
+    }
 
-        .notification-item {
-            transition: background-color 0.2s ease;
-        }
+    .hero-section {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 5.5rem 0 5rem;
+      text-align: center;
+    }
 
-        .notification-item:hover {
-            background-color: #f8f9fa;
-        }
+    .hero-section::before,
+    .hero-section::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
 
-        .notification-icon {
-            width: 30px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
+    .hero-section::before {
+      width: 18rem;
+      height: 18rem;
+      top: -6rem;
+      left: -4rem;
+    }
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <h1 class="hero-title">University Pathfinder</h1>
-            <p class="hero-subtitle">Trova il percorso più veloce tra le sedi universitarie</p>
-            <%= link_to "Inizia la navigazione", home_mappa_path, class: "btn btn-hero" %>
+    .hero-section::after {
+      width: 14rem;
+      height: 14rem;
+      right: -3rem;
+      bottom: -5rem;
+    }
+
+    .hero-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 52rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 4vw, 4.4rem);
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+      max-width: 40rem;
+      margin: 0 auto 2rem;
+      font-size: 1.2rem;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      color: white;
+      font-weight: 700;
+      padding: 0.95rem 1.9rem;
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-hero:hover,
+    .btn-hero:focus {
+      background-color: white;
+      color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .btn-hero-secondary {
+      background-color: transparent;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .home-features-section {
+      padding: 5rem 0;
+    }
+
+    .section-heading {
+      max-width: 42rem;
+      margin: 0 auto 3rem;
+    }
+
+    .features-grid {
+      row-gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 1.35rem;
+      padding: 2rem 1.7rem;
+      text-align: center;
+      box-shadow: 0 14px 32px rgba(31, 41, 55, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+      border: 1px solid rgba(102, 126, 234, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 22px 45px rgba(31, 41, 55, 0.14);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      color: #667eea;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      color: #24324a;
+    }
+
+    .feature-copy {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .feature-link {
+      min-width: 11rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 0.9rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: #718096;
+      margin-bottom: 0;
+    }
+
+    .cta-section {
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      padding: 5rem 0;
+    }
+
+    .cta-shell {
+      max-width: 48rem;
+    }
+
+    .cta-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 1rem;
+    }
+
+    .cta-copy {
+      font-size: 1.08rem;
+      color: #718096;
+      margin-bottom: 1.8rem;
+    }
+
+    .home-cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .home-cta-primary,
+    .home-cta-secondary {
+      min-width: 12rem;
+      padding: 0.9rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .home-cta-primary {
+      background: #667eea;
+      border-color: #667eea;
+    }
+
+    .home-cta-secondary {
+      color: #667eea;
+      border-color: #667eea;
+    }
+
+    @media (max-width: 1070px) {
+      .hero-section,
+      .home-features-section,
+      .cta-section {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+      }
+
+      .section-heading {
+        margin-bottom: 2.5rem;
+      }
+
+      .feature-card {
+        padding: 1.75rem 1.4rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-section {
+        padding-top: 3.6rem;
+        padding-bottom: 3.4rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.02rem;
+      }
+
+      .hero-actions,
+      .home-cta-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn-hero,
+      .home-cta-primary,
+      .home-cta-secondary,
+      .feature-link {
+        width: 100%;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .cta-title {
+        font-size: 1.75rem;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .hero-shell,
+      .section-heading,
+      .cta-shell {
+        max-width: none;
+      }
+
+      .feature-icon {
+        font-size: 2.45rem;
+      }
+
+      .feature-title {
+        font-size: 1.08rem;
+      }
+    }
+  </style>
+<% end %>
+
+<% supporto_path =
+  case current_user&.role.to_i
+  when 2 then admin_faqs_path
+  when 1 then user_faqs_path
+  else        visitor_faqs_path
+  end
+%>
+
+<div class="home-index-page">
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-shell mx-auto">
+        <h1 class="hero-title">University Pathfinder</h1>
+        <p class="hero-subtitle">Trova il percorso più veloce tra le sedi universitarie e gestisci navigazione, supporto e aggiornamenti da un unico punto.</p>
+        <div class="hero-actions">
+          <%= link_to "Inizia la navigazione", home_mappa_path, class: "btn btn-hero" %>
+          <%= link_to "Esplora le sedi", home_sedi_path, class: "btn btn-hero btn-hero-secondary" %>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Features Section -->
-    <section style="padding: 80px 0;">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Cosa offriamo</h2>
-                <p class="section-subtitle">Strumenti di navigazione per muoverti facilmente tra le università</p>
+  <section class="home-features-section">
+    <div class="container">
+      <div class="text-center section-heading">
+        <h2 class="section-title">Cosa offriamo</h2>
+        <p class="section-subtitle">Strumenti di navigazione per muoverti facilmente tra le università.</p>
+      </div>
+
+      <div class="row features-grid">
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-university"></i>
             </div>
-            
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-university"></i>
-                        </div>
-                        <h5 class="mb-3">Sedi Universitarie</h5>
-                        <p class="text-muted mb-4">Mappa interattiva di tutte le sedi universitarie della città con informazioni dettagliate.</p>
-                        <%= link_to "Esplora sedi", home_sedi_path, class: "btn btn-outline-primary" %>
-                    </div>
-                </div>
-                
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
-                      </div>
-                      <h5 class="mb-3">Supporto</h5>
-                      <p class="text-muted mb-4">Ricevi assistenza personalizzata per tutte le tue domande e necessità.</p>
-                      <%= link_to "Contatta supporto", admin_faqs_path, class: "btn btn-outline-primary" %>
-                  </div>
-              </div> 
+            <h5 class="feature-title">Sedi Universitarie</h5>
+            <p class="feature-copy">Mappa interattiva di tutte le sedi universitarie della città con informazioni dettagliate.</p>
+            <%= link_to "Esplora sedi", home_sedi_path, class: "btn btn-outline-primary feature-link" %>
+          </div>
+        </div>
 
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        <h5 class="mb-3">News</h5>
-                        <p class="text-muted mb-4">Rimani aggiornato su chiusure strade, eventi e novità che influenzano i percorsi.</p>
-                        <%= link_to "Leggi news", home_meteo_path, class: "btn btn-outline-primary" %>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <h5 class="mb-3">Il tuo Profilo</h5>
-                        <p class="text-muted mb-4">Salva i tuoi percorsi preferiti e personalizza esperienza di navigazione. </p>
-                        <%= link_to "Vai al profilo", home_profilo_path, class: "btn btn-outline-primary" %>
-                    </div>
-                </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-headset"></i>
             </div>
+            <h5 class="feature-title">Supporto</h5>
+            <p class="feature-copy">Ricevi assistenza personalizzata per tutte le tue domande e necessità.</p>
+            <%= link_to "Contatta supporto", supporto_path, class: "btn btn-outline-primary feature-link" %>
+          </div>
         </div>
-    </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section text-center">
-        <div class="container">
-            <h3 class="mb-4" style="font-size: 2rem; font-weight: 600; color: #2d3748;">Pronto a navigare tra le università?</h3>
-            <p class="mb-4" style="font-size: 1.1rem; color: #718096;">Unisciti a migliaia di studenti che usano la nostra app per spostarsi</p>
-            <%= link_to "Registrati ora", users_new_path,
-              class: "btn btn-primary me-3",
-              style: "padding: 12px 30px; border-radius: 25px; background: #667eea; border-color: #667eea;" %>
- 
-            <%= link_to "Login", sessions_new_path,
-              class: "btn btn-outline-primary",
-              style: "padding: 12px 30px; border-radius: 25px; color: #667eea; border-color: #667eea;" %>
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-newspaper"></i>
+            </div>
+            <h5 class="feature-title">News</h5>
+            <p class="feature-copy">Rimani aggiornato su chiusure strade, eventi e novità che influenzano i percorsi.</p>
+            <%= link_to "Leggi news", home_meteo_path, class: "btn btn-outline-primary feature-link" %>
+          </div>
         </div>
-    </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-user"></i>
+            </div>
+            <h5 class="feature-title">Il tuo Profilo</h5>
+            <p class="feature-copy">Salva i tuoi percorsi preferiti e personalizza la tua esperienza di navigazione.</p>
+            <%= link_to "Vai al profilo", home_profilo_path, class: "btn btn-outline-primary feature-link" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section text-center">
+    <div class="container">
+      <div class="cta-shell mx-auto">
+        <h3 class="cta-title">Pronto a navigare tra le università?</h3>
+        <p class="cta-copy">Unisciti a migliaia di studenti che usano la piattaforma per spostarsi, salvare percorsi e restare aggiornati.</p>
+        <div class="home-cta-actions">
+          <%= link_to "Registrati ora", users_new_path, class: "btn btn-primary home-cta-primary" %>
+          <%= link_to "Login", sessions_new_path, class: "btn btn-outline-primary home-cta-secondary" %>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

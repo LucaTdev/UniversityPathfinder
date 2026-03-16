@@ -1,83 +1,19 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - University Path Finder</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<% content_for :title, "Login - University Path Finder" %>
+<% content_for :body_class, "layout-sticky-footer auth-page" %>
+
+<% content_for :head do %>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    .card {
-      border-radius: 15px;
-    }
-    
-    .form-control:focus {
-      border-color: #0d6efd;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      border-radius: 8px;
-      transition: transform 0.2s;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    
-    .text-primary {
-      color: #667eea !important;
-    }
-    
-    a.text-primary:hover {
-      color: #764ba2 !important;
-    }
+<% end %>
 
-    .bg-gradient {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-    .btn-outline-secondary {
-      border-color: #6c757d;
-      color: #6c757d;
-    }
-    
-    .btn-outline-secondary:hover {
-      background-color: #6c757d;
-      border-color: #6c757d;
-      color: white;
-    }
-
-    .btn-google {
-      border: 1px solid #dadce0;
-      border-radius: 8px;
-      color: #3c4043;
-      background-color: #fff;
-      font-weight: 600;
-    }
-
-    .btn-google:hover {
-      background-color: #f8f9fa;
-      color: #1f1f1f;
-    }
-    
-    .input-group .form-control:focus {
-      z-index: 3;
-    }
-  </style>
-</head>
-<body>
-  <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-gradient">
-    <div class="row justify-content-center w-100">
-      <div class="col-md-6 col-lg-4">
-        <div class="card shadow-lg border-0">
-          <div class="card-body p-5">
+  <div class="container-fluid auth-screen">
+    <div class="row justify-content-center w-100 g-0">
+      <div class="col-12 auth-shell auth-shell--login">
+        <div class="card auth-card shadow-lg border-0">
+          <div class="card-body auth-card-body">
             <!-- Header -->
-            <div class="text-center mb-4">
-              <h2 class="fw-bold text-primary mb-3">University Pathfinder</h2>
-              <p class="text-muted">Accedi al tuo account</p>
+            <div class="auth-header">
+              <h1 class="auth-brand">University Pathfinder</h1>
+              <p class="auth-subtitle">Accedi al tuo account per gestire percorso, profilo e preferenze.</p>
             </div>
 
             <!-- Flash messages -->
@@ -132,14 +68,14 @@
               </div>
 
               <!-- Forgot Password Link -->
-              <div class="text-center">
+              <div class="text-center auth-footer">
                 <%= link_to "Password dimenticata?", forgot_password_path, class: "text-decoration-none text-muted" %>
               </div>
 
             <% end %>
 
             <% if google_oauth_enabled? %>
-              <div class="text-center text-muted my-3">oppure</div>
+              <div class="auth-separator"><span>oppure</span></div>
               <div class="d-grid gap-2">
                 <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "btn btn-google btn-lg" do %>
                   <i class="fab fa-google me-2"></i>Continua con Google
@@ -148,10 +84,10 @@
             <% end %>
 
             <!-- Divider -->
-            <hr class="my-4">
+            <hr class="auth-divider">
 
             <!-- Registration Link -->
-            <div class="text-center">
+            <div class="text-center auth-footer">
               <p class="text-muted mb-0">
                 Non hai un account? 
                 <%= link_to "Registrati qui", registration_path, class: "text-primary text-decoration-none fw-semibold" %>
@@ -164,57 +100,50 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Password visibility toggle
-    document.addEventListener('DOMContentLoaded', function() {
+    function initializeLoginPage() {
       const togglePassword = document.getElementById('togglePassword');
       const passwordField = document.getElementById('password');
       const togglePasswordIcon = document.getElementById('togglePasswordIcon');
 
-      togglePassword.addEventListener('click', function() {
-        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordField.setAttribute('type', type);
-        
-        // Toggle icon
-        if (type === 'text') {
-          togglePasswordIcon.className = 'fas fa-eye-slash';
-        } else {
-          togglePasswordIcon.className = 'fas fa-eye';
-        }
-      });
-    });
-
-    // Bootstrap form validation
-    (function() {
-      'use strict';
-      window.addEventListener('load', function() {
-        var forms = document.getElementsByClassName('needs-validation');
-        Array.prototype.forEach.call(forms, function(form) {
-          form.addEventListener('submit', function(event) {
-            if (form.checkValidity() === false) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-          }, false);
+      if (togglePassword && passwordField && togglePasswordIcon && togglePassword.dataset.initialized !== 'true') {
+        togglePassword.dataset.initialized = 'true';
+        togglePassword.addEventListener('click', function() {
+          const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordField.setAttribute('type', type);
+          togglePasswordIcon.className = type === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
         });
-      }, false);
-    })();
+      }
 
-    // Demo hover effects
-    document.addEventListener('DOMContentLoaded', function() {
-      const loginBtn = document.querySelector('.btn-primary');
-      if (loginBtn) {
+      const forms = document.getElementsByClassName('needs-validation');
+      Array.prototype.forEach.call(forms, function(form) {
+        if (form.dataset.validationInitialized === 'true') return;
+        form.dataset.validationInitialized = 'true';
+        form.addEventListener('submit', function(event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+
+      const loginBtn = document.querySelector('input[type="submit"].btn-primary');
+      if (loginBtn && loginBtn.dataset.hoverInitialized !== 'true') {
+        loginBtn.dataset.hoverInitialized = 'true';
         loginBtn.addEventListener('mouseenter', function() {
           this.style.transform = 'translateY(-2px)';
         });
-        
         loginBtn.addEventListener('mouseleave', function() {
           this.style.transform = 'translateY(0)';
         });
       }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeLoginPage);
+    } else {
+      initializeLoginPage();
+    }
+    document.addEventListener('turbo:load', initializeLoginPage);
   </script>
-</body>
-</html>
