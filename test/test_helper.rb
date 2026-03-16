@@ -1,5 +1,12 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
+
+if defined?(ActiveRecord)
+  # Avoid automatic schema purge/load on test boot. In this project the test DB
+  # is shared enough that the auto-maintenance step produces noisy warnings.
+  ActiveRecord.maintain_test_schema = false
+end
+
 require "rails/test_help"
 
 module ActiveSupport
