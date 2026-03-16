@@ -1,14 +1,14 @@
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+<nav class="navbar navbar-expand-upf navbar-custom fixed-top">
   <div class="container">
     <%= link_to "University Pathfinder", home_index_path, class: "navbar-brand navbar-brand-custom" %>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler navbar-toggler-custom" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Apri menu di navigazione">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+    <div class="collapse navbar-collapse navbar-collapse-custom" id="navbarNav">
+      <ul class="navbar-nav ms-auto navbar-nav-custom">
         <li class="nav-item">
           <%= link_to "Sedi", home_sedi_path, class: "nav-link nav-link-custom" %>
         </li>

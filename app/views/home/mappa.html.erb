@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta name="turbo-cache-control" content="no-cache">
-<%= csrf_meta_tags %>
+<% content_for :title, "University Pathfinder - Mappa" %>
 
-<!-- Librerie Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-
+<% content_for :head do %>
+    <meta name="turbo-cache-control" content="no-cache">
     <style>
         * {
             margin: 0;
@@ -16,17 +9,20 @@
             box-sizing: border-box;
         }
 
-        body {
+        .map-page {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: white;
-            min-height: 100vh;
+            background:
+                radial-gradient(circle at top right, rgba(118, 75, 162, 0.12), transparent 24rem),
+                linear-gradient(180deg, #f8faff 0%, #eef3fb 100%);
+            min-height: calc(100vh - 70px);
             color: #333;
+            padding-bottom: 3rem;
         }
 
         .container_m {
             max-width: 1450px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 24px 20px 36px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -47,68 +43,75 @@
             color: #4a5568;
             font-size: 1.5rem;
             text-align: center;
+            overflow-wrap: anywhere;
         }
 
         .button-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 15px;
+            align-items: stretch;
         }
 
         
-        .select {
+        .select,
+        .dropdown {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 70%;
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             position: relative;
             grid-column: span 2;
-        }
-
-        .dropdown {
             width: 100%;
+            min-width: 0;
+            min-height: 52px;
             padding: 12px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: black;
-            border: none;
-            border-radius: 10px;
+            color: #111827;
+            -webkit-text-fill-color: #111827;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 15px center;
             background-size: 16px;
             padding-right: 45px; 
         }
 
+        .select option:first-child,
         .dropdown option:first-child {
-            color: rgba(255, 255, 255, 0.7);
+            color: #4b5563;
             font-style: italic;
         }
 
+        .select:invalid,
         .dropdown:invalid {
-            color: rgba(255, 255, 255, 0.7);
+            color: #111827;
+            -webkit-text-fill-color: #111827;
         }
 
+        .select:valid,
         .dropdown:valid {
-            color: white;
-}
+            color: #111827;
+            -webkit-text-fill-color: #111827;
+        }
 
+        .select:hover,
         .dropdown:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
+        .select:focus,
         .dropdown:focus {
             outline: none;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
         }
 
+        .select option,
         .dropdown option {
             background: white; 
             color: #333;       
@@ -126,6 +129,12 @@
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            min-height: 52px;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         #startInput, #endInput {
@@ -148,11 +157,10 @@
         
         .map-directions-wrapper {
             display: flex;
-            align-items: stretch;
             flex-direction: row;
             gap: 20px;
             width: 100%;
-            align-items: flex-start;
+            align-items: stretch;
         }
         
         .map-section {
@@ -163,6 +171,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 0;
         }
 
         .map-section h2 {
@@ -170,15 +179,21 @@
             color: #4a5568;
             font-size: 1.5rem;
             text-align: center;
+            overflow-wrap: anywhere;
         }
 
         .map-container {
             width: 100%;
-            height: calc(100% - 60px);
             border-radius: 10px;
             min-height: 400px;
             position: relative;
             overflow: visible !important;
+        }
+
+        .map-canvas {
+            height: clamp(360px, 60vh, 640px);
+            width: 100%;
+            border-radius: 10px;
         }
 
         .map-placeholder {
@@ -206,6 +221,7 @@
             min-height: 400px;
             max-height: 900px;
             overflow-y: auto;
+            min-width: 0;
         }
 
         .directions-section h2 {
@@ -213,15 +229,37 @@
             color: #4a5568;
             font-size: 1.5rem;
             text-align: center;
+            overflow-wrap: anywhere;
         }
 
         .directions-content {
             background: #f8fafc;
             border-radius: 10px;
             padding: 20px;
-            height: calc(100% - 60px);
+            min-height: 100%;
             overflow-y: auto;
             border: 1px solid #e2e8f0;
+            overflow-wrap: anywhere;
+        }
+
+        .directions-content h3 {
+            font-size: 1.1rem;
+            margin: 0 0 0.85rem;
+            color: #334155;
+        }
+
+        .directions-content p {
+            margin-bottom: 0.55rem;
+        }
+
+        .directions-content ol {
+            margin: 0.85rem 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .directions-content li {
+            margin-bottom: 0.75rem;
+            line-height: 1.45;
         }
 
         .direction-item {
@@ -272,7 +310,10 @@
         }
 
         .navigation-alert.show {
-            display: block;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem 1rem;
             opacity: 1;
             transform: translateY(0);
         }
@@ -286,7 +327,8 @@
             font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-left: 10px;
+            margin-left: auto;
+            flex: 0 0 auto;
         }
 
         .clear-btn:hover {
@@ -306,6 +348,58 @@
         }
 
         
+        @media (max-width: 1070px) {
+            .map-page {
+                padding-bottom: 2.5rem;
+            }
+
+            .container_m {
+                padding: 20px 16px 32px;
+                gap: 16px;
+            }
+
+            .button-section,
+            .map-section,
+            .directions-section {
+                padding: 20px;
+            }
+
+            .button-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .select,
+            .dropdown {
+                grid-column: span 2;
+            }
+
+            .map-directions-wrapper {
+                flex-direction: column;
+            }
+
+            .map-section,
+            .directions-section {
+                min-height: auto;
+                max-height: none;
+            }
+
+            .map-canvas {
+                height: clamp(320px, 52vh, 520px);
+            }
+
+            .directions-content {
+                min-height: 15rem;
+            }
+
+            .navigation-alert.show {
+                align-items: flex-start;
+            }
+
+            .clear-btn {
+                margin-left: 0;
+            }
+        }
+
         @media (max-width: 768px) {
             .container_m {
                 padding: 15px;
@@ -319,19 +413,72 @@
             .button-section,
             .map-section,
             .directions-section {
-                padding: 20px;
+                padding: 18px;
+            }
+
+            .button-section h2,
+            .map-section h2,
+            .directions-section h2 {
+                font-size: 1.3rem;
             }
             
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .select,
+            .dropdown {
+                grid-column: span 1;
+            }
+
             .map-container {
-                min-height: 250px;
+                min-height: 280px;
             }
-            
+
+            .map-canvas {
+                height: clamp(280px, 48vh, 420px);
+            }
+
             .directions-content {
-                height: 120px;
+                min-height: 12rem;
+                padding: 16px;
             }
 
             .map-directions-wrapper {
                 flex-direction: column;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .map-page {
+                padding-bottom: 2rem;
+            }
+
+            .container_m {
+                padding: 12px;
+            }
+
+            .button-section,
+            .map-section,
+            .directions-section {
+                padding: 16px;
+                border-radius: 14px;
+            }
+
+            .button-section h2,
+            .map-section h2,
+            .directions-section h2 {
+                font-size: 1.15rem;
+            }
+
+            .select,
+            .dropdown,
+            .control-btn {
+                font-size: 0.95rem;
+            }
+
+            .map-canvas {
+                height: clamp(260px, 45vh, 360px);
             }
         }
 
@@ -372,9 +519,9 @@
             animation-delay: 0.4s;
         }
     </style>
-</head>
+<% end %>
 
-<body>
+    <div class="map-page">
     <div class="container_m">
 
         <!-- Alert per navigazione -->
@@ -418,7 +565,7 @@
             <section class="map-section">
                 <h2>🗺️ Mappa Interattiva</h2>
                 <div class="map-container" id="mapContainer">
-                    <div id="map" style="height: 60vh; width: 100%;"></div>
+                    <div id="map" class="map-canvas"></div>
                 </div>
             </section>
     
@@ -570,7 +717,7 @@
         // 4. EVENT LISTENERS
         // =====================================================================
 
-        calculateBtn.addEventListener('click', () => {
+        calculateBtn.onclick = () => {
             showLoading();
 
             const startSede = sedi.find(s => s.id === parseInt(startSelect.value));
@@ -593,7 +740,7 @@
             ], { padding: [50, 50] });
 
             addRouteMarkers(startSede, endSede);
-        });
+        };
 
         routingControl.on('routesfound', function(e) {
             hideLoading();
@@ -649,5 +796,4 @@
 
     document.addEventListener('turbo:load', initializeMapPage);
 </script>
-</body>
-</html>
+    </div>
