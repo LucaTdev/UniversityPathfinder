@@ -1,39 +1,72 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mockup Dashboard News & Meteo</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<% content_for :title, "Mockup Dashboard News & Meteo" %>
+
+<% content_for :head do %>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
+        .meteo-page {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            min-height: calc(100vh - 70px);
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
+            padding-bottom: 3rem;
         }
         
         .mockup-container {
             width: 100%;
-            height: 100vh;
+            min-height: calc(100vh - 70px);
+            height: calc(100vh - 70px);
             margin: 0;
             padding: 0;
         }
         
         .browser-mockup {
             background: white;
-            height: 100vh;
+            min-height: calc(100vh - 70px);
+            height: calc(100vh - 70px);
             overflow: hidden;
         }
         
         .mockup-content {
             padding: 30px;
             background: #f8f9fa;
-            height: 100vh;
+            min-height: calc(100vh - 70px);
+            height: calc(100vh - 70px);
             overflow-y: auto;
+        }
+
+        .meteo-dashboard-header {
+            margin-bottom: 1.75rem;
+        }
+
+        .meteo-dashboard-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.9rem;
+        }
+
+        .meteo-toolbar {
+            margin-bottom: 1.25rem;
+        }
+
+        .news-grid,
+        .main-grid {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .news-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .main-grid {
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+            align-items: start;
         }
         
         .widget {
@@ -42,6 +75,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             height: 100%;
+            overflow-wrap: anywhere;
         }
         
         .widget:hover {
@@ -54,7 +88,9 @@
             border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
-            justify-content: between;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .widget-title {
@@ -64,6 +100,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            overflow-wrap: anywhere;
         }
         
         .weather-widget .widget-header {
@@ -115,9 +152,68 @@
             padding: 4px 8px;
             font-size: 0.8rem;
         }
+
+        .widget-count-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            width: max-content;
+            max-width: 100%;
+        }
         
         .widget-body {
             padding: 25px;
+        }
+
+        .widget-body--scroll {
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .widget-body--news {
+            max-height: 350px;
+        }
+
+        .widget-body--alerts {
+            max-height: 450px;
+        }
+
+        .widget-body-inner {
+            padding: 0 25px;
+        }
+
+        .widget-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .weather-panel {
+            width: 100%;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .weather-panel .container {
+            max-width: none;
+            padding: 0;
+        }
+
+        .weather-panel-title {
+            overflow-wrap: anywhere;
+        }
+
+        #meteo-card {
+            border: none;
+            border-radius: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        #weather-alerts {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            overflow-wrap: anywhere;
         }
         
         .weather-display {
@@ -205,6 +301,7 @@
             padding: 20px 0;
             border-bottom: 1px solid #eee;
             transition: background 0.2s ease;
+            align-items: flex-start;
         }
         
         .news-item:hover {
@@ -239,6 +336,11 @@
             margin: 0 0 8px 0;
             font-size: 1rem;
             font-weight: 600;
+        }
+
+        .news-content {
+            min-width: 0;
+            flex: 1 1 auto;
         }
         
         .news-content p {
@@ -289,20 +391,80 @@
             opacity: 0.9;
         }
         
-        @media (max-width: 1200px) {
-            .main-grid, .news-grid {
-                display: block !important;
-                grid-template-columns: none !important;
+        @media (max-width: 1070px) {
+            .meteo-page {
+                padding-bottom: 2.5rem;
             }
-            
+
+            .mockup-container,
+            .browser-mockup,
+            .mockup-content {
+                min-height: auto;
+                height: auto;
+            }
+
+            .mockup-content {
+                padding: 20px 16px 28px;
+                overflow: visible;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .news-grid {
+                gap: 20px;
+            }
+
             .widget {
-                margin-bottom: 20px;
+                height: auto;
+            }
+
+            .widget-body--news,
+            .widget-body--alerts {
+                max-height: none;
+            }
+
+            .weather-panel {
+                padding: 2rem 1.25rem;
+            }
+
+            .news-actions {
+                opacity: 1;
+            }
+
+            [data-is-admin="true"] .news-item:hover,
+            .news-item:hover {
+                padding: 20px 12px;
             }
         }
         
         @media (max-width: 768px) {
             .mockup-content {
                 padding: 15px;
+            }
+
+            .meteo-dashboard-bar {
+                align-items: flex-start;
+            }
+
+            .widget-header,
+            .widget-body,
+            .widget-footer,
+            .widget-body-inner {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .widget-header {
+                padding-top: 18px;
+                padding-bottom: 14px;
+            }
+
+            .widget-body {
+                padding-top: 18px;
+                padding-bottom: 18px;
             }
             
             .weather-details {
@@ -312,9 +474,39 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .weather-panel {
+                padding: 1.5rem 0.5rem;
+            }
+
+            .weather-panel-title {
+                font-size: 1.75rem;
+            }
+
+            .news-item {
+                gap: 12px;
+                padding: 16px 0;
+            }
+
+            [data-is-admin="true"] .news-item:hover,
+            .news-item:hover {
+                padding: 16px 10px;
+            }
+
+            .modal-dialog {
+                margin: 0.75rem;
+            }
         }
         
         @media (max-width: 480px) {
+            .meteo-page {
+                padding-bottom: 2rem;
+            }
+
+            .mockup-content {
+                padding: 12px;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -330,16 +522,29 @@
             .weather-icon {
                 font-size: 3rem;
             }
+
+            .widget-header,
+            .widget-body,
+            .widget-footer,
+            .widget-body-inner {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .weather-panel-title {
+                font-size: 1.5rem;
+            }
         }
     </style>
-</head>
-<body>
+<% end %>
+
+<div class="meteo-page">
     <div class="mockup-container">
         <div class="browser-mockup">
             <div class="mockup-content">
                 <!-- Header -->
-                <div style="margin-bottom: 30px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="meteo-dashboard-header">
+                    <div class="meteo-dashboard-bar">
                         
                         <span style="color: #636e72;">23 Agosto 2025</span>
                     </div>
@@ -349,7 +554,7 @@
 
 <!-- 1. PULSANTE AGGIUNGI NEWS - Deve essere protetto -->
 <% if current_user&.admin? %>
-  <div style="margin-bottom: 20px;">
+  <div class="meteo-toolbar">
     <button class="btn btn-primary" id="add-news-btn">
       <i class="fas fa-plus"></i> Aggiungi News
     </button>
@@ -357,19 +562,19 @@
 <% end %>
 
 <!-- 2. WIDGET NEWS -->
-<div style="display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 30px;" class="news-grid">
+<div class="news-grid">
   <div class="widget unified-news-widget">
     <div class="widget-header" style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; border-radius: 12px 12px 0 0;">
       <h3 class="widget-title">
         <i class="fas fa-newspaper"></i>
         News
       </h3>
-      <span id="news-count" style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">
+      <span id="news-count" class="widget-count-badge">
         <%= @news&.count || 0 %> nuove
       </span>
     </div>
-    <div class="widget-body" style="padding: 0; max-height: 350px; overflow-y: auto;">
-      <div style="padding: 0 25px;" id="news-container" data-is-admin="<%= current_user&.admin? %>">
+    <div class="widget-body widget-body--scroll widget-body--news">
+      <div class="widget-body-inner" id="news-container" data-is-admin="<%= current_user&.admin? %>">
         <% if @news.present? %>
           <%= render partial: 'news/news_item', collection: @news, as: :news %>
         <% else %>
@@ -377,7 +582,7 @@
         <% end %>
       </div>
     </div>
-    <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
+    <div class="widget-footer">
       <small style="color: #666;">
         Ultimo aggiornamento: <%= Time.current.strftime("%H:%M") %> - Mostrando le ultime <%= @news&.count || 0 %> news
       </small>
@@ -467,12 +672,12 @@
 <% end %>
 <%= javascript_include_tag 'news_management' %>
 
-    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;" class="main-grid">
+    <div class="main-grid">
         <!-- Widget Meteo -->
         <div class="widget weather-widget">
             <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
-                <div class="container py-5">
-                    <h1 class="text-center mb-4">Previsioni Meteo</h1>
+                <div class="container weather-panel">
+                    <h1 class="text-center mb-4 weather-panel-title">Previsioni Meteo</h1>
                     <div id="meteo-card" class="card shadow-sm p-4 text-center">
                         <p>Caricamento posizione...</p>
                     </div>
@@ -487,21 +692,23 @@
                     <i class="fas fa-bell"></i>
                     Notifiche Meteo
                 </h3>
-                <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">2 attive</span>
+                <span class="widget-count-badge">2 attive</span>
             </div>
-            <div class="widget-body" style="padding: 0; max-height: 450px; overflow-y: auto;">
-                <div style="padding: 0 25px;">
-                    <div id="weather-alerts" class="p-3 card shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 15px;">
+            <div class="widget-body widget-body--scroll widget-body--alerts">
+                <div class="widget-body-inner">
+                    <div id="weather-alerts" class="p-3 card shadow-sm">
                         <p>Caricamento allerte...</p>
                     </div>
                 </div>
             </div>
-            <div style="padding: 15px 25px; border-top: 1px solid #eee; background: #f8f9fa; text-align: center;">
+            <div class="widget-footer">
                 <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
             </div>
         </div>
     </div>
 </div>
+        </div>
+    </div>
 
 <script>
 function initializeMeteo() {
@@ -636,6 +843,9 @@ if (document.readyState === 'loading') {
 } else {
     initializeMeteo();
 }
-document.addEventListener("turbo:load", initializeMeteo);
-document.addEventListener("turbo:render", initializeMeteo);
+if (!window.meteoListenersBound) {
+    document.addEventListener("turbo:load", initializeMeteo);
+    document.addEventListener("turbo:render", initializeMeteo);
+    window.meteoListenersBound = true;
+}
 </script>

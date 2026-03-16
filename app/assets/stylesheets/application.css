@@ -10,6 +10,7 @@
 */
 @import "navbar.css";
 @import "faqs.css";
+@import "auth.css";
 
 html, body {
   height: 100%;
@@ -28,16 +29,48 @@ html, body {
 /* Keep footer at the bottom on short pages; scroll to reach it on long pages. */
 .footer {
   margin-top: auto;
+  color: white;
+  background: linear-gradient(135deg, #2b3342 0%, #343a40 100%);
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
 
+.footer-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
 
+.footer-tagline,
+.footer-copy {
+  margin: 0;
+  color: rgba(255,255,255,0.78);
+}
 
-/*FOOTER*/
+.footer-copy {
+  text-align: right;
+}
 
-.footer {
-  color: white;
-  background-color: #343a40; /*background: #2d3748;*/
-  padding: 1rem;
+@media (max-width: 1070px) {
+  .footer {
+    padding: 1.5rem 0;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-copy {
+    text-align: left;
+  }
 }
   

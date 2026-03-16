@@ -18,7 +18,7 @@ class HomeController < ApplicationController
   end
 
   def sedi
-    @user_role = current_user&.role || 0 # Se non loggato, role = 0 (guest)
+    @is_admin = current_user&.admin? || false
   end 
 
   def mappa

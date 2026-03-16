@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Pathfinder</title>
+<% content_for :title, "University Pathfinder" %>
+
+<% content_for :head do %>
     <meta name="turbo-cache-control" content="no-cache">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         
@@ -21,6 +15,9 @@
             border-radius: 50px;
             padding: 5px;
             display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem;
             margin-bottom: 2rem;
         }
         
@@ -30,6 +27,10 @@
             border-radius: 45px;
             transition: all 0.3s ease;
             font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
         }
         
         .mode-btn.active {
@@ -60,6 +61,9 @@
             color: white;
             padding: 3rem 0;
             margin-bottom: 3rem;
+            min-height: 294px;
+            display: flex;
+            align-items: center;
         }
         
         .building-item {
@@ -69,6 +73,8 @@
             font-size: 0.9em;
             margin: 2px;
             display: inline-block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
         }
 
         .navigate-btn {
@@ -91,17 +97,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
             color: white;
-        }
-
-        .footer{
-            width:100%;
-            background-color: #343a40; 
-            color: white;
-            padding: 1rem;
-        }
-
-        .footer, .push {
-            height: 89px; 
         }
 
         .loading-spinner {
@@ -128,10 +123,189 @@
             margin-bottom: 20px;
         }
 
-    </style>
-</head>
+        .sedi-section-title {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
 
-<body data-user-role="<%= @user_role %>">
+        .sedi-admin-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sedi-admin-toolbar__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .sedi-form-actions {
+            flex-wrap: wrap;
+        }
+
+        .sedi-form-actions > .btn {
+            flex: 1 1 12rem;
+        }
+
+        .building-input-row {
+            flex-wrap: nowrap;
+        }
+
+        .building-input-row .form-control {
+            min-width: 0;
+        }
+
+        .sedi-admin-card-header {
+            gap: 0.75rem;
+        }
+
+        .sedi-admin-card-header .btn-group {
+            flex: 0 0 auto;
+        }
+
+        .university-card .card-title,
+        .university-card .card-text,
+        #adminUniversitiesList .card-title,
+        #adminUniversitiesList .card-text,
+        .modal-title,
+        .modal-body,
+        .modal-body h6 {
+            overflow-wrap: anywhere;
+        }
+
+        .sedi-modal-body {
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 1070px) {
+            .main-content {
+                margin-bottom: 3rem;
+            }
+
+            .page-header {
+                padding: 2.5rem 0;
+                margin-bottom: 2rem;
+            }
+
+            .page-header .display-4 {
+                font-size: clamp(2rem, 5vw, 2.8rem);
+                margin-bottom: 1rem !important;
+            }
+
+            .page-header p {
+                max-width: 34rem;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .mode-switch {
+                width: auto;
+                max-width: 100%;
+                padding: 0.55rem;
+                border-radius: 1.5rem;
+            }
+
+            .mode-btn {
+                flex: 0 1 auto;
+                width: auto;
+                padding: 0.75rem 1rem;
+                white-space: nowrap;
+            }
+
+            .sedi-admin-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sedi-admin-toolbar__actions {
+                justify-content: flex-start;
+            }
+
+            #addForm .card-body {
+                padding: 1.25rem;
+            }
+
+            .navigate-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .modal-dialog {
+                margin: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mode-switch {
+                width: auto;
+                max-width: 100%;
+            }
+
+            .mode-btn {
+                flex: 0 1 auto;
+                width: auto;
+            }
+
+            .sedi-admin-card-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            .sedi-admin-card-header .btn-group {
+                width: 100%;
+            }
+
+            .sedi-admin-card-header .btn {
+                flex: 1 1 auto;
+            }
+
+            .building-input-row {
+                flex-wrap: nowrap;
+                align-items: stretch;
+            }
+
+            .building-input-row .form-control {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .building-input-row .btn {
+                width: auto;
+                flex: 0 0 auto;
+            }
+
+            .sedi-form-actions > .btn {
+                flex-basis: 100%;
+            }
+
+            .modal-dialog {
+                margin: 0.75rem;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .page-header {
+                padding: 2rem 0;
+            }
+
+            .page-header .display-4 {
+                font-size: clamp(1.8rem, 7vw, 2.35rem);
+            }
+
+            .navigate-btn {
+                padding: 0.9rem 1rem;
+                font-size: 0.95rem;
+            }
+        }
+
+    </style>
+<% end %>
+
+<div class="sedi-page">
     <!-- Header -->
     <div class="page-header text-center">
         <div class="container">
@@ -143,9 +317,11 @@
                 <button type="button" class="mode-btn active" id="userBtn" onclick="switchMode('user')">
                     <i class="fas fa-user me-2"></i>Utente
                 </button>
-                <button type="button" class="mode-btn" id="adminBtn" onclick="switchMode('admin')">
-                    <i class="fas fa-shield-alt me-2"></i>Amministratore
-                </button>
+                <% if @is_admin %>
+                    <button type="button" class="mode-btn" id="adminBtn" onclick="switchMode('admin')">
+                        <i class="fas fa-shield-alt me-2"></i>Amministratore
+                    </button>
+                <% end %>
             </div>
         </div>
     </div>
@@ -172,7 +348,7 @@
 
             <!-- Modalità Utente -->
             <div id="userMode" class="mode-content">
-                <h2 class="mb-4">
+                <h2 class="mb-4 sedi-section-title">
                     <i class="fas fa-map-marked-alt me-2"></i>Sedi Disponibili
                 </h2>
             
@@ -184,13 +360,15 @@
 
             <!-- Modalità admin -->
             <div id="adminMode" class="mode-content d-none">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>
+                <div class="sedi-admin-toolbar">
+                    <h2 class="sedi-section-title">
                         <i class="fas fa-cog me-2"></i>Amministrazione Sedi
                     </h2>
-                    <button type="button" class="btn btn-success" onclick="showAddForm()">
-                        <i class="fas fa-plus me-2"></i>Aggiungi Sede
-                    </button>
+                    <div class="sedi-admin-toolbar__actions">
+                        <button type="button" class="btn btn-success" onclick="showAddForm()">
+                            <i class="fas fa-plus me-2"></i>Aggiungi Sede
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Add/Edit Form -->
@@ -203,7 +381,7 @@
                     <div class="card-body">
                         <form id="universityForm">
                             <input type="hidden" id="universityId" value="">
-                            <div class="row">
+                            <div class="row g-3">
                                 <div class="col-md-6 mb-3">
                                     <label for="nomeSede" class="form-label">Nome Sede *</label>
                                     <input type="text" class="form-control" id="nomeSede" required>
@@ -217,7 +395,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Edifici presenti nella sede *</label>
                                 <div id="edificiContainer">
-                                    <div class="input-group mb-2">
+                                    <div class="input-group mb-2 building-input-row">
                                         <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                                         <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                                             <i class="fas fa-trash"></i>
@@ -229,7 +407,7 @@
                                 </button>
                             </div>
 
-                            <div class="row">
+                            <div class="row g-3">
                                 <div class="col-md-6 mb-3">
                                     <label for="nomeSede" class="form-label">Latitudine sede *</label>
                                     <input type="text" class="form-control" id="latSede" required>
@@ -240,7 +418,7 @@
                                 </div>
                             </div>
                             
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 sedi-form-actions">
                                 <button type="submit" class="btn btn-primary" id="saveBtn">
                                     <i class="fas fa-save me-2"></i>Salva Sede
                                 </button>
@@ -260,13 +438,13 @@
 
             <!-- University Detail Modal -->
             <div class="modal fade" id="universityModal" tabindex="-1">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalTitle"></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-                        <div class="modal-body" id="modalBody">
+                        <div class="modal-body sedi-modal-body" id="modalBody">
                             <!-- Dynamic content -->
                         </div>
                     </div>
@@ -274,10 +452,8 @@
             </div>
         </div>
     </div>
+</div>
 
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         // Variabile globale per memorizzare le sedi
         let universities = [];
@@ -421,7 +597,10 @@
             
             // Update buttons
             document.getElementById('userBtn').classList.toggle('active', mode === 'user');
-            document.getElementById('adminBtn').classList.toggle('active', mode === 'admin');
+            const adminButton = document.getElementById('adminBtn');
+            if (adminButton) {
+                adminButton.classList.toggle('active', mode === 'admin');
+            }
             
             // Show/hide content
             document.getElementById('userMode').classList.toggle('d-none', mode !== 'user');
@@ -503,7 +682,7 @@
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex justify-content-between align-items-start mb-2 sedi-admin-card-header">
                                     <h5 class="card-title text-primary">${uni.nome}</h5>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-outline-primary btn-sm" onclick="editUniversity(${uni.id})" title="Modifica sede">
@@ -632,7 +811,7 @@
             // Reset edifici container
             const container = document.getElementById('edificiContainer');
             container.innerHTML = `
-                <div class="input-group mb-2">
+                <div class="input-group mb-2 building-input-row">
                     <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
@@ -665,7 +844,7 @@
             
             edificiArray.forEach(edificio => {
                 const inputHtml = `
-                    <div class="input-group mb-2">
+                    <div class="input-group mb-2 building-input-row">
                         <input type="text" class="form-control edificio-input" placeholder="Nome edificio" value="${edificio}" required>
                         <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                             <i class="fas fa-trash"></i>
@@ -696,7 +875,7 @@
             // Reset edifici container
             const container = document.getElementById('edificiContainer');
             container.innerHTML = `
-                <div class="input-group mb-2">
+                <div class="input-group mb-2 building-input-row">
                     <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
@@ -708,7 +887,7 @@
         function addBuildingInput() {
             const container = document.getElementById('edificiContainer');
             const newInput = `
-                <div class="input-group mb-2">
+                <div class="input-group mb-2 building-input-row">
                     <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
@@ -740,68 +919,62 @@
         }
 
         // Form submission
-        document.getElementById('universityForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        const universityForm = document.getElementById('universityForm');
+        if (universityForm && universityForm.dataset.initialized !== 'true') {
+            universityForm.dataset.initialized = 'true';
+            universityForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
             
-            const universityId = document.getElementById('universityId').value;
-            const nome = document.getElementById('nomeSede').value.trim();
-            const indirizzo = document.getElementById('indirizzoSede').value.trim();
-            const lat = document.getElementById('latSede').value.trim();
-            const long = document.getElementById('longSede').value.trim();
+                const universityId = document.getElementById('universityId').value;
+                const nome = document.getElementById('nomeSede').value.trim();
+                const indirizzo = document.getElementById('indirizzoSede').value.trim();
+                const lat = document.getElementById('latSede').value.trim();
+                const long = document.getElementById('longSede').value.trim();
 
-            const edificiInputs = document.querySelectorAll('.edificio-input');
-            const edifici = Array.from(edificiInputs)
-                .map(input => input.value.trim())
-                .filter(value => value !== '');
+                const edificiInputs = document.querySelectorAll('.edificio-input');
+                const edifici = Array.from(edificiInputs)
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
 
-            if (!nome || !indirizzo || !lat || !long || edifici.length === 0) {
-                showError('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
-                return;
-            }
-
-            const sedeData = {
-                nome: nome,
-                indirizzo: indirizzo,
-                latitudine:lat,
-                long: long,
-                edifici: edifici
-            };
-
-            try {
-                showLoading();
-                
-                if (universityId) {
-                    // Update existing university
-                    await updateUniversity(universityId, sedeData);
-                    showSuccess('Sede universitaria aggiornata!');
-                } else {
-                    // Add new university
-                    await createUniversity(sedeData);
-                    showSuccess('Sede universitaria aggiunta!');
+                if (!nome || !indirizzo || !lat || !long || edifici.length === 0) {
+                    showError('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
+                    return;
                 }
 
-                await fetchUniversities(); // Ricarica la lista
-                hideAddForm();
+                const sedeData = {
+                    nome: nome,
+                    indirizzo: indirizzo,
+                    latitudine:lat,
+                    long: long,
+                    edifici: edifici
+                };
+
+                try {
+                    showLoading();
                 
-            } catch (error) {
-                hideLoading();
-                showError('Errore nel salvataggio: ' + error.message);
-            }
-        });
+                    if (universityId) {
+                        // Update existing university
+                        await updateUniversity(universityId, sedeData);
+                        showSuccess('Sede universitaria aggiornata!');
+                    } else {
+                        // Add new university
+                        await createUniversity(sedeData);
+                        showSuccess('Sede universitaria aggiunta!');
+                    }
+
+                    await fetchUniversities(); // Ricarica la lista
+                    hideAddForm();
+                
+                } catch (error) {
+                    hideLoading();
+                    showError('Errore nel salvataggio: ' + error.message);
+                }
+            });
+        }
 
         // Initialize - Carica le sedi in avvio
         document.addEventListener('turbo:load', function() {
-            const userRole = document.body.dataset.userRole;
-            const adminButton = document.getElementById('adminBtn');
-
-            // IMPORTANTE: Assumiamo che il ruolo admin sia '2'. 
-            // Se usi un altro valore (es. 1 o 'admin'), modificalo qui.
-            if (userRole !== '2') {
-                adminButton.style.display = 'none';
-            }
             fetchUniversities();
         });
 
     </script>
-</body>
-</html>
