@@ -3,7 +3,13 @@
 # newer version of cucumber-rails. Consider adding your own code to a new file
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
+ENV["RAILS_ENV"] ||= "test"
 
+require_relative "../../config/environment"
+
+if defined?(ActiveRecord)
+  ActiveRecord.maintain_test_schema = false
+end
 
 require 'cucumber/rails'
 
@@ -50,4 +56,4 @@ end
 # Possible values are :truncation and :transaction
 # The :transaction strategy is faster, but might give you threading problems.
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
-Cucumber::Rails::Database.javascript_strategy = :deletion
+Cucumber::Rails::Database.javascript_strategy = :truncation
