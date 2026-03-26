@@ -811,24 +811,37 @@
         // =====================================================================
         addAllSediMarkers();
 
-         // Pre-popola i select se arrivi da un percorso preferito
+        const findFavoriteSede = (name, location) => {
+            const normalizedName = (name || "").toString().trim().toLowerCase();
+            const normalizedLocation = (location || "").toString().trim();
+
+            return sedi.find((sede) => {
+                const sedeName = (sede.nome || "").toString().trim().toLowerCase();
+                const sedeLocation = `${sede.lat},${sede.long}`;
+                return sedeName === normalizedName || sedeLocation === normalizedLocation;
+            });
+        };
+
         const favoriteData = sessionStorage.getItem('favoriteRoute');
         if (favoriteData) {
             sessionStorage.removeItem('favoriteRoute');
-            const fav = JSON.parse(favoriteData);
 
-            // Trova le sedi corrispondenti per nome
-            const startSede = sedi.find(s => s.nome === fav.start_name);
-            const endSede = sedi.find(s => s.nome === fav.end_name);
+            try {
+                const favoriteRoute = JSON.parse(favoriteData);
+                const startSede = findFavoriteSede(favoriteRoute.start_name, favoriteRoute.start_location);
+                const endSede = findFavoriteSede(favoriteRoute.end_name, favoriteRoute.end_location);
 
-            if (startSede) startSelect.value = startSede.id;
-            if (endSede) endSelect.value = endSede.id;
+                if (startSede) startSelect.value = startSede.id;
+                if (endSede) endSelect.value = endSede.id;
 
-            // Calcola automaticamente il percorso
-            if (startSede && endSede) {
-                calculateBtn.click();
+                if (startSede && endSede) {
+                    calculateBtn.click();
+                }
+            } catch (error) {
+                console.error('Errore nel ripristinare il percorso preferito:', error);
             }
         }
+
     };
 
     document.addEventListener('turbo:load', initializeMapPage);

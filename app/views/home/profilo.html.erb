@@ -154,22 +154,6 @@
             font-weight: bold;
             color: #667eea;
         }
-
-        .profile-actions form button {
-            background: #dc3545;
-            border: none;
-            color: white;
-            padding: 0.3rem 1.0rem;
-            border-radius: 0;  /* quadrato */
-            transition: all 0.3s ease;
-        }
-
-        .profile-actions form button:hover {
-            background: #bb2d3b;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
-        }
         
         .btn.btn-edit {
             background: linear-gradient(45deg, #7E88BF, #7D5EBF);
@@ -594,9 +578,16 @@
                     
                     <% if @favorite_routes.any? %>
                         <% @favorite_routes.each do |fav| %>
-                            <div class="route-item" id="<%= dom_id(fav) %>"
-                                    style="cursor: pointer;"
-                                    onclick="navigateToFavorite('<%= fav.start_location %>', '<%= fav.end_location %>', '<%= fav.start_name %>', '<%= fav.end_name %>')">
+                            <div
+                                class="route-item profile-favorite-route"
+                                id="<%= dom_id(fav) %>"
+                                role="button"
+                                tabindex="0"
+                                data-start-location="<%= fav.start_location %>"
+                                data-end-location="<%= fav.end_location %>"
+                                data-start-name="<%= fav.start_name %>"
+                                data-end-name="<%= fav.end_name %>"
+                            >
                                 <div class="profile-route-row">
                                     <div class="flex-grow-1">
                                         <h6 class="mb-1"><%= fav.start_name %> → <%= fav.end_name %></h6>
@@ -611,7 +602,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="profile-route-actions" onclick="event.stopPropagation()">
+                                    <div class="profile-route-actions">
                                         <%= button_to favorite_route_path(fav), method: :delete, 
                                             class: "btn btn-sm btn-outline-danger",
                                             form: { data: { turbo_confirm: 'Rimuovere questo percorso dai preferiti?' } } do %>
@@ -789,20 +780,46 @@
                     });
                 });
             }
+
+            document.querySelectorAll('.profile-favorite-route').forEach(routeItem => {
+                const navigate = () => {
+                    navigateToFavorite({
+                        start_location: routeItem.dataset.startLocation,
+                        end_location: routeItem.dataset.endLocation,
+                        start_name: routeItem.dataset.startName,
+                        end_name: routeItem.dataset.endName
+                    });
+                };
+
+                routeItem.addEventListener('click', navigate);
+                routeItem.addEventListener('keydown', function(event) {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    navigate();
+                });
+            });
+
+            document.querySelectorAll('.profile-route-actions').forEach(actions => {
+                actions.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            });
         });
-        
-        //FUNZIONE PER RIPORTARE ALLA PAGINA PERCORSI DA Percorsi Preferiti
-        function navigateToFavorite(startLocation, endLocation, startName, endName) {
-            sessionStorage.setItem('favoriteRoute', JSON.stringify({
-                start_location: startLocation,
-                end_location: endLocation,
-                start_name: startName,
-                end_name: endName
-            }));
-            window.location.href = '/home/mappa';
-        }
 
         // Funzioni globali (fuori dal turbo:load perché chiamate da attributi HTML o altri script)
+
+        window.navigateToFavorite = function(routeData) {
+            if (!routeData?.start_name || !routeData?.end_name) return;
+
+            sessionStorage.setItem('favoriteRoute', JSON.stringify({
+                start_location: routeData.start_location,
+                end_location: routeData.end_location,
+                start_name: routeData.start_name,
+                end_name: routeData.end_name
+            }));
+
+            window.location.href = '/home/mappa';
+        };
         
         window.refreshProfileCounter = function(newCount) {
             const counter = document.getElementById('routes-counter');

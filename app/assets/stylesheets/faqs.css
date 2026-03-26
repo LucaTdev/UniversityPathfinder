@@ -144,6 +144,7 @@
     white-space: nowrap;
     text-align: center;
     max-width: 100%;
+    pointer-events: auto;
 }
 
 .faqs-page .faq-toolbar__actions .dropdown {
@@ -171,6 +172,8 @@
     background-size: initial;
     padding-right: 0;
     transform: none;
+    overflow: visible;
+    grid-column: auto;
 }
 
 .faqs-page .faq-toolbar__actions .faq-toolbar__dropdown--language {
@@ -187,6 +190,7 @@
 .faqs-page .faq-toolbar__actions .faq-toolbar__dropdown .dropdown-toggle {
     width: 100%;
     justify-content: center;
+    background-image: none;
 }
 
 .faqs-page .faq-toolbar__actions .faq-toolbar__dropdown .dropdown-toggle > .fas {
