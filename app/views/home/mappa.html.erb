@@ -811,6 +811,24 @@
         // =====================================================================
         addAllSediMarkers();
 
+         // Pre-popola i select se arrivi da un percorso preferito
+        const favoriteData = sessionStorage.getItem('favoriteRoute');
+        if (favoriteData) {
+            sessionStorage.removeItem('favoriteRoute');
+            const fav = JSON.parse(favoriteData);
+
+            // Trova le sedi corrispondenti per nome
+            const startSede = sedi.find(s => s.nome === fav.start_name);
+            const endSede = sedi.find(s => s.nome === fav.end_name);
+
+            if (startSede) startSelect.value = startSede.id;
+            if (endSede) endSelect.value = endSede.id;
+
+            // Calcola automaticamente il percorso
+            if (startSede && endSede) {
+                calculateBtn.click();
+            }
+        }
     };
 
     document.addEventListener('turbo:load', initializeMapPage);
