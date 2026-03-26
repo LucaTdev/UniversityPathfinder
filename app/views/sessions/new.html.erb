@@ -56,20 +56,9 @@
                 </div>
               </div>
 
-              <!-- Remember Me Checkbox -->
-              <div class="mb-3 form-check">
-                <%= f.check_box :remember_me, {class: "form-check-input"}, "1", "0" %>
-                <%= f.label :remember_me, "Ricordami", class: "form-check-label" %>
-              </div>
-
               <!-- Login Button -->
               <div class="d-grid gap-2 mb-3">
                 <%= f.submit "Accedi", class: "btn btn-primary btn-lg" %>
-              </div>
-
-              <!-- Forgot Password Link -->
-              <div class="text-center auth-footer">
-                <%= link_to "Password dimenticata?", forgot_password_path, class: "text-decoration-none text-muted" %>
               </div>
 
             <% end %>

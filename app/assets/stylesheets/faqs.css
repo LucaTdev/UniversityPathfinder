@@ -77,8 +77,9 @@
 
 .faqs-page .faq-toolbar {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem 1.25rem;
     margin-bottom: 1.5rem;
 }
@@ -88,6 +89,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.85rem;
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
 .faqs-page .faq-toolbar__title-icon {
@@ -117,18 +120,115 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
+    align-items: stretch;
+    flex: 1 1 34rem;
     gap: 0.75rem;
+    min-width: min(100%, 34rem);
 }
 
 .faqs-page .faq-toolbar__actions > .dropdown,
 .faqs-page .faq-toolbar__actions > button,
 .faqs-page .faq-toolbar__actions > a {
     flex: 0 0 auto;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .faqs-page .faq-toolbar__actions .btn,
 .faqs-page .faq-toolbar__actions .dropdown-toggle {
-    white-space: normal;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    text-align: center;
+    max-width: 100%;
+}
+
+.faqs-page .faq-toolbar__actions .dropdown {
+    flex: 0 0 auto;
+    max-width: 100%;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__dropdown {
+    display: block;
+    width: 11.75rem;
+    max-width: 11.75rem;
+    min-height: auto;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    position: relative;
+    color: inherit;
+    cursor: default;
+    font-size: inherit;
+    font-weight: inherit;
+    appearance: auto;
+    background-image: none;
+    background-position: initial;
+    background-size: initial;
+    padding-right: 0;
+    transform: none;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__dropdown--language {
+    width: 10.75rem;
+    max-width: 10.75rem;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__dropdown:hover,
+.faqs-page .faq-toolbar__actions .faq-toolbar__dropdown:focus-within {
+    transform: none;
+    box-shadow: none;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__dropdown .dropdown-toggle {
+    width: 100%;
+    justify-content: center;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__dropdown .dropdown-toggle > .fas {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    text-align: center;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__compact-toggle {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__toggle-code {
+    flex: 0 0 auto;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__toggle-text {
+    display: inline-block;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+    text-align: center;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__compact-toggle--category .faq-toolbar__toggle-text {
+    max-width: none;
+}
+
+.faqs-page .faq-toolbar__actions .faq-toolbar__compact-toggle--language .faq-toolbar__toggle-text {
+    max-width: none;
+}
+
+.faqs-page .faq-toolbar__actions [data-faqs-category-filter-target="label"] {
+    max-width: none;
 }
 
 .faqs-page .faq-card__top {
@@ -167,15 +267,17 @@
 .faqs-page .faqs-lang-menu {
     max-height: 320px;
     overflow-y: auto;
+    min-width: 100%;
 }
 
 /* Filter dropdown: keep usable with many categories */
 .faqs-page .faqs-filter-menu {
     max-height: 320px;
     overflow-y: auto;
+    min-width: 100%;
 }
 
-@media (max-width: 1070px) {
+@media (max-width: 900px) {
     .faqs-page .page-header {
         padding: 2.5rem 0;
         margin-bottom: 2rem;
@@ -186,61 +288,14 @@
         margin-bottom: 0;
     }
 
-    .faqs-page .faq-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
     .faqs-page .faq-toolbar__title {
-        position: static;
         min-width: 0;
-        width: 100%;
         font-size: clamp(1.35rem, 2.4vw, 1.9rem);
     }
 
-    .faqs-page .faq-toolbar__title-label {
-        position: static;
-        display: inline-block;
-        flex: 0 0 auto;
-        min-width: max-content;
-        width: max-content;
-        max-width: none;
-        height: auto;
-        padding: 0;
-        margin: 0;
-        overflow: visible;
-        overflow-wrap: normal;
-        word-break: normal;
-        clip: auto;
-        white-space: nowrap;
-        border: 0;
-    }
-
     .faqs-page .faq-toolbar__actions {
-        width: auto;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        justify-content: stretch;
-    }
-
-    .faqs-page .faq-toolbar__actions > .dropdown,
-    .faqs-page .faq-toolbar__actions > button,
-    .faqs-page .faq-toolbar__actions > a {
-        min-width: 0;
-    }
-
-    .faqs-page .faq-toolbar__actions .btn,
-    .faqs-page .faq-toolbar__actions .dropdown-toggle {
-        width: 100%;
-        min-height: 100%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .faqs-page .faq-toolbar__actions .dropdown-menu {
-        width: 100%;
+        justify-content: flex-start;
+        flex-basis: 100%;
         min-width: 0;
     }
 
@@ -264,10 +319,67 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .faqs-page .page-header {
         padding: 2rem 0;
         min-height: 240px;
+    }
+
+    .faqs-page .faq-toolbar {
+        gap: 0.9rem;
+    }
+
+    .faqs-page .faq-toolbar__title-label {
+        position: static;
+        display: inline-block;
+        flex: 0 0 auto;
+        min-width: max-content;
+        width: max-content;
+        max-width: none;
+        height: auto;
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+        overflow-wrap: normal;
+        word-break: normal;
+        clip: auto;
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .faqs-page .faq-toolbar__actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .faqs-page .faq-toolbar__actions > .dropdown,
+    .faqs-page .faq-toolbar__actions > button,
+    .faqs-page .faq-toolbar__actions > a {
+        min-width: 0;
+        max-width: none;
+    }
+
+    .faqs-page .faq-toolbar__actions .btn,
+    .faqs-page .faq-toolbar__actions .dropdown-toggle {
+        width: 100%;
+        min-height: 100%;
+    }
+
+    .faqs-page .faq-toolbar__actions .faq-toolbar__compact-toggle,
+    .faqs-page .faq-toolbar__actions .faq-toolbar__dropdown,
+    .faqs-page .faq-toolbar__actions .faq-toolbar__toggle-text {
+        max-width: none;
+    }
+
+    .faqs-page .faq-toolbar__actions .faq-toolbar__dropdown {
+        width: auto;
+    }
+
+    .faqs-page .faq-toolbar__actions .dropdown-menu {
+        width: 100%;
+        min-width: 0;
     }
 
     .faqs-page .faq-card__top {
@@ -286,7 +398,7 @@
     }
 }
 
-@media (max-width: 580px) {
+@media (max-width: 420px) {
     .faqs-page .faq-toolbar__actions {
         grid-template-columns: 1fr;
     }

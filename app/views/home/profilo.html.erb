@@ -155,8 +155,8 @@
             color: #667eea;
         }
         
-        .btn-edit {
-            background: linear-gradient(45deg, #7E88BF, #7D5EBF); 
+        .btn.btn-edit {
+            background: linear-gradient(45deg, #7E88BF, #7D5EBF);
             border: none;
             color: white;
             padding: 0.3rem 1.0rem;
@@ -164,10 +164,15 @@
             transition: all 0.3s ease;
         }
 
-        .btn-edit:hover {
+        .btn.btn-edit:hover,
+        .btn.btn-edit:focus,
+        .btn.btn-edit:active,
+        .btn.btn-edit:focus-visible {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4); 
-            color: yellow;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+            color: white;
+            background: linear-gradient(45deg, #6f79b4, #714fb1);
+            border: none;
         }
 
         .btn-rmv{

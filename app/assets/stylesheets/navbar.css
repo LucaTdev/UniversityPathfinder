@@ -93,7 +93,7 @@ body {
     }
 }
 
-@media (max-width: 1070px) {
+@media (max-width: 1069.98px) {
     .navbar-custom .container {
         row-gap: 0.75rem;
     }

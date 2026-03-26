@@ -3,9 +3,9 @@
 <% current_label = faq_locale_label(current_locale) %>
 <% options = local_assigns.fetch(:options, faq_locale_options) %>
 
-<div class="dropdown">
+<div class="dropdown faq-toolbar__dropdown faq-toolbar__dropdown--language">
   <button
-    class="btn btn-outline-primary dropdown-toggle"
+    class="btn btn-outline-primary dropdown-toggle faq-toolbar__compact-toggle faq-toolbar__compact-toggle--language"
     type="button"
     id="<%= dropdown_id %>"
     data-bs-toggle="dropdown"
@@ -13,7 +13,9 @@
     aria-expanded="false"
     title="Cambia lingua"
   >
-    <i class="fas fa-globe me-2"></i>Lingua: <%= current_label %> <span class="badge text-bg-light ms-1"><%= current_locale.upcase %></span>
+    <i class="fas fa-globe" aria-hidden="true"></i>
+    <span class="faq-toolbar__toggle-text faq-toolbar__toggle-text--language">Lingua: <%= current_label %></span>
+    <span class="badge text-bg-light faq-toolbar__toggle-code"><%= current_locale.upcase %></span>
   </button>
 
   <ul class="dropdown-menu dropdown-menu-end faqs-lang-menu" aria-labelledby="<%= dropdown_id %>">
