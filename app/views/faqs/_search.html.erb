@@ -1,0 +1,14 @@
+<% collapse_id = local_assigns.fetch(:collapse_id, "faq-search") %>
+<% query_present = params[:q].to_s.strip.present? %>
+
+<button
+  type="button"
+  class="btn btn-outline-primary <%= "active" if query_present %>"
+  data-bs-toggle="collapse"
+  data-bs-target="#<%= collapse_id %>"
+  aria-expanded="<%= query_present %>"
+  aria-controls="<%= collapse_id %>"
+  aria-pressed="<%= query_present %>"
+>
+  <i class="fas fa-search me-2"></i>Cerca FAQ
+</button>

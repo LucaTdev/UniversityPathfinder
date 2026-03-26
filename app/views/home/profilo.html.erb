@@ -1,18 +1,36 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniversityPathfinder - Profilo Utente</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<% content_for :title, "UniversityPathfinder - Profilo Utente" %>
+<% content_for :body_attributes, 'style="background-color: #f5f6fa;"' %>
+
+<% content_for :head do %>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        .profile-page {
+            padding-bottom: 3rem;
+        }
+
         .profile-header {
             background: linear-gradient(200deg, #667eea 10%, #764ba2 90%);
             color: white;
             padding: 2rem 0;
             text-align: center;
             margin-bottom: 2rem;
+            min-height: 294px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-header .container {
+            width: 100%;
+        }
+
+        .profile-header .display-4 {
+            overflow-wrap: anywhere;
+        }
+
+        .profile-title-icon {
+            transform: translateY(4px);
+            flex: 0 0 auto;
         }
         
         .profile-card {
@@ -22,6 +40,8 @@
             padding: 2rem;
             margin-bottom: 2rem;
             border: none;
+            height: 100%;
+            overflow-wrap: anywhere;
         }
         
         .profile-image {
@@ -94,6 +114,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            overflow-wrap: anywhere;
         }
         
         .user-info h2 {
@@ -135,27 +156,236 @@
         }
         
         .btn-edit {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #7E88BF, #7D5EBF); 
             border: none;
             color: white;
-            padding: 0.5rem 1.5rem;
+            padding: 0.3rem 1.0rem;
             border-radius: 25px;
             transition: all 0.3s ease;
         }
-        
+
         .btn-edit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-            color: white;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4); 
+            color: yellow;
         }
+
+        .btn-rmv{
+            background:linear-gradient(#dc3545)
+        }
+
+        .profile-actions,
+        .profile-edit-actions,
+        .profile-route-row,
+        .profile-notification-header {
+            gap: 1rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .profile-edit-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .profile-info-panel {
+            max-width: 36rem;
+            margin: 0 auto;
+        }
+
+        .profile-card .list-group-item {
+            background: transparent;
+            border-color: #dee2e6;
+            overflow-wrap: anywhere;
+        }
+
+        .recent-route-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .recent-route-destination {
+            min-width: 0;
+        }
+
+        .preference-item {
+            gap: 0.75rem;
+        }
+
+        .preference-item .form-check {
+            margin-bottom: 0;
+            flex: 0 0 auto;
+        }
+
+        .profile-route-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .profile-route-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+            flex: 0 0 auto;
+        }
+
+        .profile-route-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .profile-notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 1070px) {
+            .profile-page {
+                padding-bottom: 2.5rem;
+            }
+
+            .profile-header {
+                padding: 2.25rem 0;
+                margin-bottom: 1.5rem;
+            }
+
+            .profile-header .display-4 {
+                font-size: clamp(2rem, 5vw, 2.8rem);
+                line-height: 1.15;
+            }
+
+            .profile-card {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .profile-actions {
+                justify-content: center;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .profile-route-row,
+            .profile-notification-header {
+                flex-wrap: wrap;
+            }
+
+            .profile-route-actions {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-page {
+                padding-bottom: 2rem;
+            }
+
+            .profile-header {
+                padding: 2rem 0;
+            }
+
+            .profile-header .display-4 {
+                font-size: clamp(1.8rem, 7vw, 2.35rem);
+                flex-wrap: wrap;
+            }
+
+            .profile-title-icon {
+                width: 42px;
+                height: 40px;
+                transform: none;
+            }
+
+            .profile-card {
+                padding: 1.25rem;
+                border-radius: 14px;
+            }
+
+            .profile-actions > .btn,
+            .profile-actions form,
+            .profile-edit-actions > .btn {
+                width: 100%;
+            }
+
+            .profile-actions form .btn {
+                width: 100%;
+            }
+
+            .profile-edit-actions {
+                justify-content: stretch;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .recent-route-item {
+                align-items: flex-start;
+            }
+
+            .profile-route-actions,
+            .profile-notification-header > .btn {
+                width: 100%;
+            }
+
+            .profile-route-actions .btn,
+            .profile-notification-header > .btn,
+            .text-center .btn-outline-info,
+            .btn-outline-primary.btn-sm.mt-2 {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .profile-header {
+                padding: 1.75rem 0;
+            }
+
+            .profile-card {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .preference-item {
+                align-items: flex-start;
+            }
+        }
+
     </style>
-</head>
-<body style="background-color: #f5f6fa;">
+<% end %>
+
+<div class="profile-page">
     <!-- Header del progetto -->
     <div class="profile-header">
         <div class="container">
-            <h1><i class="fas fa-map-marked-alt me-2"></i>UniversityPathfinder</h1>
-            <p class="mb-0">Il tuo assistente personale per i percorsi universitari</p>
+            <h1 class="display-4 fw-bold mb-3 d-flex align-items-center justify-content-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="47" fill="currentColor" class="bi bi-person-bounding-box profile-title-icon" viewBox="0 0 16 16">
+                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+            </svg>
+            </i>Il tuo profilo</h1>
+            <p class="mb-0">Visualizza qui le tue informazioni</p>
         </div>
     </div>
 
@@ -164,41 +394,100 @@
         <div class="row justify-content-center mb-4">
             <div class="col-lg-8">
                 <div class="profile-card text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
-                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                    </svg>
+                    <div class="modify-button profile-actions mb-3">
+                        <button class="btn btn-edit">
+                            <i class="fas fa-edit me-2"></i>Modifica Profilo
+                        </button>
+                        
+                        <%= button_to logout_path, method: :delete, form: { class: 'd-inline' }, bclass: "btn btn-danger" do %>
+                            <i class="fas fa-sign-out-alt me-2"></i>Disconnetti
+                        <% end %>
+                    </div>
                     
                     <div class="user-info">
-                        <h2>Mario Rossi</h2>
-                        <p><i class="fas fa-envelope text-muted me-2"></i>mario.rossi@university.it</p>
-                        <p><i class="fas fa-id-card text-muted me-2"></i>Studente</p>
-                        <span class="badge-custom">Utente Attivo dal 2024</span>
+                        <div id="view-profile-info" class="profile-info-panel">
+                            <h2><%= @user.full_name %></h2>
+                            <p>
+                                <i class="fas fa-envelope text-muted me-2"></i>
+                                <%= @user.email %>
+                            </p>
+                            <p>
+                                <i class="fas fa-id-card text-muted me-2"></i>
+                                <%= @user.role_display %>
+                            </p>
+                            <span class="badge-custom">
+                                Utente attivo dal <%= @user.registration_year %>
+                            </span>
+                        </div>
+
+                        <form id="edit-profile-form" style="display: none;">
+                            <div class="mb-3">
+                                <label for="user_first_name" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="user_first_name" name="user[first_name]" value="<%= @user.first_name %>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_last_name" class="form-label">Cognome</label>
+                                <input type="text" class="form-control" id="user_last_name" name="user[last_name]" value="<%= @user.last_name %>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="user_email" name="user[email]" value="<%= @user.email %>">
+                            </div>
+
+                            <div class="profile-edit-actions mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Salva Modifiche
+                                </button>
+                                <button type="button" id="cancel-edit-btn" class="btn btn-secondary">
+                                    Annulla
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="deleteProfile()">
+                                    <i class="fas fa-trash me-2"></i>Elimina Profilo
+                                </button>
+                            </div>
+                        </form>
                     </div>
                     
                     <div class="stats-container mt-3">
                         <div class="stat-item">
-                            <div class="stat-number">47</div>
+                            <div class="stat-number" id="routes-counter"><%= @user.routes.count %></div>
                             <small class="text-muted">Percorsi Cercati</small>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">12</div>
+                            <div class="stat-number"><%= @user.favorites_count %></div>
                             <small class="text-muted">Preferiti</small>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">3</div>
+                            <div class="stat-number"><%= @user.notifications_count %></div>
                             <small class="text-muted">Notifiche</small>
                         </div>
                     </div>
-                    
-                    <button class="btn btn-edit mt-3">
-                        <i class="fas fa-edit me-2"></i>Modifica Profilo
-                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-12">
+                <div class="profile-card">
+                    <h4 class="section-title">
+                        <i class="fas fa-history text-primary"></i>
+                        Ultime Ricerche
+                    </h4>
+                    <ul class="list-group list-group-flush" id="recent-routes-list">
+                    <% @recent_routes.each do |route| %>
+                        <li class="list-group-item recent-route-item">
+                            <span class="recent-route-destination"><strong><%= route.destination_name %></strong></span>
+                            <small class="text-muted time-ago" data-timestamp="<%= route.searched_at.iso8601 %>">
+                                <%= time_ago_in_words(route.searched_at) %> fa
+                            </small>
+                        </li>
+                    <% end %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
             <!-- Preferenze Mezzi di Trasporto -->
             <div class="col-lg-6 mb-4">
                 <div class="profile-card">
@@ -250,231 +539,267 @@
                             <input class="form-check-input" type="checkbox" id="bike-switch">
                         </div>
                     </div>
+
+                    <div class="preference-item active">
+                        <i class="fas fa-taxi text-info me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Taxi/Uber</strong>
+                            <small class="d-block text-muted">Disponibile</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="car-switch">
+                        </div>
+                    </div>
+
+                    <div class="preference-item">
+                        <i class="fas fa-motorcycle text-success me-3" style="font-size: 1.2rem;"></i>
+                        <div class="flex-grow-1">
+                            <strong>Moto/Monopattino </strong>
+                            <small class="d-block text-muted">Su due ruote</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="bike-switch">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Percorsi Più Ricercati -->
             <div class="col-lg-6 mb-4">
                 <div class="profile-card">
                     <h4 class="section-title">
                         <i class="fas fa-star text-warning"></i>
-                        Percorsi Più Ricercati
+                        Percorsi Preferiti
                     </h4>
                     
-                    <div class="route-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Casa → Facoltà di Ingegneria</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    Via Roma, 123 → Viale Università, 45
-                                </small>
-                                <div class="mt-1">
-                                    <span class="badge bg-primary">15 min</span>
-                                    <span class="badge bg-success">A piedi</span>
+                    <% if @favorite_routes.any? %>
+                        <% @favorite_routes.each do |fav| %>
+                            <div class="route-item" id="<%= dom_id(fav) %>">
+                                <div class="profile-route-row">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1"><%= fav.start_name %> → <%= fav.end_name %></h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            Distanza: <%= fav.distance_km %> km
+                                        </small>
+                                        <div class="mt-1 profile-route-meta">
+                                            <span class="badge bg-primary"><%= fav.duration_minutes %> min</span>
+                                            <span class="badge bg-<%= fav.transport_mode == 'auto' ? 'info' : 'success' %>">
+                                                <%= fav.transport_mode == 'auto' ? 'Auto' : 'A piedi' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="profile-route-actions">
+                                        <%= button_to favorite_route_path(fav), method: :delete, 
+                                            class: "btn btn-sm btn-outline-danger",
+                                            form: { data: { turbo_confirm: 'Rimuovere questo percorso dai preferiti?' } } do %>
+                                            <i class="fas fa-trash"></i>
+                                        <% end %>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="badge bg-secondary">23 ricerche</span>
+                        <% end %>
+                    <% else %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-star fa-3x mb-3 opacity-25"></i>
+                            <p>Nessun percorso preferito salvato.<br>
+                            Calcola un percorso nella mappa e clicca "Salva Percorso"!</p>
                         </div>
-                    </div>
+                    <% end %>
                     
-                    <div class="route-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Stazione → Biblioteca</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    Stazione Centrale → Biblioteca Universitaria
-                                </small>
-                                <div class="mt-1">
-                                    <span class="badge bg-info">8 min</span>
-                                    <span class="badge bg-warning">Bus</span>
-                                </div>
-                            </div>
-                            <span class="badge bg-secondary">18 ricerche</span>
-                        </div>
-                    </div>
-                    
-                    <div class="route-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">Mensa → Aula Studio</h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    Mensa Universitaria → Aula Studio Centrale
-                                </small>
-                                <div class="mt-1">
-                                    <span class="badge bg-primary">5 min</span>
-                                    <span class="badge bg-success">A piedi</span>
-                                </div>
-                            </div>
-                            <span class="badge bg-secondary">12 ricerche</span>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-outline-primary btn-sm mt-2">
-                        <i class="fas fa-history me-1"></i>Vedi Cronologia Completa
+                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="window.location.href='/home/mappa'">
+                        <i class="fas fa-map me-1"></i>Vai alla Mappa
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Notifiche Amministratore -->
-
-        <div class="row">
+        <% if @user&.admin? %>
+        <div class="row mb-4">
             <div class="col-12">
                 <div class="profile-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="profile-notification-header mb-3">
                         <h4 class="section-title mb-0">
                             <i class="fas fa-bell text-info"></i>
-                            Notifiche Amministratore
+                            <span class="badge bg-danger"><%= @pending_faq_suggestions_count %></span> Notifiche Amministratore
                         </h4>
-                        <button class="btn btn-outline-secondary btn-sm">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="mark-all-admin-notifications">
                             <i class="fas fa-check-double me-1"></i>Segna tutte come lette
                         </button>
                     </div>
-                    
-                    <div class="notification-item unread">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-exclamation-circle text-info me-2"></i>
-                                    Aggiornamento del Sistema
-                                </h6>
-                                <p class="mb-1">Il sistema sarà aggiornato domenica 25 agosto dalle 02:00 alle 04:00. Durante questo periodo il servizio potrebbe essere temporaneamente non disponibile.</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>2 ore fa
-                                </small>
-                            </div>
+
+                    <% if @pending_faq_suggestions_count.to_i == 0 %>
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-bell-slash fa-3x mb-3 opacity-25"></i>
+                            <p class="mb-0">Nessuna nuova notifica.</p>
                         </div>
-                    </div>
-                    
-                    <div class="notification-item important">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-warning text-danger me-2"></i>
-                                    Interruzione Linea Bus 42
-                                </h6>
-                                <p class="mb-1">La linea bus 42 (Stazione-Università) sarà sospesa dal 22 al 24 agosto per lavori stradali. Utilizzare la linea alternativa 44A.</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>1 giorno fa
-                                </small>
+                    <% else %>
+                        <% @pending_faq_suggestions.each do |s| %>
+                            <div class="notification-item unread">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            <i class="fas fa-lightbulb text-info me-2"></i>
+                                            Nuova FAQ suggerita
+                                        </h6>
+                                        <p class="mb-1"><%= s.domanda %></p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            <span class="time-ago" data-timestamp="<%= s.created_at.iso8601 %>"><%= time_ago_in_words(s.created_at) %> fa</span>
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="notification-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-info-circle text-primary me-2"></i>
-                                    Nuove Funzionalità Disponibili
-                                </h6>
-                                <p class="mb-1">Ora puoi salvare i tuoi percorsi preferiti e ricevere notifiche sui ritardi dei mezzi pubblici in tempo reale!</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>3 giorni fa
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                    
+                        <% end %>
+                    <% end %>
+
                     <div class="text-center mt-3">
-                        <button class="btn btn-outline-info">
-                            <i class="fas fa-archive me-1"></i>Visualizza Archivio Notifiche
-                        </button>
+                        <%= link_to admin_faqs_path(anchor: "faq-suggestions"), class: "btn btn-outline-info" do %>
+                            <i class="fas fa-archive me-1"></i>Visualizza Suggerimenti FAQ
+                        <% end %>
                     </div>
                 </div>
             </div>
         </div>
+        <% end %>
     </div>
-
-    <!-- Footer -->
-    <footer class="text-center py-4 mt-5" style="background-color: #343a40; color: white;">
-        <div class="container">
-            <p class="mb-0">&copy; 2024 UniversityPathfinder. Progetto universitario sviluppato con Ruby on Rails.</p>
-        </div>
-    </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</div>
     <script>
-        <!-- Script per gestire gli switch delle preferenze -->
-    document.querySelectorAll('.form-check-input').forEach(function(switchElement) {
-        switchElement.addEventListener('change', function() {
-            const preferenceItem = this.closest('.preference-item');
-            const switchContainer = preferenceItem.querySelector('.form-check');
+        // Variabile globale per il timer così possiamo pulirlo
+        let profileTimer;
+        let profilePageInitialized = false;
+
+        document.addEventListener('turbo:load', function() {
+            if (profilePageInitialized) return;
+            profilePageInitialized = true;
             
-            if (this.checked) {
-                preferenceItem.classList.add('active');
-                <!-- Nasconde lo switch -->
-                switchContainer.style.display = 'none';
-                
-                <!-- Crea icona di check se non esiste -->
-                let checkIcon = preferenceItem.querySelector('.check-icon');
-                if (!checkIcon) {
-                    checkIcon = document.createElement('i');
-                    checkIcon.className = 'fas fa-check-circle text-success check-icon';
-                    checkIcon.style.cursor = 'pointer';
-                    checkIcon.style.fontSize = '1.2rem';
+            // ========= GESTIONE MODIFICA PROFILO =========
+            const editProfileBtn = document.querySelector('.btn-edit');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const viewProfileInfo = document.getElementById('view-profile-info');
+            const editProfileForm = document.getElementById('edit-profile-form');
+
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function() {
+                    viewProfileInfo.style.display = 'none';
+                    editProfileForm.style.display = 'block';
+                    editProfileBtn.style.display = 'none';
+                });
+            }
+
+            if (cancelEditBtn) {
+                cancelEditBtn.addEventListener('click', function() {
+                    viewProfileInfo.style.display = 'block';
+                    editProfileForm.style.display = 'none';
+                    editProfileBtn.style.display = 'inline-block';
+                });
+            }
+            
+            if (editProfileForm) {
+                editProfileForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); 
+                    const userId = <%= @user.id %>;
+                    const formData = new FormData(editProfileForm);
+
+                    fetch(`/users/${userId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.querySelector('#view-profile-info h2').textContent = data.full_name;
+                        document.querySelector('#view-profile-info p:nth-of-type(1)').innerHTML = 
+                            `<i class="fas fa-envelope text-muted me-2"></i> ${data.email}`;
+                        cancelEditBtn.click();
+                    })
+                    .catch(error => console.error('Errore:', error));
+                });
+            }
+
+            // ========= GESTIONE TEMPO "QUANTO TEMPO FA" =========
+            function updateTimeLabels() {
+                const timeElements = document.querySelectorAll('.time-ago');
+                const now = new Date();
+
+                timeElements.forEach(el => {
+                    const timestamp = new Date(el.getAttribute('data-timestamp'));
+                    const diffInSeconds = Math.floor((now - timestamp) / 1000);
+                    const diffInMinutes = Math.floor(diffInSeconds / 60);
+                    const diffInHours = Math.floor(diffInMinutes / 60);
+
+                    let text = "";
+                    if (diffInMinutes < 1) text = "meno di un minuto fa";
+                    else if (diffInMinutes < 60) text = `${diffInMinutes} min fa`;
+                    else if (diffInHours < 24) text = `${diffInHours} ore fa`;
+                    else text = `${Math.floor(diffInHours/24)} giorni fa`;
                     
-                    <!-- Riattiva lo switch -->
-                    checkIcon.addEventListener('click', function() {
-                        preferenceItem.classList.remove('active');
-                        switchContainer.style.display = 'block';
-                        switchElement.checked = false;
-                        checkIcon.style.display = 'none';
+                    el.textContent = text;
+                });
+            }
+
+            // Avvia l'aggiornamento subito e imposta l'intervallo
+            updateTimeLabels();
+            
+            // Puliamo eventuali timer precedenti per evitare duplicati
+            if (profileTimer) clearInterval(profileTimer);
+            profileTimer = setInterval(updateTimeLabels, 300000); // 5 minuti
+
+            // ========= ALTRE ANIMAZIONI =========
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.remove('unread');
+                    this.style.background = '#fff';
+                });
+            });
+
+            const markAllAdminBtn = document.getElementById('mark-all-admin-notifications');
+            if (markAllAdminBtn) {
+                markAllAdminBtn.addEventListener('click', function() {
+                    const container = markAllAdminBtn.closest('.profile-card') || document;
+                    container.querySelectorAll('.notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                        item.style.background = '#fff';
                     });
-                    
-                    preferenceItem.appendChild(checkIcon);
-                }
-                checkIcon.style.display = 'inline-block';
-                
-            } else {
-                preferenceItem.classList.remove('active');
-                const checkIcon = preferenceItem.querySelector('.check-icon');
-                if (checkIcon) {
-                    checkIcon.style.display = 'none';
-                }
-                switchContainer.style.display = 'block';
+                });
             }
         });
-    });
 
-    // Animazione per le notifiche non lette
-    document.querySelectorAll('.notification-item.unread').forEach(function(item) {
-        item.addEventListener('click', function() {
-            this.classList.remove('unread');
-            this.style.background = '#fff';
-        });
-    });
+        // Funzioni globali (fuori dal turbo:load perché chiamate da attributi HTML o altri script)
+        
+        window.refreshProfileCounter = function(newCount) {
+            const counter = document.getElementById('routes-counter');
+            if (counter) {
+                counter.textContent = newCount;
+                counter.style.transition = "transform 0.3s ease";
+                counter.style.transform = "scale(1.3)";
+                setTimeout(() => counter.style.transform = "scale(1)", 300);
+            }
+        };
 
-    // Gestione hover per le route
-    document.querySelectorAll('.route-item').forEach(function(item) {
-        item.addEventListener('mouseenter', function() {
-            this.style.borderColor = '#667eea';
-        });
-        item.addEventListener('mouseleave', function() {
-            this.style.borderColor = '#dee2e6';
-        });
-    });
+        function deleteProfile() {
+            const confirmation = prompt('Digita "ELIMINA" per confermare:');
+            if (confirmation === 'ELIMINA') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '<%= user_path(@user) %>';
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden'; methodInput.name = '_method'; methodInput.value = 'DELETE';
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden'; tokenInput.name = 'authenticity_token';
+                tokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                form.appendChild(methodInput); form.appendChild(tokenInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
 
-    // Animazione per le notifiche non lette
-    document.querySelectorAll('.notification-item.unread').forEach(function(item) {
-        item.addEventListener('click', function() {
-            this.classList.remove('unread');
-            this.style.background = '#fff';
+        // Pulizia definitiva prima di cambiare pagina
+        document.addEventListener("turbo:before-cache", () => {
+            if (profileTimer) clearInterval(profileTimer);
+            profilePageInitialized = false;
         });
-    });
-
-    // Gestione hover per le route
-    document.querySelectorAll('.route-item').forEach(function(item) {
-        item.addEventListener('mouseenter', function() {
-            this.style.borderColor = '#667eea';
-        });
-        item.addEventListener('mouseleave', function() {
-            this.style.borderColor = '#dee2e6';
-        });
-    });
     </script>
-</body>
-</html>

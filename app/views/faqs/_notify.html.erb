@@ -1,0 +1,55 @@
+<% mode = local_assigns.fetch(:mode, :user).to_sym %>
+<% enabled_value = current_user&.faq_notification_setting&.enabled %>
+<% notify_enabled = enabled_value.nil? ? true : enabled_value %>
+
+<% if mode == :user %>
+  <div class="modal fade" id="notify-settings-modal" tabindex="-1" aria-hidden="true" data-controller="faqs-notify-modal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content"
+           data-controller="faqs-notify-settings"
+           data-faqs-notify-settings-update-url-value="<%= faq_notification_setting_path %>">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-bell me-2"></i>Avvisami</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input"
+                   type="checkbox"
+                   role="switch"
+                   id="notify-enabled"
+                   data-faqs-notify-settings-target="checkbox"
+                   <%= "checked" if notify_enabled %>>
+            <label class="form-check-label" for="notify-enabled">Ricevi avvisi per aggiornamenti FAQ</label>
+          </div>
+          <div class="form-text mt-2">Impostazione unica (non per categoria).</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <button type="button"
+                  class="btn btn-primary"
+                  data-action="click->faqs-notify-settings#save"
+                  data-faqs-notify-settings-target="saveButton"
+                  data-bs-dismiss="modal">
+            Salva
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<button
+  type="button"
+  class="btn btn-outline-primary"
+  <% if mode == :visitor %>
+    data-action="click->faqs-login-prompt#prompt"
+    data-faqs-login-prompt-title-param="Accedi per ricevere avvisi"
+    data-faqs-login-prompt-message-param="Accedi per attivare le notifiche quando vengono aggiunte o aggiornate FAQ."
+  <% else %>
+    data-bs-toggle="modal"
+    data-bs-target="#notify-settings-modal"
+  <% end %>
+>
+  <i class="fas fa-bell me-2"></i>Avvisami
+</button>

@@ -1,10 +1,76 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+* This is a manifest file that'll be compiled into application.css.
+*
+* With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+* application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+* cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+* depending on specificity.
+*
+* Consider organizing styles into separate files for maintainability.
+*/
+@import "navbar.css";
+@import "faqs.css";
+@import "auth.css";
+
+html, body {
+  height: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 0 auto;
+}
+
+/* Keep footer at the bottom on short pages; scroll to reach it on long pages. */
+.footer {
+  margin-top: auto;
+  color: white;
+  background: linear-gradient(135deg, #2b3342 0%, #343a40 100%);
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.footer-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.footer-tagline,
+.footer-copy {
+  margin: 0;
+  color: rgba(255,255,255,0.78);
+}
+
+.footer-copy {
+  text-align: right;
+}
+
+@media (max-width: 1070px) {
+  .footer {
+    padding: 1.5rem 0;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-copy {
+    text-align: left;
+  }
+}
+  

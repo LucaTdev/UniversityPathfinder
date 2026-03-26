@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Pathfinder</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<% content_for :title, "University Pathfinder" %>
+
+<% content_for :head do %>
+    <meta name="turbo-cache-control" content="no-cache">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        
+        .main-content {
+            flex: 1 0 auto;
+            margin-bottom: 4rem;
+        }
+    
         .mode-switch {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50px;
             padding: 5px;
             display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem;
             margin-bottom: 2rem;
         }
         
@@ -21,6 +27,10 @@
             border-radius: 45px;
             transition: all 0.3s ease;
             font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
         }
         
         .mode-btn.active {
@@ -51,6 +61,9 @@
             color: white;
             padding: 3rem 0;
             margin-bottom: 3rem;
+            min-height: 294px;
+            display: flex;
+            align-items: center;
         }
         
         .building-item {
@@ -60,154 +73,534 @@
             font-size: 0.9em;
             margin: 2px;
             display: inline-block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
         }
+
+        .navigate-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .navigate-btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            display: none;
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .sedi-section-title {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .sedi-admin-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sedi-admin-toolbar__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .sedi-form-actions {
+            flex-wrap: wrap;
+        }
+
+        .sedi-form-actions > .btn {
+            flex: 1 1 12rem;
+        }
+
+        .building-input-row {
+            flex-wrap: nowrap;
+        }
+
+        .building-input-row .form-control {
+            min-width: 0;
+        }
+
+        .sedi-admin-card-header {
+            gap: 0.75rem;
+        }
+
+        .sedi-admin-card-header .btn-group {
+            flex: 0 0 auto;
+        }
+
+        .university-card .card-title,
+        .university-card .card-text,
+        #adminUniversitiesList .card-title,
+        #adminUniversitiesList .card-text,
+        .modal-title,
+        .modal-body,
+        .modal-body h6 {
+            overflow-wrap: anywhere;
+        }
+
+        .sedi-modal-body {
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 1070px) {
+            .main-content {
+                margin-bottom: 3rem;
+            }
+
+            .page-header {
+                padding: 2.5rem 0;
+                margin-bottom: 2rem;
+            }
+
+            .page-header .display-4 {
+                font-size: clamp(2rem, 5vw, 2.8rem);
+                margin-bottom: 1rem !important;
+            }
+
+            .page-header p {
+                max-width: 34rem;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .mode-switch {
+                width: auto;
+                max-width: 100%;
+                padding: 0.55rem;
+                border-radius: 1.5rem;
+            }
+
+            .mode-btn {
+                flex: 0 1 auto;
+                width: auto;
+                padding: 0.75rem 1rem;
+                white-space: nowrap;
+            }
+
+            .sedi-admin-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sedi-admin-toolbar__actions {
+                justify-content: flex-start;
+            }
+
+            #addForm .card-body {
+                padding: 1.25rem;
+            }
+
+            .navigate-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .modal-dialog {
+                margin: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mode-switch {
+                width: auto;
+                max-width: 100%;
+            }
+
+            .mode-btn {
+                flex: 0 1 auto;
+                width: auto;
+            }
+
+            .sedi-admin-card-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            .sedi-admin-card-header .btn-group {
+                width: 100%;
+            }
+
+            .sedi-admin-card-header .btn {
+                flex: 1 1 auto;
+            }
+
+            .building-input-row {
+                flex-wrap: nowrap;
+                align-items: stretch;
+            }
+
+            .building-input-row .form-control {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .building-input-row .btn {
+                width: auto;
+                flex: 0 0 auto;
+            }
+
+            .sedi-form-actions > .btn {
+                flex-basis: 100%;
+            }
+
+            .modal-dialog {
+                margin: 0.75rem;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .page-header {
+                padding: 2rem 0;
+            }
+
+            .page-header .display-4 {
+                font-size: clamp(1.8rem, 7vw, 2.35rem);
+            }
+
+            .navigate-btn {
+                padding: 0.9rem 1rem;
+                font-size: 0.95rem;
+            }
+        }
+
     </style>
-</head>
-<body>
+<% end %>
+
+<div class="sedi-page">
     <!-- Header -->
     <div class="page-header text-center">
         <div class="container">
-            <h1 class="display-4 fw-bold mb-4">University Pathfinder</h1>
-            
+            <h1 class="display-4 fw-bold mb-4"><i class="fas fa-university me-2"></i>Sedi Universitarie</h1>
+            <p class="mb-4">Cerca qui la sede universitaria in cui vuoi arrivare!</p>
+
             <!-- Mode Switch -->
-            <div class="mode-switch">
+            <div class="mode-switch mb-1">
                 <button type="button" class="mode-btn active" id="userBtn" onclick="switchMode('user')">
                     <i class="fas fa-user me-2"></i>Utente
                 </button>
-                <button type="button" class="mode-btn" id="adminBtn" onclick="switchMode('admin')">
-                    <i class="fas fa-shield-alt me-2"></i>Amministratore
-                </button>
+                <% if @is_admin %>
+                    <button type="button" class="mode-btn" id="adminBtn" onclick="switchMode('admin')">
+                        <i class="fas fa-shield-alt me-2"></i>Amministratore
+                    </button>
+                <% end %>
             </div>
         </div>
     </div>
-
-    <div class="container">
-        <!-- Modalità Utente -->
-        <div id="userMode" class="mode-content">
-            <h2 class="mb-4">
-                <i class="fas fa-university me-2"></i>Sedi Universitarie
-            </h2>
-            
-            <!-- Universities List -->
-            <div class="row" id="universitiesList">
-                <!-- Dynamic content will be inserted here -->
-            </div>
-        </div>
-
-        <!-- Modalità admin -->
-        <div id="adminMode" class="mode-content d-none">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>
-                    <i class="fas fa-cog me-2"></i>Amministrazione Sedi
-                </h2>
-                <button type="button" class="btn btn-success" onclick="showAddForm()">
-                    <i class="fas fa-plus me-2"></i>Aggiungi Sede
-                </button>
-            </div>
-
-            <!-- Add/Edit Form -->
-            <div id="addForm" class="card mb-4 d-none">
-                <div class="card-header">
-                    <h5 class="mb-0" id="formTitle">
-                        <i class="fas fa-plus me-2"></i>Nuova Sede Universitaria
-                    </h5>
+    
+    <div class="main-content">
+        <div class="container">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Caricamento...</span>
                 </div>
-                <div class="card-body">
-                    <form id="universityForm">
-                    <input type="hidden" id="universityId" value="">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="nomeSede" class="form-label">Nome Sede</label>
-                                <input type="text" class="form-control" id="nomeSede" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="indirizzoSede" class="form-label">Indirizzo Sede</label>
-                                <input type="text" class="form-control" id="indirizzoSede" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Edifici presenti nella sede</label>
-                            <div id="edificiContainer">
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
-                                    <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                <p class="mt-2">Caricamento sedi universitarie...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message">
+                <strong>Errore!</strong> <span id="errorText"></span>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message">
+                <strong>Successo!</strong> <span id="successText"></span>
+            </div>
+
+            <!-- Modalità Utente -->
+            <div id="userMode" class="mode-content">
+                <h2 class="mb-4 sedi-section-title">
+                    <i class="fas fa-map-marked-alt me-2"></i>Sedi Disponibili
+                </h2>
+            
+                <!-- Universities List -->
+                <div class="row" id="universitiesList">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Modalità admin -->
+            <div id="adminMode" class="mode-content d-none">
+                <div class="sedi-admin-toolbar">
+                    <h2 class="sedi-section-title">
+                        <i class="fas fa-cog me-2"></i>Amministrazione Sedi
+                    </h2>
+                    <div class="sedi-admin-toolbar__actions">
+                        <button type="button" class="btn btn-success" onclick="showAddForm()">
+                            <i class="fas fa-plus me-2"></i>Aggiungi Sede
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add/Edit Form -->
+                <div id="addForm" class="card mb-4 d-none">
+                    <div class="card-header">
+                        <h5 class="mb-0" id="formTitle">
+                            <i class="fas fa-plus me-2"></i>Nuova Sede Universitaria
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="universityForm">
+                            <input type="hidden" id="universityId" value="">
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nomeSede" class="form-label">Nome Sede *</label>
+                                    <input type="text" class="form-control" id="nomeSede" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="indirizzoSede" class="form-label">Indirizzo Sede *</label>
+                                    <input type="text" class="form-control" id="indirizzoSede" required>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addBuildingInput()">
-                                <i class="fas fa-plus me-2"></i>Aggiungi Edificio
-                            </button>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary" id="saveBtn">
-                                <i class="fas fa-save me-2"></i>Salva Sede
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="hideAddForm()">
-                                <i class="fas fa-times me-2"></i>Annulla
-                            </button>
-                        </div>
-                    </form>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Edifici presenti nella sede *</label>
+                                <div id="edificiContainer">
+                                    <div class="input-group mb-2 building-input-row">
+                                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addBuildingInput()">
+                                    <i class="fas fa-plus me-2"></i>Aggiungi Edificio
+                                </button>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nomeSede" class="form-label">Latitudine sede *</label>
+                                    <input type="text" class="form-control" id="latSede" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="indirizzoSede" class="form-label">Longitudine sede *</label>
+                                    <input type="text" class="form-control" id="longSede" required>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 sedi-form-actions">
+                                <button type="submit" class="btn btn-primary" id="saveBtn">
+                                    <i class="fas fa-save me-2"></i>Salva Sede
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="hideAddForm()">
+                                    <i class="fas fa-times me-2"></i>Annulla
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Admin Universities List -->
+                <div class="row" id="adminUniversitiesList">
+                    <!-- Dynamic content will be inserted here -->
                 </div>
             </div>
 
-            <!-- Admin Universities List -->
-            <div class="row" id="adminUniversitiesList">
-                <!-- Dynamic content will be inserted here -->
-            </div>
-        </div>
-
-        <!-- University Detail Modal -->
-        <div class="modal fade" id="universityModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalTitle"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body" id="modalBody">
-                        <!-- Dynamic content -->
+            <!-- University Detail Modal -->
+            <div class="modal fade" id="universityModal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body sedi-modal-body" id="modalBody">
+                            <!-- Dynamic content -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // Sample data - In Rails this would come from the backend
-        let universities = [
-            {
-                id: 1,
-                nome: "Università La Sapienza",
-                indirizzo: "Piazzale Aldo Moro, 5, 00185 Roma RM",
-                edifici: ["Edificio CU002 - Matematica", "Edificio CU006 - Fisica", "Edificio RM018 - Lettere", "Biblioteca Centrale"]
-            },
-            {
-                id: 2,
-                nome: "Università Tor Vergata",
-                indirizzo: "Via della Ricerca Scientifica, 1, 00133 Roma RM",
-                edifici: ["Macroarea di Ingegneria", "Macroarea di Scienze", "Biblioteca di Area Tecnologica"]
-            },
-            {
-                id: 3,
-                nome: "Università Roma Tre",
-                indirizzo: "Via Ostiense, 133, 00154 Roma RM",
-                edifici: ["Edificio Principali", "Dipartimento di Architettura", "Biblioteca di Area delle Arti"]
-            }
-        ];
-
+        // Variabile globale per memorizzare le sedi
+        let universities = [];
         let currentMode = 'user';
+
+        // Utility functions per gestire UI
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('errorMessage').style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+
+        // Funzione per ottenere il CSRF token
+        function getCSRFToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            return meta ? meta.getAttribute('content') : '';
+        }
+
+        // API Calls per comunicare con Rails backend
+        async function fetchUniversities() {
+            try {
+                showLoading();
+                const response = await fetch("/sedi", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                universities = data;
+                hideLoading();
+                
+                if (currentMode === 'user') {
+                    renderUserUniversities();
+                } else {
+                    renderAdminUniversities();
+                }
+                
+            } catch (error) {
+                hideLoading();
+                showError('Errore nel caricamento delle sedi: ' + error.message);
+                console.error('Error fetching universities:', error);
+            }
+        }
+
+        async function createUniversity(sedeData) {
+            try {
+                const response = await fetch('/sedi', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCSRFToken()
+                    },
+                    body: JSON.stringify({ sede: sedeData })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.errors ? data.errors.join(', ') : 'Errore nella creazione');
+                }
+
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function updateUniversity(id, sedeData) {
+            try {
+                const response = await fetch(`/sedi/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCSRFToken()
+                    },
+                    body: JSON.stringify({ sede: sedeData })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.errors ? data.errors.join(', ') : 'Errore nell\'aggiornamento');
+                }
+
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function deleteUniversityFromServer(id) {
+            try {
+                const response = await fetch(`/sedi/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCSRFToken()
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return true;
+            } catch (error) {
+                throw error;
+            }
+        }
 
         function switchMode(mode) {
             currentMode = mode;
             
             // Update buttons
             document.getElementById('userBtn').classList.toggle('active', mode === 'user');
-            document.getElementById('adminBtn').classList.toggle('active', mode === 'admin');
+            const adminButton = document.getElementById('adminBtn');
+            if (adminButton) {
+                adminButton.classList.toggle('active', mode === 'admin');
+            }
             
             // Show/hide content
             document.getElementById('userMode').classList.toggle('d-none', mode !== 'user');
@@ -225,7 +618,19 @@
             const container = document.getElementById('universitiesList');
             container.innerHTML = '';
 
+            if (universities.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-university fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Nessuna sede universitaria disponibile</h4>
+                        <p class="text-muted">Le sedi universitarie verranno visualizzate qui una volta aggiunte.</p>
+                    </div>
+                `;
+                return;
+            }
+
             universities.forEach(uni => {
+                const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
                 const card = `
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card university-card h-100" onclick="showUniversityDetails(${uni.id})">
@@ -236,14 +641,17 @@
                                 <p class="card-text text-muted mb-3">
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
+                                <p class="small text-muted mb-3">
+                                    <i class="fas fa-globe me-2"></i>${uni.lat}, ${uni.long}
+                                </p>
                                 <div class="mb-2">
-                                    <small class="text-muted">Edifici: ${uni.edifici.length}</small>
+                                    <small class="text-muted">Edifici: ${edificiArray.length}</small>
                                 </div>
                                 <div class="d-flex flex-wrap">
-                                    ${uni.edifici.slice(0, 2).map(edificio => 
+                                    ${edificiArray.slice(0, 2).map(edificio => 
                                         `<span class="building-item">${edificio}</span>`
                                     ).join('')}
-                                    ${uni.edifici.length > 2 ? `<span class="building-item">+${uni.edifici.length - 2} altri</span>` : ''}
+                                    ${edificiArray.length > 2 ? `<span class="building-item">+${edificiArray.length - 2} altri</span>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -257,12 +665,24 @@
             const container = document.getElementById('adminUniversitiesList');
             container.innerHTML = '';
 
+            if (universities.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Nessuna sede da gestire</h4>
+                        <p class="text-muted">Aggiungi la prima sede universitaria cliccando sul pulsante "Aggiungi Sede".</p>
+                    </div>
+                `;
+                return;
+            }
+
             universities.forEach(uni => {
+                const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
                 const card = `
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex justify-content-between align-items-start mb-2 sedi-admin-card-header">
                                     <h5 class="card-title text-primary">${uni.nome}</h5>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-outline-primary btn-sm" onclick="editUniversity(${uni.id})" title="Modifica sede">
@@ -273,14 +693,17 @@
                                         </button>
                                     </div>
                                 </div>
-                                <p class="card-text text-muted mb-3">
+                                <p class="card-text text-muted mb-1">
                                     <i class="fas fa-map-marker-alt me-2"></i>${uni.indirizzo}
                                 </p>
+                                <p class="small text-muted mb-3">
+                                    <i class="fas fa-globe me-2"></i>${uni.lat}, ${uni.long}
+                                </p>
                                 <div class="mb-2">
-                                    <strong>Edifici (${uni.edifici.length}):</strong>
+                                    <strong>Edifici (${edificiArray.length}):</strong>
                                 </div>
                                 <div class="d-flex flex-wrap">
-                                    ${uni.edifici.map(edificio => 
+                                    ${edificiArray.map(edificio => 
                                         `<span class="building-item">${edificio}</span>`
                                     ).join('')}
                                 </div>
@@ -296,6 +719,8 @@
             const uni = universities.find(u => u.id === id);
             if (!uni) return;
 
+            const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
+
             document.getElementById('modalTitle').innerHTML = `
                 <i class="fas fa-university me-2"></i>${uni.nome}
             `;
@@ -305,17 +730,76 @@
                     <h6><i class="fas fa-map-marker-alt me-2"></i>Indirizzo</h6>
                     <p class="text-muted">${uni.indirizzo}</p>
                 </div>
-                <div>
-                    <h6><i class="fas fa-building me-2"></i>Edifici presenti (${uni.edifici.length})</h6>
+                <div class="mb-4">
+                    <h6><i class="fas fa-globe me-2"></i>Coordinate</h6>
+                    <p class="text-muted">Lat: ${uni.lat} | Long: ${uni.long}</p>
+                </div>
+                <div class="mb-4">
+                    <h6><i class="fas fa-building me-2"></i>Edifici presenti (${edificiArray.length})</h6>
                     <div class="d-flex flex-wrap">
-                        ${uni.edifici.map(edificio => 
+                        ${edificiArray.map(edificio => 
                             `<span class="building-item me-2 mb-2">${edificio}</span>`
                         ).join('')}
                     </div>
                 </div>
+                <div class="text-center">
+                    <button class="navigate-btn" onclick="navigateToUniversity(${uni.id})">
+                        <i class="fa-solid fa-route"></i> Portami lì  
+                    </button>
+                </div>
             `;
 
             new bootstrap.Modal(document.getElementById('universityModal')).show();
+        }
+
+
+        // Funzione per navigare alla sede
+        // Funzione per navigare alla sede
+        async function navigateToUniversity(id) {
+            const uni = universities.find(u => u.id === id);
+            if (!uni) return;
+
+            // Salva la ricerca nel database
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const response = await fetch('/routes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({
+                        route: {
+                            destination: uni.indirizzo,
+                            destination_name: uni.nome
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('Ricerca salvata con successo!');
+                } else {
+                    console.error('Errore nel salvare la ricerca:', await response.text());
+                }
+            } catch (error) {
+                console.error('Errore nel salvare la ricerca:', error);
+            }
+
+            // Chiudi il modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('universityModal'));
+            modal.hide();
+
+            // Usa il sessionStorage per passare i dati alla pagina mappa
+            const navigationData = {
+                destination: uni.indirizzo,
+                destinationName: uni.nome,
+                timestamp: Date.now()
+            };
+            
+            sessionStorage.setItem('navigationData', JSON.stringify(navigationData));
+            
+            // Reindirizza alla pagina mappa
+            window.location.href = '/home/mappa';
         }
 
         function showAddForm() {
@@ -323,6 +807,17 @@
             document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Nuova Sede Universitaria';
             document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save me-2"></i>Salva Sede';
             document.getElementById('universityId').value = '';
+            
+            // Reset edifici container
+            const container = document.getElementById('edificiContainer');
+            container.innerHTML = `
+                <div class="input-group mb-2 building-input-row">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
+                    <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
         }
 
         function editUniversity(id) {
@@ -338,15 +833,19 @@
             document.getElementById('universityId').value = id;
             document.getElementById('nomeSede').value = uni.nome;
             document.getElementById('indirizzoSede').value = uni.indirizzo;
+            document.getElementById('latSede').value = uni.lat || '';
+            document.getElementById('longSede').value = uni.long || '';
             
             // Clear and rebuild edifici container
             const container = document.getElementById('edificiContainer');
             container.innerHTML = '';
             
-            uni.edifici.forEach(edificio => {
+            const edificiArray = Array.isArray(uni.edifici) ? uni.edifici : [];
+            
+            edificiArray.forEach(edificio => {
                 const inputHtml = `
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" value="${edificio}">
+                    <div class="input-group mb-2 building-input-row">
+                        <input type="text" class="form-control edificio-input" placeholder="Nome edificio" value="${edificio}" required>
                         <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -356,7 +855,7 @@
             });
             
             // Ensure at least one input exists
-            if (uni.edifici.length === 0) {
+            if (edificiArray.length === 0) {
                 addBuildingInput();
             }
             
@@ -376,8 +875,8 @@
             // Reset edifici container
             const container = document.getElementById('edificiContainer');
             container.innerHTML = `
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                <div class="input-group mb-2 building-input-row">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -388,8 +887,8 @@
         function addBuildingInput() {
             const container = document.getElementById('edificiContainer');
             const newInput = `
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio">
+                <div class="input-group mb-2 building-input-row">
+                    <input type="text" class="form-control edificio-input" placeholder="Nome edificio" required>
                     <button type="button" class="btn btn-outline-danger" onclick="removeBuilding(this)">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -405,63 +904,77 @@
             }
         }
 
-        function deleteUniversity(id) {
+        async function deleteUniversity(id) {
             if (confirm('Sei sicuro di voler eliminare questa sede universitaria?')) {
-                universities = universities.filter(uni => uni.id !== id);
-                renderAdminUniversities();
+                try {
+                    showLoading();
+                    await deleteUniversityFromServer(id);
+                    showSuccess('Sede eliminata!');
+                    await fetchUniversities(); // Ricarica la lista
+                } catch (error) {
+                    hideLoading();
+                    showError('Errore nell\'eliminazione della sede: ' + error.message);
+                }
             }
         }
 
         // Form submission
-        document.getElementById('universityForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        const universityForm = document.getElementById('universityForm');
+        if (universityForm && universityForm.dataset.initialized !== 'true') {
+            universityForm.dataset.initialized = 'true';
+            universityForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
             
-            const universityId = document.getElementById('universityId').value;
-            const nome = document.getElementById('nomeSede').value;
-            const indirizzo = document.getElementById('indirizzoSede').value;
-            const edificiInputs = document.querySelectorAll('.edificio-input');
-            const edifici = Array.from(edificiInputs)
-                .map(input => input.value.trim())
-                .filter(value => value !== '');
+                const universityId = document.getElementById('universityId').value;
+                const nome = document.getElementById('nomeSede').value.trim();
+                const indirizzo = document.getElementById('indirizzoSede').value.trim();
+                const lat = document.getElementById('latSede').value.trim();
+                const long = document.getElementById('longSede').value.trim();
 
-            if (nome && indirizzo && edifici.length > 0) {
-                if (universityId) {
-                    // Update existing university
-                    const index = universities.findIndex(uni => uni.id == universityId);
-                    if (index !== -1) {
-                        universities[index] = {
-                            id: parseInt(universityId),
-                            nome: nome,
-                            indirizzo: indirizzo,
-                            edifici: edifici
-                        };
-                        alert('Sede universitaria aggiornata con successo!');
-                    }
-                } else {
-                    // Add new university
-                    const newUniversity = {
-                        id: Date.now(),
-                        nome: nome,
-                        indirizzo: indirizzo,
-                        edifici: edifici
-                    };
-                    universities.push(newUniversity);
-                    alert('Sede universitaria aggiunta con successo!');
+                const edificiInputs = document.querySelectorAll('.edificio-input');
+                const edifici = Array.from(edificiInputs)
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+
+                if (!nome || !indirizzo || !lat || !long || edifici.length === 0) {
+                    showError('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
+                    return;
                 }
 
-                renderAdminUniversities();
-                hideAddForm();
+                const sedeData = {
+                    nome: nome,
+                    indirizzo: indirizzo,
+                    latitudine:lat,
+                    long: long,
+                    edifici: edifici
+                };
+
+                try {
+                    showLoading();
                 
-                // In Rails, this would be an AJAX call to your backend
-                // For update: PUT /universities/:id
-                // For create: POST /universities
-            } else {
-                alert('Per favore compila tutti i campi obbligatori e aggiungi almeno un edificio.');
-            }
+                    if (universityId) {
+                        // Update existing university
+                        await updateUniversity(universityId, sedeData);
+                        showSuccess('Sede universitaria aggiornata!');
+                    } else {
+                        // Add new university
+                        await createUniversity(sedeData);
+                        showSuccess('Sede universitaria aggiunta!');
+                    }
+
+                    await fetchUniversities(); // Ricarica la lista
+                    hideAddForm();
+                
+                } catch (error) {
+                    hideLoading();
+                    showError('Errore nel salvataggio: ' + error.message);
+                }
+            });
+        }
+
+        // Initialize - Carica le sedi in avvio
+        document.addEventListener('turbo:load', function() {
+            fetchUniversities();
         });
 
-        // Initialize
-        renderUserUniversities();
     </script>
-</body>
-</html>

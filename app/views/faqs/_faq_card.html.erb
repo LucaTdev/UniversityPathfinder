@@ -1,0 +1,26 @@
+<% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% locale = local_assigns[:locale] %>
+<% up_count = local_assigns.fetch(:up_count, 0) %>
+<% down_count = local_assigns.fetch(:down_count, 0) %>
+<% current_vote = local_assigns[:current_vote] %>
+
+<div class="col-lg-4 col-md-6 mb-4" data-faqs-category-filter-target="card" data-faq-category="<%= faq.categoria %>">
+  <div class="card faq-card h-100">
+    <div class="card-body">
+      <div class="faq-card__top d-flex justify-content-between align-items-start gap-2 mb-2">
+        <span class="category-badge"><%= faq.categoria %></span>
+        <%= render "admin_actions", faq: faq, locale: locale if mode == :admin %>
+      </div>
+
+      <h6 class="card-subtitle faq-card__question mb-2 text-primary"><%= faq.domanda_for(locale) %></h6>
+      <p class="card-text faq-card__answer text-muted"><%= faq.risposta_for(locale) %></p>
+
+      <%= render "votes",
+        faq: faq,
+        mode: mode,
+        up_count: up_count,
+        down_count: down_count,
+        current_vote: current_vote %>
+    </div>
+  </div>
+</div>

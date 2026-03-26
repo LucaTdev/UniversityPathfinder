@@ -1,0 +1,117 @@
+<% faq_id = local_assigns[:faq]&.id || local_assigns[:faq_id] %>
+<% up_count = local_assigns.fetch(:up_count, 0) %>
+<% down_count = local_assigns.fetch(:down_count, 0) %>
+<% mode = local_assigns.fetch(:mode, :visitor).to_sym %>
+<% current_vote = local_assigns[:current_vote] %>
+<% current =
+  case current_vote
+  when 1, "1", :up, "up" then "up"
+  when -1, "-1", :down, "down" then "down"
+  else ""
+  end
+%>
+
+<div class="faq-votes mt-3 pt-3 border-top"
+     <% if mode == :user %>
+       data-controller="faqs-votes"
+       data-faqs-votes-faq-id-value="<%= faq_id %>"
+       data-faqs-votes-up-value="<%= up_count %>"
+       data-faqs-votes-down-value="<%= down_count %>"
+       data-faqs-votes-current-value="<%= current %>"
+     <% end %>>
+  <% if mode == :user || mode == :visitor %>
+    <div class="faq-votes__row d-flex align-items-center justify-content-between gap-3">
+      <div class="faq-votes__prompt text-muted small">
+        Hai trovato utile questa risposta?
+      </div>
+
+      <div class="faq-votes__actions text-end">
+        <div class="btn-group" role="group" aria-label="Vota questa FAQ">
+        <% if mode == :user %>
+          <button type="button"
+                  class="btn btn-sm btn-outline-success faq-vote-btn"
+                  data-action="click->faqs-votes#toggleUp"
+                  data-faqs-votes-target="upButton"
+                  title="Pollice in su">
+            <i class="fa-regular fa-thumbs-up"></i>
+          </button>
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger faq-vote-btn"
+                  data-action="click->faqs-votes#toggleDown"
+                  data-faqs-votes-target="downButton"
+                  title="Pollice in giù">
+            <i class="fa-regular fa-thumbs-down"></i>
+          </button>
+        <% else %>
+          <button type="button"
+                  class="btn btn-sm btn-outline-success faq-vote-btn"
+                  data-action="click->faqs-login-prompt#prompt"
+                  data-faqs-login-prompt-title-param="Accedi per votare"
+                  data-faqs-login-prompt-message-param="La tua opinione è importante: accedi per votare questa FAQ."
+                  title="Pollice in su">
+            <i class="fa-regular fa-thumbs-up"></i>
+          </button>
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger faq-vote-btn"
+                  data-action="click->faqs-login-prompt#prompt"
+                  data-faqs-login-prompt-title-param="Accedi per votare"
+                  data-faqs-login-prompt-message-param="La tua opinione è importante: accedi per votare questa FAQ."
+                  title="Pollice in giù">
+            <i class="fa-regular fa-thumbs-down"></i>
+          </button>
+        <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-votes__counts small text-muted d-flex gap-3 justify-content-end mt-2">
+      <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
+        <i class="fa-regular fa-thumbs-up"></i>
+        <% if mode == :user %>
+          <span data-faqs-votes-target="upCount"><%= up_count %></span>
+        <% else %>
+          <span><%= up_count %></span>
+        <% end %>
+      </span>
+
+      <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
+        <i class="fa-regular fa-thumbs-down"></i>
+        <% if mode == :user %>
+          <span data-faqs-votes-target="downCount"><%= down_count %></span>
+        <% else %>
+          <span><%= down_count %></span>
+        <% end %>
+      </span>
+    </div>
+  <% else %>
+    <% if mode == :admin %>
+      <div class="faq-votes__admin-row d-flex align-items-start justify-content-between gap-3">
+        <div></div>
+        <div class="faq-votes__admin-right d-flex flex-column align-items-end gap-2">
+          <div class="faq-votes__counts small text-muted d-flex gap-3 justify-content-end">
+            <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
+              <i class="fa-regular fa-thumbs-up"></i>
+              <span><%= up_count %></span>
+            </span>
+            <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
+              <i class="fa-regular fa-thumbs-down"></i>
+              <span><%= down_count %></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="faq-votes__counts small text-muted d-flex gap-3">
+        <span class="d-inline-flex align-items-center gap-1" title="Pollici in su">
+          <i class="fa-regular fa-thumbs-up"></i>
+          <span><%= up_count %></span>
+        </span>
+
+        <span class="d-inline-flex align-items-center gap-1" title="Pollici in giù">
+          <i class="fa-regular fa-thumbs-down"></i>
+          <span><%= down_count %></span>
+        </span>
+      </div>
+    <% end %>
+  <% end %>
+</div>

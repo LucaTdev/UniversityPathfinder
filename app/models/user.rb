@@ -1,0 +1,100 @@
+class User < ApplicationRecord
+    has_secure_password
+
+    # Callback per normalizzare il ruolo
+    before_validation :cast_role_to_integer
+
+    # === Validazioni ===
+    validates :first_name, :last_name, :email, :registration_date, presence: true
+    validates :email, uniqueness: true
+    validates :password, length: { minimum: 8 }, if: -> { password.present? }
+    validates :terms_accepted, acceptance: true
+
+
+    # === Costanti Ruoli ===
+    ROLE_BASE = 0     # Altro
+    ROLE_STUDENT = 1  # Studente
+    ROLE_ADMIN = 2    # Admin
+
+    # === Helpers Ruolo ===
+    def base?
+        role == ROLE_BASE
+    end
+
+    def student?
+        role == ROLE_STUDENT
+    end
+
+    def admin?
+        role == ROLE_ADMIN
+    end
+
+    # === Metodi per il profilo ===
+    def full_name
+        "#{first_name} #{last_name}".strip
+    end
+
+    def role_display
+        case role
+        when ROLE_STUDENT then "Studente"
+        when ROLE_ADMIN then "Amministratore"
+        else "Utente"
+        end
+    end
+
+    def registration_year
+        registration_date&.year || created_at&.year
+    end
+
+    def registration_month_year
+        date = registration_date || created_at
+        date&.strftime("%B %Y")
+    end
+
+    # Metodi per le statistiche (da implementare in base alle tue esigenze)
+    def routes_count
+        # Implementa il conteggio dei percorsi cercati dall'utente
+        # Esempio: Route.where(user: self).count
+        0 # Placeholder
+    end
+
+    def favorites_count
+        favorite_routes.count
+    end
+
+    def top_favorite_routes
+        favorite_routes.by_search_count.limit(3)
+    end
+
+    def notifications_count
+        return FaqSuggestion.attesa.count if admin?
+
+        news_scope = News.all
+        news_scope = news_scope.where.not(category: "FAQ") unless faq_notifications_enabled?
+        news_scope.count
+    end
+
+    # === Relazioni ===
+    has_one :student_profile, dependent: :destroy
+    has_one :admin_profile, dependent: :destroy
+    has_many :routes, dependent: :destroy
+    has_many :favorite_routes, dependent: :destroy
+
+    has_many :faq_votes, dependent: :destroy
+    has_many :faq_suggestions, dependent: :destroy
+    has_one :faq_notification_setting, dependent: :destroy
+
+    def faq_notifications_enabled?
+        setting = faq_notification_setting
+        return true if setting.nil?
+
+        setting.enabled?
+    end
+
+    private
+
+
+    def cast_role_to_integer
+        self.role = role.to_i if role.present?
+    end
+end

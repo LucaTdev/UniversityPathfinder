@@ -1,0 +1,23 @@
+<div class="news-item" data-news-id="<%= news.id %>">
+  <div class="news-icon <%= news.category.downcase rescue '' %>" style="background: <%= category_color(news.category) %>;">
+    <i class="<%= news.icon_class || 'fas fa-newspaper' %>"></i>
+  </div>
+  <div class="news-content">
+    <h6><%= news.title %></h6>
+    <p><%= news.content %></p>
+    <span class="news-time"><%= time_ago_in_words(news.published_at) %> fa</span>
+    <span class="badge-custom" style="background: <%= category_color(news.category) %>; color: white; margin-left: 10px;">
+      <%= news.category %>
+    </span>
+  </div>
+  <% if defined?(current_user) && current_user&.admin? %>
+    <div class="news-actions" style="margin-left: auto; display: flex; gap: 10px;">
+      <button class="btn btn-sm btn-warning edit-news-btn" data-news-id="<%= news.id %>" type="button">
+        <i class="fas fa-edit"></i>
+      </button>
+      <button class="btn btn-sm btn-danger delete-news-btn" data-news-id="<%= news.id %>" type="button">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  <% end %>
+</div>

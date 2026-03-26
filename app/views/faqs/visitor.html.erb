@@ -1,0 +1,67 @@
+<% content_for :title, "University Pathfinder - FAQ" %>
+<% content_for :body_class, "layout-sticky-footer" %>
+
+<% content_for :head do %>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<% end %>
+
+<% categories = Array(@faq_categories).map(&:name) %>
+<% search_query = params[:q].to_s.strip %>
+<% searching = search_query.present? %>
+<% empty_title = searching ? "Nessun risultato" : "Nessuna FAQ disponibile" %>
+<% empty_body =
+  if searching
+    "Nessuna FAQ corrisponde a “#{search_query}”. Prova a cambiare parole chiave o la lingua."
+  else
+    "Quando saranno pubblicate, le vedrai qui."
+  end %>
+
+<div class="faqs-page" data-controller="faqs-login-prompt faqs-category-filter faqs-dialog" data-faqs-login-prompt-login-url-value="<%= login_path %>">
+  <div class="page-header text-center">
+    <div class="container">
+      <h1 class="display-4 fw-bold mb-4"><i class="fas fa-question-circle me-2"></i>FAQ</h1>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="container">
+      <div class="faq-toolbar">
+        <h2 class="faq-toolbar__title">
+          <span class="faq-toolbar__title-icon" aria-hidden="true">
+            <i class="fas fa-user"></i>
+          </span>
+          <span class="faq-toolbar__title-label">Visitatore</span>
+        </h2>
+
+        <div class="faq-toolbar__actions">
+          <%= render "search", collapse_id: "faq-search-visitor" %>
+          <%= render "filter", categories: categories, dropdown_id: "faq-filter-visitor" %>
+          <%= render "notify", mode: :visitor %>
+          <%= render "language", dropdown_id: "faq-lang-visitor", current_locale: @faq_locale %>
+          <button type="button"
+                  class="btn btn-success"
+                  data-action="click->faqs-login-prompt#prompt"
+                  data-faqs-login-prompt-title-param="Accedi per suggerire"
+                  data-faqs-login-prompt-message-param="La tua opinione è importante: accedi per suggerire una nuova FAQ.">
+            <i class="fas fa-plus me-2"></i>Suggerisci FAQ
+          </button>
+        </div>
+      </div>
+
+      <%= render "search_panel", collapse_id: "faq-search-visitor" %>
+
+      <%= render "faq_grid",
+        faqs: @faqs,
+        mode: :visitor,
+        locale: @faq_locale,
+        up_map: @faq_votes_up_map,
+        down_map: @faq_votes_down_map,
+        current_map: @faq_votes_current_map,
+        empty_title: empty_title,
+        empty_body: empty_body %>
+    </div>
+  </div>
+</div>
+
+<%= render "login_modal" %>
+<%= render "dialog_modal" %>

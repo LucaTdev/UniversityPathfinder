@@ -1,0 +1,149 @@
+<% content_for :title, "Login - University Path Finder" %>
+<% content_for :body_class, "layout-sticky-footer auth-page" %>
+
+<% content_for :head do %>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<% end %>
+
+  <div class="container-fluid auth-screen">
+    <div class="row justify-content-center w-100 g-0">
+      <div class="col-12 auth-shell auth-shell--login">
+        <div class="card auth-card shadow-lg border-0">
+          <div class="card-body auth-card-body">
+            <!-- Header -->
+            <div class="auth-header">
+              <h1 class="auth-brand">University Pathfinder</h1>
+              <p class="auth-subtitle">Accedi al tuo account per gestire percorso, profilo e preferenze.</p>
+            </div>
+
+            <!-- Flash messages -->
+            <% if flash[:alert] %>
+              <div class="alert alert-danger"><%= flash[:alert] %></div>
+            <% elsif flash[:notice] %>
+              <div class="alert alert-success"><%= flash[:notice] %></div>
+            <% end %>
+
+            <!-- Login Form -->
+            <%= form_with url: login_path, method: :post, local: true, class: "needs-validation" do |f| %>
+              
+              <!-- Email Field -->
+              <div class="mb-3">
+                <%= f.label :email, "Email", class: "form-label fw-semibold" %>
+                <%= f.email_field :email,
+                      class: "form-control form-control-lg",
+                      placeholder: "Inserisci la tua email",
+                      required: true %>
+                <div class="invalid-feedback">
+                  Inserisci un indirizzo email valido.
+                </div>
+              </div>
+
+              <!-- Password Field -->
+              <div class="mb-3">
+                <%= f.label :password, "Password", class: "form-label fw-semibold" %>
+                <div class="input-group">
+                  <%= f.password_field :password,
+                        class: "form-control form-control-lg",
+                        id: "password",
+                        placeholder: "Inserisci la tua password",
+                        required: true %>
+                  <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback">
+                  La password è obbligatoria.
+                </div>
+              </div>
+
+              <!-- Remember Me Checkbox -->
+              <div class="mb-3 form-check">
+                <%= f.check_box :remember_me, {class: "form-check-input"}, "1", "0" %>
+                <%= f.label :remember_me, "Ricordami", class: "form-check-label" %>
+              </div>
+
+              <!-- Login Button -->
+              <div class="d-grid gap-2 mb-3">
+                <%= f.submit "Accedi", class: "btn btn-primary btn-lg" %>
+              </div>
+
+              <!-- Forgot Password Link -->
+              <div class="text-center auth-footer">
+                <%= link_to "Password dimenticata?", forgot_password_path, class: "text-decoration-none text-muted" %>
+              </div>
+
+            <% end %>
+
+            <% if google_oauth_enabled? %>
+              <div class="auth-separator"><span>oppure</span></div>
+              <div class="d-grid gap-2">
+                <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "btn btn-google btn-lg" do %>
+                  <i class="fab fa-google me-2"></i>Continua con Google
+                <% end %>
+              </div>
+            <% end %>
+
+            <!-- Divider -->
+            <hr class="auth-divider">
+
+            <!-- Registration Link -->
+            <div class="text-center auth-footer">
+              <p class="text-muted mb-0">
+                Non hai un account? 
+                <%= link_to "Registrati qui", registration_path, class: "text-primary text-decoration-none fw-semibold" %>
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function initializeLoginPage() {
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordField = document.getElementById('password');
+      const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+      if (togglePassword && passwordField && togglePasswordIcon && togglePassword.dataset.initialized !== 'true') {
+        togglePassword.dataset.initialized = 'true';
+        togglePassword.addEventListener('click', function() {
+          const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordField.setAttribute('type', type);
+          togglePasswordIcon.className = type === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+      }
+
+      const forms = document.getElementsByClassName('needs-validation');
+      Array.prototype.forEach.call(forms, function(form) {
+        if (form.dataset.validationInitialized === 'true') return;
+        form.dataset.validationInitialized = 'true';
+        form.addEventListener('submit', function(event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+
+      const loginBtn = document.querySelector('input[type="submit"].btn-primary');
+      if (loginBtn && loginBtn.dataset.hoverInitialized !== 'true') {
+        loginBtn.dataset.hoverInitialized = 'true';
+        loginBtn.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        loginBtn.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeLoginPage);
+    } else {
+      initializeLoginPage();
+    }
+    document.addEventListener('turbo:load', initializeLoginPage);
+  </script>

@@ -1,0 +1,47 @@
+<div class="modal fade" id="faqs-dialog-modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" data-faqs-dialog-target="title">Conferma</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-action="click->faqs-dialog#cancelCurrent"
+          aria-label="Chiudi"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-0" style="white-space: pre-line;" data-faqs-dialog-target="message"></div>
+
+        <div class="mt-3 d-none" data-faqs-dialog-target="inputGroup">
+          <label class="form-label" data-faqs-dialog-target="inputLabel">Valore</label>
+          <input
+            type="text"
+            class="form-control"
+            data-faqs-dialog-target="input"
+          >
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-faqs-dialog-target="cancelButton"
+          data-action="click->faqs-dialog#cancelCurrent"
+        >
+          Annulla
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-faqs-dialog-target="confirmButton"
+          data-action="click->faqs-dialog#submitCurrent"
+        >
+          Conferma
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

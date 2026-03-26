@@ -1,0 +1,851 @@
+<% content_for :title, "Mockup Dashboard News & Meteo" %>
+
+<% content_for :head do %>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .meteo-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: calc(100vh - 70px);
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            padding-bottom: 3rem;
+        }
+        
+        .mockup-container {
+            width: 100%;
+            min-height: calc(100vh - 70px);
+            height: calc(100vh - 70px);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .browser-mockup {
+            background: white;
+            min-height: calc(100vh - 70px);
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+        
+        .mockup-content {
+            padding: 30px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 70px);
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .meteo-dashboard-header {
+            margin-bottom: 1.75rem;
+        }
+
+        .meteo-dashboard-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.9rem;
+        }
+
+        .meteo-toolbar {
+            margin-bottom: 1.25rem;
+        }
+
+        .news-grid,
+        .main-grid {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .news-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .main-grid {
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+            align-items: start;
+        }
+        
+        .widget {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            overflow-wrap: anywhere;
+        }
+        
+        .widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .widget-header {
+            padding: 20px 25px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .widget-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-wrap: anywhere;
+        }
+        
+        .weather-widget .widget-header {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .news-widget .widget-header {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .news-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .news-item:hover .news-actions {
+            opacity: 1;
+        }
+
+        
+        .news-item .news-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .news-item:hover .news-actions {
+            opacity: 1;
+        }
+
+        [data-is-admin="false"] .news-actions {
+            display: none !important;
+        }
+
+        [data-is-admin="false"] .news-item {
+            cursor: default;
+        }
+
+        [data-is-admin="true"] .news-item:hover {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px 15px;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .widget-count-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            width: max-content;
+            max-width: 100%;
+        }
+        
+        .widget-body {
+            padding: 25px;
+        }
+
+        .widget-body--scroll {
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .widget-body--news {
+            max-height: 350px;
+        }
+
+        .widget-body--alerts {
+            max-height: 450px;
+        }
+
+        .widget-body-inner {
+            padding: 0 25px;
+        }
+
+        .widget-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .weather-panel {
+            width: 100%;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .weather-panel .container {
+            max-width: none;
+            padding: 0;
+        }
+
+        .weather-panel-title {
+            overflow-wrap: anywhere;
+        }
+
+        #meteo-card {
+            border: none;
+            border-radius: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        #weather-alerts {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            overflow-wrap: anywhere;
+        }
+        
+        .weather-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .weather-icon {
+            font-size: 4rem;
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        
+        .temperature {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .weather-desc {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .feels-like {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .weather-detail {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .weather-detail i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .weather-detail .label {
+            font-size: 0.8rem;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .weather-detail .value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .forecast-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #666;
+        }
+        
+        .forecast-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .forecast-item:last-child {
+            border-bottom: none;
+        }
+        
+        .news-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s ease;
+            align-items: flex-start;
+        }
+        
+        .news-item:hover {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px 15px;
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        
+        .news-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .news-icon.alert { background: #e17055; }
+        .news-icon.news { background: #74b9ff; }
+        .news-icon.system { background: #81ecec; color: #333; }
+        .news-icon.sport { background: #00b894; }
+        .news-icon.economy { background: #636e72; }
+        
+        .news-content h6 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .news-content {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        
+        .news-content p {
+            margin: 0 0 8px 0;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .news-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .badge-custom {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card.primary { background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; }
+        .stat-card.success { background: linear-gradient(135deg, #00b894, #00a085); color: white; }
+        .stat-card.info { background: linear-gradient(135deg, #81ecec, #00cec9); color: #333; }
+        .stat-card.warning { background: linear-gradient(135deg, #fdcb6e, #e17055); color: white; }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 1070px) {
+            .meteo-page {
+                padding-bottom: 2.5rem;
+            }
+
+            .mockup-container,
+            .browser-mockup,
+            .mockup-content {
+                min-height: auto;
+                height: auto;
+            }
+
+            .mockup-content {
+                padding: 20px 16px 28px;
+                overflow: visible;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .news-grid {
+                gap: 20px;
+            }
+
+            .widget {
+                height: auto;
+            }
+
+            .widget-body--news,
+            .widget-body--alerts {
+                max-height: none;
+            }
+
+            .weather-panel {
+                padding: 2rem 1.25rem;
+            }
+
+            .news-actions {
+                opacity: 1;
+            }
+
+            [data-is-admin="true"] .news-item:hover,
+            .news-item:hover {
+                padding: 20px 12px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mockup-content {
+                padding: 15px;
+            }
+
+            .meteo-dashboard-bar {
+                align-items: flex-start;
+            }
+
+            .widget-header,
+            .widget-body,
+            .widget-footer,
+            .widget-body-inner {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .widget-header {
+                padding-top: 18px;
+                padding-bottom: 14px;
+            }
+
+            .widget-body {
+                padding-top: 18px;
+                padding-bottom: 18px;
+            }
+            
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .weather-panel {
+                padding: 1.5rem 0.5rem;
+            }
+
+            .weather-panel-title {
+                font-size: 1.75rem;
+            }
+
+            .news-item {
+                gap: 12px;
+                padding: 16px 0;
+            }
+
+            [data-is-admin="true"] .news-item:hover,
+            .news-item:hover {
+                padding: 16px 10px;
+            }
+
+            .modal-dialog {
+                margin: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .meteo-page {
+                padding-bottom: 2rem;
+            }
+
+            .mockup-content {
+                padding: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .widget-body {
+                padding: 15px;
+            }
+            
+            .temperature {
+                font-size: 2rem;
+            }
+            
+            .weather-icon {
+                font-size: 3rem;
+            }
+
+            .widget-header,
+            .widget-body,
+            .widget-footer,
+            .widget-body-inner {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .weather-panel-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+<% end %>
+
+<div class="meteo-page">
+    <div class="mockup-container">
+        <div class="browser-mockup">
+            <div class="mockup-content">
+                <!-- Header -->
+                <div class="meteo-dashboard-header">
+                    <div class="meteo-dashboard-bar">
+                        
+                        <span style="color: #636e72;">23 Agosto 2025</span>
+                    </div>
+                    <hr style="border-color: #ddd;">
+                </div>
+
+
+<!-- 1. PULSANTE AGGIUNGI NEWS - Deve essere protetto -->
+<% if current_user&.admin? %>
+  <div class="meteo-toolbar">
+    <button class="btn btn-primary" id="add-news-btn">
+      <i class="fas fa-plus"></i> Aggiungi News
+    </button>
+  </div>
+<% end %>
+
+<!-- 2. WIDGET NEWS -->
+<div class="news-grid">
+  <div class="widget unified-news-widget">
+    <div class="widget-header" style="background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; border-radius: 12px 12px 0 0;">
+      <h3 class="widget-title">
+        <i class="fas fa-newspaper"></i>
+        News
+      </h3>
+      <span id="news-count" class="widget-count-badge">
+        <%= @news&.count || 0 %> nuove
+      </span>
+    </div>
+    <div class="widget-body widget-body--scroll widget-body--news">
+      <div class="widget-body-inner" id="news-container" data-is-admin="<%= current_user&.admin? %>">
+        <% if @news.present? %>
+          <%= render partial: 'news/news_item', collection: @news, as: :news %>
+        <% else %>
+          <div class="alert alert-info m-3">Nessuna news disponibile al momento.</div>
+        <% end %>
+      </div>
+    </div>
+    <div class="widget-footer">
+      <small style="color: #666;">
+        Ultimo aggiornamento: <%= Time.current.strftime("%H:%M") %> - Mostrando le ultime <%= @news&.count || 0 %> news
+      </small>
+    </div>
+  </div>
+</div>
+
+<% if current_user&.admin? %>
+  <div class="modal fade" id="newsModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newsModalLabel">Nuova News</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="news-form">
+            <input type="hidden" id="news-id" name="news_id">
+            
+            <div class="mb-3">
+              <label for="news-title" class="form-label">Titolo</label>
+              <input type="text" class="form-control" id="news-title" name="title" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="news-content" class="form-label">Contenuto</label>
+              <textarea class="form-control" id="news-content" name="content" rows="3" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label for="news-category" class="form-label">Categoria</label>
+              <select class="form-control" id="news-category" name="category" required>
+                <option value="">Seleziona categoria</option>
+                <option value="Università">Università</option>
+                <option value="Locale">Locale</option>
+                <option value="Sport">Sport</option>
+                <option value="Economia">Economia</option>
+                <option value="Ambiente">Ambiente</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="news-icon" class="form-label">Icona</label>
+              <select class="form-control" id="news-icon" name="icon_class">
+                <optgroup label="Università">
+                  <option value="fas fa-graduation-cap">🎓 Cappello laurea</option>
+                  <option value="fas fa-book-open">📖 Libro aperto</option>
+                  <option value="fas fa-calendar-alt">📅 Calendario</option>
+                  <option value="fas fa-users">👥 Gruppo</option>
+                  <option value="fas fa-euro-sign">💰 Euro</option>
+                </optgroup>
+                <optgroup label="News/Locale">
+                  <option value="fas fa-newspaper">📰 Giornale</option>
+                  <option value="fas fa-city">🏙️ Città</option>
+                  <option value="fas fa-building">🏢 Edificio</option>
+                  <option value="fas fa-bell">🔔 Campanella</option>
+                </optgroup>
+                <optgroup label="Sport">
+                  <option value="fas fa-futbol">⚽ Calcio</option>
+                  <option value="fas fa-basketball-ball">🏀 Basket</option>
+                  <option value="fas fa-trophy">🏆 Trofeo</option>
+                  <option value="fas fa-running">🏃 Corsa</option>
+                </optgroup>
+                <optgroup label="Economia">
+                  <option value="fas fa-chart-line">📈 Grafico</option>
+                  <option value="fas fa-chart-bar">📊 Barre</option>
+                  <option value="fas fa-coins">💰 Monete</option>
+                  <option value="fas fa-briefcase">💼 Valigetta</option>
+                </optgroup>
+                <optgroup label="Ambiente">
+                  <option value="fas fa-leaf">🍃 Foglia</option>
+                  <option value="fas fa-tree">🌳 Albero</option>
+                  <option value="fas fa-recycle">♻️ Riciclo</option>
+                  <option value="fas fa-sun">☀️ Sole</option>
+                </optgroup>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="button" class="btn btn-primary" id="save-news-btn">Salva</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+<%= javascript_include_tag 'news_management' %>
+
+    <div class="main-grid">
+        <!-- Widget Meteo -->
+        <div class="widget weather-widget">
+            <div class="widget-header" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; border-radius: 12px 12px 0 0;">
+                <div class="container weather-panel">
+                    <h1 class="text-center mb-4 weather-panel-title">Previsioni Meteo</h1>
+                    <div id="meteo-card" class="card shadow-sm p-4 text-center">
+                        <p>Caricamento posizione...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Widget Notifiche Meteo -->
+        <div class="widget weather-notifications-widget">
+            <div class="widget-header" style="background: linear-gradient(135deg, #e17055, #f39c12); color: white; border-radius: 12px 12px 0 0;">
+                <h3 class="widget-title">
+                    <i class="fas fa-bell"></i>
+                    Notifiche Meteo
+                </h3>
+                <span class="widget-count-badge">2 attive</span>
+            </div>
+            <div class="widget-body widget-body--scroll widget-body--alerts">
+                <div class="widget-body-inner">
+                    <div id="weather-alerts" class="p-3 card shadow-sm">
+                        <p>Caricamento allerte...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer">
+                <small style="color: #666;">Notifiche attive - Sistema di allerta automatico</small>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+
+<script>
+function initializeMeteo() {
+    const meteoCard = document.getElementById('meteo-card');
+    
+    // Evita inizializzazioni multiple
+    if (!meteoCard) {
+        console.log('Meteo card non trovato');
+        return;
+    }
+    
+    if (meteoCard.dataset.initialized === 'true') {
+        console.log('Meteo già inizializzato');
+        return;
+    }
+    
+    console.log('Inizializzazione meteo...');
+    meteoCard.dataset.initialized = 'true';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+        meteoCard.innerHTML = "<div class='alert alert-danger'>Geolocalizzazione non supportata dal browser.</div>";
+    }
+
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Fetch dati meteo attuale
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode,relativehumidity_2m,pressure_msl&current_weather=true&timezone=auto`)
+        .then(response => response.json())
+        .then(data => {
+            const weather = data.current_weather;
+            const temp = weather.temperature;
+            const wind = weather.windspeed;
+            const code = weather.weathercode;
+            const time = weather.time;
+
+            // Trova indice dell'orario corrente
+            const currentIndex = data.hourly.time.indexOf(time);
+            const humidity = data.hourly.relativehumidity_2m[currentIndex];
+            const pressure = data.hourly.pressure_msl[currentIndex];
+
+            const descrizione = getWeatherDescription(code);
+            const icona = getWeatherIcon(code);
+
+            meteoCard.innerHTML = `
+            <div class="d-flex flex-column align-items-center">
+                <img src="${icona}" alt="Icona Meteo" class="mb-3" style="width:80px;">
+                <h2 class="mb-3">${descrizione}</h2>
+                <p class="fs-4"><strong>Temperatura:</strong> ${temp}°C</p>
+                <p><strong>Umidità:</strong> ${humidity}%</p>
+                <p><strong>Pressione:</strong> ${pressure} hPa</p>
+                <p><strong>Vento:</strong> ${wind} km/h</p>
+                <p class="text-muted"><small>Aggiornato alle: ${time}</small></p>
+            </div>
+            `;
+        })
+        .catch(err => {
+            meteoCard.innerHTML = "<div class='alert alert-danger'>Errore nel recupero dei dati meteo.</div>";
+            console.error(err);
+        });
+
+        // Fetch allerte meteo
+        getWeatherAlerts(lat, lon);
+    }
+
+    function error() {
+        meteoCard.innerHTML = "<div class='alert alert-warning'>Impossibile ottenere la posizione.</div>";
+        const alertsContainer = document.getElementById('weather-alerts');
+        if (alertsContainer) {
+            alertsContainer.innerHTML = '<div class="alert alert-warning">Allerte non disponibili senza posizione.</div>';
+        }
+    }
+
+    function getWeatherDescription(code) {
+        const map = {
+        0: "Cielo sereno", 1: "Prevalentemente sereno", 2: "Parzialmente nuvoloso", 3: "Nuvoloso",
+        45: "Nebbia", 48: "Nebbia ghiacciata", 51: "Pioviggine leggera", 53: "Pioviggine moderata",
+        55: "Pioviggine intensa", 61: "Pioggia leggera", 63: "Pioggia moderata", 65: "Pioggia intensa",
+        71: "Neve leggera", 73: "Neve moderata", 75: "Neve intensa", 80: "Rovesci leggeri",
+        81: "Rovesci moderati", 82: "Rovesci forti", 95: "Temporali", 96: "Temporali con grandine leggera",
+        99: "Temporali con grandine forte"
+        };
+        return map[code] || "Condizione sconosciuta";
+    }
+
+    function getWeatherIcon(code) {
+        if ([0, 1].includes(code)) return "https://img.icons8.com/color/96/000000/sun--v1.png";
+        if ([2, 3].includes(code)) return "https://img.icons8.com/color/96/000000/partly-cloudy-day.png";
+        if ([61, 63, 65, 80, 81, 82].includes(code)) return "https://img.icons8.com/color/96/000000/rain.png";
+        if ([71, 73, 75].includes(code)) return "https://img.icons8.com/color/96/000000/snow.png";
+        if ([95, 96, 99].includes(code)) return "https://img.icons8.com/color/96/000000/storm.png";
+        return "https://img.icons8.com/color/96/000000/cloud.png";
+    }
+
+    function getWeatherAlerts(lat, lon) {
+        const alertsContainer = document.getElementById('weather-alerts');
+        if (!alertsContainer) return;
+        
+        fetch(`https://api.open-meteo.com/v1/weather-alerts?latitude=${lat}&longitude=${lon}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.alerts && data.alerts.length > 0) {
+                let html = '';
+                data.alerts.forEach(alert => {
+                    html += `
+                    <div class="alert alert-warning mb-3">
+                        <strong>${alert.event}</strong><br>
+                        <small><em>${alert.sender_name}</em></small><br>
+                        <span>${alert.description}</span><br>
+                        <small><strong>Validità:</strong> ${alert.effective} - ${alert.expires}</small>
+                    </div>
+                    `;
+                });
+                alertsContainer.innerHTML = html;
+            } else {
+                alertsContainer.innerHTML = '<div class="alert alert-success">Nessuna allerta meteo in corso.</div>';
+            }
+        })
+        .catch(err => {
+            alertsContainer.innerHTML = '<div class="alert alert-danger">Errore nel recupero delle allerte.</div>';
+            console.error(err);
+        });
+    }
+}
+
+// Ascolta tutti gli eventi possibili
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initializeMeteo);
+} else {
+    initializeMeteo();
+}
+if (!window.meteoListenersBound) {
+    document.addEventListener("turbo:load", initializeMeteo);
+    document.addEventListener("turbo:render", initializeMeteo);
+    window.meteoListenersBound = true;
+}
+</script>
