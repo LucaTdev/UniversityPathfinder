@@ -22,28 +22,6 @@
       text-align: center;
     }
 
-    .hero-section::before,
-    .hero-section::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .hero-section::before {
-      width: 18rem;
-      height: 18rem;
-      top: -6rem;
-      left: -4rem;
-    }
-
-    .hero-section::after {
-      width: 14rem;
-      height: 14rem;
-      right: -3rem;
-      bottom: -5rem;
-    }
-
     .hero-shell {
       position: relative;
       z-index: 1;
@@ -75,7 +53,7 @@
       flex-wrap: wrap;
     }
 
-    .btn-hero {
+    .btn.btn-hero {
       background-color: rgba(255, 255, 255, 0.2);
       border: 2px solid white;
       color: white;
@@ -87,14 +65,14 @@
       text-decoration: none;
     }
 
-    .btn-hero:hover,
-    .btn-hero:focus {
+    .btn.btn-hero:hover,
+    .btn.btn-hero:focus {
       background-color: white;
       color: #667eea;
       transform: translateY(-2px);
     }
 
-    .btn-hero-secondary {
+    .btn.btn-hero-secondary {
       background-color: transparent;
       border-color: rgba(255, 255, 255, 0.5);
     }
@@ -106,6 +84,7 @@
     .section-heading {
       max-width: 42rem;
       margin: 0 auto 3rem;
+      text-align: center;
     }
 
     .features-grid {
@@ -308,7 +287,7 @@
 
   <section class="home-features-section">
     <div class="container">
-      <div class="text-center section-heading">
+      <div class="section-heading">
         <h2 class="section-title">Cosa offriamo</h2>
         <p class="section-subtitle">Strumenti di navigazione per muoverti facilmente tra le università.</p>
       </div>

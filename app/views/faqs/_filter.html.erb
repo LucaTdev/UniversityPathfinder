@@ -1,16 +1,20 @@
 <% categories = Array(local_assigns[:categories]).compact.map { |c| c.to_s.strip }.reject(&:blank?).uniq.sort %>
 <% dropdown_id = local_assigns.fetch(:dropdown_id, "faq-filter") %>
 
-<div class="dropdown">
+<div class="dropdown faq-toolbar__dropdown faq-toolbar__dropdown--category">
   <button
-    class="btn btn-outline-primary dropdown-toggle"
+    class="btn btn-outline-primary dropdown-toggle faq-toolbar__compact-toggle faq-toolbar__compact-toggle--category"
     type="button"
     id="<%= dropdown_id %>"
     data-bs-toggle="dropdown"
     data-bs-display="static"
     aria-expanded="false"
   >
-    <i class="fas fa-filter me-2"></i><span data-faqs-category-filter-target="label">Categoria: Tutte</span>
+    <i class="fas fa-filter" aria-hidden="true"></i>
+    <span
+      class="faq-toolbar__toggle-text faq-toolbar__toggle-text--category"
+      data-faqs-category-filter-target="label"
+    >Categoria: Tutte</span>
   </button>
 
   <ul class="dropdown-menu faqs-filter-menu" aria-labelledby="<%= dropdown_id %>">
