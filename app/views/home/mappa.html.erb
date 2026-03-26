@@ -763,6 +763,22 @@
                 transport_mode: 'auto'
             };
 
+            // BLOCCO PER SALVATAGGIO DI Ultime Ricerche CLICCANDO SU Calcola Percorso 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            fetch('/routes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({
+                    route: {
+                        destination: endSede.indirizzo,
+                        destination_name: endSede.nome
+                    }
+                })
+            }).catch(error => console.error('Errore nel salvare la ricerca:', error));
+
             let instructionsHTML = `
                 <h3>🚦 Riepilogo Percorso</h3>
                 <p><b>Distanza:</b> ${currentRouteData.distance_km} km</p>
