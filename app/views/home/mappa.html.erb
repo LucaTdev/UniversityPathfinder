@@ -2,6 +2,9 @@
 
 <% content_for :head do %>
     <meta name="turbo-cache-control" content="no-cache">
+    <% content_for :head do %>
+        <meta name="turbo-visit-control" content="reload">
+    <% end %>
     <style>
         * {
             margin: 0;
@@ -760,6 +763,22 @@
                 transport_mode: 'auto'
             };
 
+            // BLOCCO PER SALVATAGGIO DI Ultime Ricerche CLICCANDO SU Calcola Percorso 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            fetch('/routes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({
+                    route: {
+                        destination: endSede.indirizzo,
+                        destination_name: endSede.nome
+                    }
+                })
+            }).catch(error => console.error('Errore nel salvare la ricerca:', error));
+
             let instructionsHTML = `
                 <h3>🚦 Riepilogo Percorso</h3>
                 <p><b>Distanza:</b> ${currentRouteData.distance_km} km</p>
@@ -791,6 +810,37 @@
         // 5. ESECUZIONE INIZIALE
         // =====================================================================
         addAllSediMarkers();
+
+        const findFavoriteSede = (name, location) => {
+            const normalizedName = (name || "").toString().trim().toLowerCase();
+            const normalizedLocation = (location || "").toString().trim();
+
+            return sedi.find((sede) => {
+                const sedeName = (sede.nome || "").toString().trim().toLowerCase();
+                const sedeLocation = `${sede.lat},${sede.long}`;
+                return sedeName === normalizedName || sedeLocation === normalizedLocation;
+            });
+        };
+
+        const favoriteData = sessionStorage.getItem('favoriteRoute');
+        if (favoriteData) {
+            sessionStorage.removeItem('favoriteRoute');
+
+            try {
+                const favoriteRoute = JSON.parse(favoriteData);
+                const startSede = findFavoriteSede(favoriteRoute.start_name, favoriteRoute.start_location);
+                const endSede = findFavoriteSede(favoriteRoute.end_name, favoriteRoute.end_location);
+
+                if (startSede) startSelect.value = startSede.id;
+                if (endSede) endSelect.value = endSede.id;
+
+                if (startSede && endSede) {
+                    calculateBtn.click();
+                }
+            } catch (error) {
+                console.error('Errore nel ripristinare il percorso preferito:', error);
+            }
+        }
 
     };
 

@@ -404,7 +404,7 @@
                             <i class="fas fa-edit me-2"></i>Modifica Profilo
                         </button>
                         
-                        <%= button_to logout_path, method: :delete, form: { class: 'd-inline' }, bclass: "btn btn-danger" do %>
+                        <%= button_to logout_path, method: :delete, form: { class: 'd-inline' }, class: "btn btn-danger" do %>
                             <i class="fas fa-sign-out-alt me-2"></i>Disconnetti
                         <% end %>
                     </div>
@@ -578,7 +578,16 @@
                     
                     <% if @favorite_routes.any? %>
                         <% @favorite_routes.each do |fav| %>
-                            <div class="route-item" id="<%= dom_id(fav) %>">
+                            <div
+                                class="route-item profile-favorite-route"
+                                id="<%= dom_id(fav) %>"
+                                role="button"
+                                tabindex="0"
+                                data-start-location="<%= fav.start_location %>"
+                                data-end-location="<%= fav.end_location %>"
+                                data-start-name="<%= fav.start_name %>"
+                                data-end-name="<%= fav.end_name %>"
+                            >
                                 <div class="profile-route-row">
                                     <div class="flex-grow-1">
                                         <h6 class="mb-1"><%= fav.start_name %> → <%= fav.end_name %></h6>
@@ -771,9 +780,46 @@
                     });
                 });
             }
+
+            document.querySelectorAll('.profile-favorite-route').forEach(routeItem => {
+                const navigate = () => {
+                    navigateToFavorite({
+                        start_location: routeItem.dataset.startLocation,
+                        end_location: routeItem.dataset.endLocation,
+                        start_name: routeItem.dataset.startName,
+                        end_name: routeItem.dataset.endName
+                    });
+                };
+
+                routeItem.addEventListener('click', navigate);
+                routeItem.addEventListener('keydown', function(event) {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    navigate();
+                });
+            });
+
+            document.querySelectorAll('.profile-route-actions').forEach(actions => {
+                actions.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            });
         });
 
         // Funzioni globali (fuori dal turbo:load perché chiamate da attributi HTML o altri script)
+
+        window.navigateToFavorite = function(routeData) {
+            if (!routeData?.start_name || !routeData?.end_name) return;
+
+            sessionStorage.setItem('favoriteRoute', JSON.stringify({
+                start_location: routeData.start_location,
+                end_location: routeData.end_location,
+                start_name: routeData.start_name,
+                end_name: routeData.end_name
+            }));
+
+            window.location.href = '/home/mappa';
+        };
         
         window.refreshProfileCounter = function(newCount) {
             const counter = document.getElementById('routes-counter');
